@@ -28,16 +28,17 @@ fenced code blocks with the language preserved, blockquotes (`>`), **bold**,
 
 ## Demo
 
-[`examples/`](examples/) has two volumes with numbered sections and
-cross-references. The compiled result is in [`examples/demo.html`](examples/demo.html):
-download it and open it in a browser.
+[`examples/`](examples/) is a short guide to clean architecture — five linked
+documents with numbered sections and cross-references between them. The compiled
+result is in [`examples/demo.html`](examples/demo.html): download it and open it
+in a browser.
 
 ![The HTML output in dark theme](docs/img/demo-dark.png)
 
 To regenerate it:
 
 ```bash
-uv run mdbook build --input examples --title "Python Course — mdbook demo" \
+uv run mdbook build --input examples --title "Clean Architecture — a short guide" \
   --theme dark --cross-refs --output examples/demo.html
 ```
 

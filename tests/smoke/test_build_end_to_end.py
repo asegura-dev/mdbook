@@ -1,4 +1,4 @@
-"""Smoke test: compile the sample .md files end to end."""
+"""Smoke test: compile the example guide end to end."""
 
 from __future__ import annotations
 
@@ -13,9 +13,10 @@ pytestmark = pytest.mark.smoke
 
 
 def test_compiles_and_writes_html(sample_files: list[Path], tmp_path: Path) -> None:
+    assert len(sample_files) == 5  # the five guide documents
     output = tmp_path / "book.html"
     options = BuildOptions(
-        title="My Study Book",
+        title="Clean Architecture Guide",
         inputs=sample_files,
         output=output,
         theme="dark",
@@ -33,27 +34,27 @@ def test_compiles_and_writes_html(sample_files: list[Path], tmp_path: Path) -> N
     assert "http://" not in html and "https://" not in html
 
     # Key structure.
-    assert "My Study Book" in html
+    assert "Clean Architecture Guide" in html
     assert 'data-theme="dark"' in html  # default theme applied
     assert 'class="search"' in html
     assert "theme-btn" in html
     assert "copy-btn" in html
 
-    # Document titles (first H1 of each file).
-    assert "Volume 1: Fundamentals" in html
-    assert "Volume 2: Advanced topics" in html
+    # Document titles (first H1 of the first and last file).
+    assert "Coupling and cohesion" in html
+    assert "When not to add structure" in html
 
-    # Navigation and index.
+    # Navigation: one section per document.
     assert 'class="toc"' in html
-    assert 'id="doc1"' in html and 'id="doc2"' in html
+    assert 'id="doc1"' in html and 'id="doc5"' in html
 
-    # Cross-reference enabled: T2 §1 -> "## 1. Decorators" of doc2.
-    assert '<a class="xref" href="#doc2--1-decorators">T2 §1</a>' in html
+    # Cross-reference enabled: T2 §1 -> "## 1. Dependencies point inward".
+    assert '<a class="xref" href="#doc2--1-dependencies-point-inward">T2 §1</a>' in html
 
 
 def test_crossref_disabled_does_not_link(sample_files: list[Path], tmp_path: Path) -> None:
     options = BuildOptions(
-        title="Book",
+        title="Guide",
         inputs=sample_files,
         output=tmp_path / "book.html",
         theme="light",

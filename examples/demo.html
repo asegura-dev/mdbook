@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Python Course — mdbook demo</title>
+<title>Clean Architecture — a short guide</title>
 <style>
 :root {
   --bg: #ffffff;
@@ -230,129 +230,243 @@ mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
 <body>
 <header class="topbar">
   <button class="icon-btn menu-btn" type="button" aria-label="Menu">&#9776;</button>
-  <span class="topbar-title">Python Course — mdbook demo</span>
+  <span class="topbar-title">Clean Architecture — a short guide</span>
   <input type="search" class="search" placeholder="Search…" aria-label="Search" autocomplete="off">
   <button class="icon-btn theme-btn" type="button" aria-label="Toggle theme">&#9788;</button>
 </header>
 <div class="layout">
   <nav class="sidebar" aria-label="Navigation">
-    <ul class="toc"><li class="toc-doc" data-doc="doc1"><a href="#doc1" class="toc-doc-link">Volume 1: Python fundamentals</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc1--1-variables-and-types"><a href="#doc1--1-variables-and-types">1. Variables and types</a></li><li class="toc-sec lvl2" data-target="doc1--2-control-flow"><a href="#doc1--2-control-flow">2. Control flow</a></li><li class="toc-sec lvl2" data-target="doc1--3-functions"><a href="#doc1--3-functions">3. Functions</a></li><li class="toc-sec lvl2" data-target="doc1--4-collections"><a href="#doc1--4-collections">4. Collections</a></li></ul></li><li class="toc-doc" data-doc="doc2"><a href="#doc2" class="toc-doc-link">Volume 2: Advanced Python</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc2--1-decorators"><a href="#doc2--1-decorators">1. Decorators</a></li><li class="toc-sec lvl2" data-target="doc2--2-generators"><a href="#doc2--2-generators">2. Generators</a></li><li class="toc-sec lvl2" data-target="doc2--3-context-managers"><a href="#doc2--3-context-managers">3. Context managers</a></li></ul></li></ul>
+    <ul class="toc"><li class="toc-doc" data-doc="doc1"><a href="#doc1" class="toc-doc-link">Coupling and cohesion</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc1--1-what-coupling-is"><a href="#doc1--1-what-coupling-is">1. What coupling is</a></li><li class="toc-sec lvl2" data-target="doc1--2-what-cohesion-is"><a href="#doc1--2-what-cohesion-is">2. What cohesion is</a></li><li class="toc-sec lvl2" data-target="doc1--3-the-rule-of-thumb"><a href="#doc1--3-the-rule-of-thumb">3. The rule of thumb</a></li></ul></li><li class="toc-doc" data-doc="doc2"><a href="#doc2" class="toc-doc-link">Dependency direction</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc2--1-dependencies-point-inward"><a href="#doc2--1-dependencies-point-inward">1. Dependencies point inward</a></li><li class="toc-sec lvl2" data-target="doc2--2-the-dependency-inversion-trick"><a href="#doc2--2-the-dependency-inversion-trick">2. The dependency inversion trick</a></li><li class="toc-sec lvl2" data-target="doc2--3-a-worked-example"><a href="#doc2--3-a-worked-example">3. A worked example</a></li></ul></li><li class="toc-doc" data-doc="doc3"><a href="#doc3" class="toc-doc-link">Validation at the boundary</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc3--1-validate-once-at-the-edge"><a href="#doc3--1-validate-once-at-the-edge">1. Validate once, at the edge</a></li><li class="toc-sec lvl2" data-target="doc3--2-the-core-trusts-its-inputs"><a href="#doc3--2-the-core-trusts-its-inputs">2. The core trusts its inputs</a></li><li class="toc-sec lvl2" data-target="doc3--3-where-to-put-the-contract"><a href="#doc3--3-where-to-put-the-contract">3. Where to put the contract</a></li></ul></li><li class="toc-doc" data-doc="doc4"><a href="#doc4" class="toc-doc-link">Pure functions and side effects</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc4--1-what-makes-a-function-pure"><a href="#doc4--1-what-makes-a-function-pure">1. What makes a function pure</a></li><li class="toc-sec lvl2" data-target="doc4--2-push-side-effects-to-the-edges"><a href="#doc4--2-push-side-effects-to-the-edges">2. Push side effects to the edges</a></li><li class="toc-sec lvl2" data-target="doc4--3-why-this-helps-testing"><a href="#doc4--3-why-this-helps-testing">3. Why this helps testing</a></li></ul></li><li class="toc-doc" data-doc="doc5"><a href="#doc5" class="toc-doc-link">When not to add structure</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc5--1-structure-has-a-cost"><a href="#doc5--1-structure-has-a-cost">1. Structure has a cost</a></li><li class="toc-sec lvl2" data-target="doc5--2-signs-you-went-too-far"><a href="#doc5--2-signs-you-went-too-far">2. Signs you went too far</a></li><li class="toc-sec lvl2" data-target="doc5--3-a-checklist"><a href="#doc5--3-a-checklist">3. A checklist</a></li></ul></li></ul>
   </nav>
   <div class="backdrop"></div>
   <main class="content">
-    <header class="cover"><h1>Python Course — mdbook demo</h1><nav class="index"><h2>Contents</h2><ol class="index-list"><li><a href="#doc1">Volume 1: Python fundamentals</a></li><li><a href="#doc2">Volume 2: Advanced Python</a></li></ol></nav></header><article class="doc" id="doc1"><h1 id="doc1--volume-1-python-fundamentals">Volume 1: Python fundamentals</h1>
-<p>This volume covers the basics of the language. Cross-references like <code>T2 §1</code>
-become links when you compile with that option on.</p>
-<h2 id="doc1--1-variables-and-types">1. Variables and types</h2>
-<p>A variable is a name bound to a value. Python infers the type:</p>
-<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-python">name = &quot;Ada&quot;        # str
-age = 36            # int
-active = True       # bool
-</code></pre></div>
-<p>The types you reach for most often:</p>
+    <header class="cover"><h1>Clean Architecture — a short guide</h1><nav class="index"><h2>Contents</h2><ol class="index-list"><li><a href="#doc1">Coupling and cohesion</a></li><li><a href="#doc2">Dependency direction</a></li><li><a href="#doc3">Validation at the boundary</a></li><li><a href="#doc4">Pure functions and side effects</a></li><li><a href="#doc5">When not to add structure</a></li></ol></nav></header><article class="doc" id="doc1"><h1 id="doc1--coupling-and-cohesion">Coupling and cohesion</h1>
+<p>Two words that get repeated until they stop meaning anything. They're worth
+pinning down, because most &quot;clean architecture&quot; advice is just a consequence of
+getting these two right.</p>
+<h2 id="doc1--1-what-coupling-is">1. What coupling is</h2>
+<p>Coupling is how much one piece of code needs to know about another. If changing
+module A forces you to open module B, they're coupled. Some coupling is
+unavoidable — code has to call other code — but the kind that hurts is the
+hidden kind: shared globals, reaching into another module's internals, depending
+on the order things run in.</p>
+<p>A quick way to feel it: count what breaks when you rename something.</p>
 <table>
 <thead>
 <tr>
-<th>Type</th>
-<th>Example</th>
-<th>Mutable</th>
+<th>Signal</th>
+<th>Coupling</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>int</code></td>
-<td><code>42</code></td>
+<td>Call a documented function</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>Pass a shared mutable object</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>Read another module's globals</td>
+<td>High</td>
+</tr>
+<tr>
+<td>Depend on import side effects</td>
+<td>High</td>
+</tr>
+</tbody>
+</table>
+<h2 id="doc1--2-what-cohesion-is">2. What cohesion is</h2>
+<p>Cohesion is the opposite question: do the things inside one module belong
+together? A module with high cohesion does one job. A <code>utils.py</code> that holds date
+math, HTTP retries and a CSV parser has low cohesion — three jobs sharing a file
+for no reason.</p>
+<blockquote>
+<p>Aim for high cohesion inside a module and low coupling between modules. The
+second tends to follow from the first.</p>
+</blockquote>
+<h2 id="doc1--3-the-rule-of-thumb">3. The rule of thumb</h2>
+<p>You usually can't remove coupling, only aim it. Where the dependencies point
+matters more than how many there are; that direction is the whole topic of
+<a class="xref" href="#doc2--1-dependencies-point-inward">T2 §1</a>. And the cheapest way to keep modules from leaking into each other is to
+stop validating the same data everywhere and do it once at the edge — see <a class="xref" href="#doc3--1-validate-once-at-the-edge">T3 §1</a>.</p>
+</article><article class="doc" id="doc2"><h1 id="doc2--dependency-direction">Dependency direction</h1>
+<p>The single idea behind layered, hexagonal and &quot;clean&quot; architectures is the same:
+control which way the arrows point. Everything else is naming.</p>
+<h2 id="doc2--1-dependencies-point-inward">1. Dependencies point inward</h2>
+<p>Put the rules that define what your program <em>is</em> — the domain logic — at the
+center, and let everything else depend on it. The center depends on nothing
+outward: not the database, not the web framework, not the CLI. This is just
+cohesion (<a class="xref" href="#doc1--2-what-cohesion-is">T1 §2</a>) applied across modules instead of inside one.</p>
+<p>Concretely: the core imports no I/O, and the I/O imports the core.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-python"># core.py  — knows nothing about storage or HTTP
+def price_with_tax(amount: float, rate: float) -&gt; float:
+    return round(amount * (1 + rate), 2)
+
+# api.py  — depends on core, never the other way around
+from core import price_with_tax
+</code></pre></div>
+<h2 id="doc2--2-the-dependency-inversion-trick">2. The dependency inversion trick</h2>
+<p>When the center genuinely needs something from the outside — &quot;save this&quot; — it
+declares an interface and lets the outer layer implement it. The arrow flips: the
+detail now depends on the abstraction the core owns.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-python">from typing import Protocol
+
+class Repository(Protocol):
+    def save(self, order: &quot;Order&quot;) -&gt; None: ...
+
+def checkout(order: &quot;Order&quot;, repo: Repository) -&gt; None:
+    repo.save(order)            # core depends on the Protocol, not on a DB
+</code></pre></div>
+<h2 id="doc2--3-a-worked-example">3. A worked example</h2>
+<p>mdbook is a small instance of this. The engine is the center; it produces HTML
+from a validated request and imports neither Typer nor Tkinter. The CLI and the
+GUI sit on the outside and depend on the engine. The thing the core insists on —
+valid input — is handled at the edge, which is <a class="xref" href="#doc3--2-the-core-trusts-its-inputs">T3 §2</a>.</p>
+</article><article class="doc" id="doc3"><h1 id="doc3--validation-at-the-boundary">Validation at the boundary</h1>
+<p>If the core trusts its inputs, something else has to make them trustworthy. That
+job lives at the boundary — the thin layer where external data becomes internal
+data.</p>
+<h2 id="doc3--1-validate-once-at-the-edge">1. Validate once, at the edge</h2>
+<p>Pick the line where untrusted input crosses into your program and validate there,
+once. Past that line, every function can assume the data is well-formed. The
+alternative — re-checking the same fields in every function &quot;to be safe&quot; — spreads
+the same knowledge everywhere and is exactly the coupling <a class="xref" href="#doc1--1-what-coupling-is">T1 §1</a> warns about.</p>
+<h2 id="doc3--2-the-core-trusts-its-inputs">2. The core trusts its inputs</h2>
+<p>A validated value should be a <em>type</em>, not a convention. Parse into something the
+core can rely on, and the checks disappear from the inner functions.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-python">from pydantic import BaseModel, field_validator
+
+class BuildRequest(BaseModel):
+    title: str
+    theme: str
+
+    @field_validator(&quot;theme&quot;)
+    @classmethod
+    def known_theme(cls, v: str) -&gt; str:
+        if v not in (&quot;light&quot;, &quot;dark&quot;):
+            raise ValueError(&quot;theme must be light or dark&quot;)
+        return v
+</code></pre></div>
+<blockquote>
+<p>&quot;Parse, don't validate&quot;: turn the input into a type that can't hold a bad
+value, instead of checking a bag of strings over and over.</p>
+</blockquote>
+<h2 id="doc3--3-where-to-put-the-contract">3. Where to put the contract</h2>
+<p>Keep the contract in its own module, between the outside and the core, so both
+the CLI and the GUI build the same object. The boundary is also where side
+effects gather, which is the subject of <a class="xref" href="#doc4--2-push-side-effects-to-the-edges">T4 §2</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Responsibility</th>
+<th>Trusts input?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Interface</td>
+<td>Collect raw input</td>
 <td>No</td>
 </tr>
 <tr>
-<td><code>str</code></td>
-<td><code>&quot;hi&quot;</code></td>
-<td>No</td>
+<td>Boundary</td>
+<td>Validate, build the type</td>
+<td>Turns No→Yes</td>
 </tr>
 <tr>
-<td><code>list</code></td>
-<td><code>[1, 2, 3]</code></td>
-<td>Yes</td>
-</tr>
-<tr>
-<td><code>dict</code></td>
-<td><code>{&quot;a&quot;: 1}</code></td>
+<td>Core</td>
+<td>Apply the rules</td>
 <td>Yes</td>
 </tr>
 </tbody>
 </table>
-<h2 id="doc1--2-control-flow">2. Control flow</h2>
-<p>Flow is controlled with <code>if</code>, <code>for</code> and <code>while</code>.</p>
+</article><article class="doc" id="doc4"><h1 id="doc4--pure-functions-and-side-effects">Pure functions and side effects</h1>
+<p>A pure function is the easiest thing to test, read and move. The trick isn't
+making everything pure — you can't — it's keeping the impure parts in as few
+places as possible.</p>
+<h2 id="doc4--1-what-makes-a-function-pure">1. What makes a function pure</h2>
+<p>A function is pure when its output depends only on its arguments and it changes
+nothing outside itself: no globals, no disk, no clock, no network. Same input,
+same output, every time.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-python"># pure: depends only on its args
+def slugify(text: str) -&gt; str:
+    return &quot;-&quot;.join(text.lower().split())
+
+# impure: reads the clock and writes a file
+def write_log(msg: str) -&gt; None:
+    with open(&quot;log.txt&quot;, &quot;a&quot;) as f:
+        f.write(f&quot;{now()} {msg}\n&quot;)
+</code></pre></div>
+<h2 id="doc4--2-push-side-effects-to-the-edges">2. Push side effects to the edges</h2>
+<p>You can't avoid I/O, but you can corner it. Keep a pure core that computes
+results, and a thin shell that reads inputs and writes outputs. This is the same
+arrow from <a class="xref" href="#doc2--1-dependencies-point-inward">T2 §1</a>, seen from a different angle: the impure shell depends on the
+pure center.</p>
 <blockquote>
-<p>In Python, <strong>indentation</strong> defines blocks, not braces.</p>
+<p>Functional core, imperative shell. Decide in the core, act in the shell.</p>
 </blockquote>
-<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-python">for i in range(3):
-    if i % 2 == 0:
-        print(f&quot;{i} is even&quot;)
-    else:
-        print(f&quot;{i} is odd&quot;)
-</code></pre></div>
-<h2 id="doc1--3-functions">3. Functions</h2>
-<p>Functions are defined with <code>def</code> and can take <em>default values</em>:</p>
-<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-python">def greet(name: str, upper: bool = False) -&gt; str:
-    msg = f&quot;Hello, {name}&quot;
-    return msg.upper() if upper else msg
-</code></pre></div>
-<p>When a function takes or returns another function, you are in decorator
-territory: see <a class="xref" href="#doc2--1-decorators">T2 §1</a>.</p>
-<h2 id="doc1--4-collections">4. Collections</h2>
-<p>Lists, tuples, sets and dicts:</p>
-<ul>
-<li><strong>Lists</strong>: ordered and mutable.</li>
-<li><strong>Tuples</strong>: ordered and immutable.</li>
-<li><strong>Sets</strong>: no duplicates.
-<ul>
-<li>Handy for fast membership tests.</li>
-</ul>
-</li>
-<li><strong>Dicts</strong>: key-value pairs.</li>
-</ul>
-<p>Lazy iteration over collections is covered in <a class="xref" href="#doc2--2-generators">T2 §2</a>.</p>
-</article><article class="doc" id="doc2"><h1 id="doc2--volume-2-advanced-python">Volume 2: Advanced Python</h1>
-<p>A follow-up to the fundamentals. This one references the first volume, like
-<code>T1 §3</code>.</p>
-<h2 id="doc2--1-decorators">1. Decorators</h2>
-<p>A decorator wraps a function to add behavior without touching its body. Part of
-<a class="xref" href="#doc1--3-functions">T1 §3</a> (functions) is a prerequisite.</p>
-<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-python">import functools
+<h2 id="doc4--3-why-this-helps-testing">3. Why this helps testing</h2>
+<p>Pure functions need no mocks — you call them and assert on the return value. The
+impure shell shrinks to a few functions you can check with one integration test.
+Boundary validation (<a class="xref" href="#doc3--1-validate-once-at-the-edge">T3 §1</a>) is one of those edges: parse at the door, compute in
+the middle, write at the other door.</p>
+</article><article class="doc" id="doc5"><h1 id="doc5--when-not-to-add-structure">When not to add structure</h1>
+<p>Every pattern in this guide has a cost. The mistake that follows reading about
+architecture is applying all of it to a script that didn't need any.</p>
+<h2 id="doc5--1-structure-has-a-cost">1. Structure has a cost</h2>
+<p>An interface, a layer, an abstraction — each one is a thing to name, navigate and
+keep in your head. That cost is worth paying when it buys you something:
+independent testing, a swappable detail, a boundary that stops a mess from
+spreading. When it buys nothing, it's just indirection.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-python"># over-engineered for a one-off
+class GreeterFactory:
+    def create(self) -&gt; &quot;Greeter&quot;: ...
 
-
-def timed(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        start = perf_counter()
-        try:
-            return func(*args, **kwargs)
-        finally:
-            print(f&quot;{func.__name__} took {perf_counter() - start:.4f}s&quot;)
-
-    return wrapper
+# fine
+def greet(name: str) -&gt; str:
+    return f&quot;Hello, {name}&quot;
 </code></pre></div>
+<h2 id="doc5--2-signs-you-went-too-far">2. Signs you went too far</h2>
 <blockquote>
-<p>Use <code>functools.wraps</code> to keep the original name and docstring.</p>
+<p>If you have to open four files to follow one request, the structure is working
+against you.</p>
 </blockquote>
-<h2 id="doc2--2-generators">2. Generators</h2>
-<p>Generators produce values <em>lazily</em> with <code>yield</code>, without materializing the
-whole collection (see <a class="xref" href="#doc1--4-collections">T1 §4</a>):</p>
-<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-python">def naturals():
-    n = 1
-    while True:
-        yield n
-        n += 1
-</code></pre></div>
-<p>This lets you work with potentially infinite sequences using little memory.</p>
-<h2 id="doc2--3-context-managers">3. Context managers</h2>
-<p>The <code>with</code> block guarantees cleanup:</p>
-<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-python">with open(&quot;data.txt&quot;, encoding=&quot;utf-8&quot;) as f:
-    content = f.read()
-</code></pre></div>
-<p>You can write your own with <code>contextlib.contextmanager</code>, which is itself a
-<strong>decorator</strong> (<a class="xref" href="#doc1--3-functions">T1 §3</a> and <a class="xref" href="#doc2--1-decorators">T2 §1</a>).</p>
+<ul>
+<li>An interface with exactly one implementation and no plan for a second.</li>
+<li>Wrappers that only forward calls.</li>
+<li>A layer every change has to pass through untouched.</li>
+<li>More test scaffolding than code under test.</li>
+</ul>
+<h2 id="doc5--3-a-checklist">3. A checklist</h2>
+<p>The patterns in <a class="xref" href="#doc2--2-the-dependency-inversion-trick">T2 §2</a> and <a class="xref" href="#doc3--3-where-to-put-the-contract">T3 §3</a> are tools, not goals. Reach for them when the
+pain they remove is real, not before. And when in doubt, optimize for cohesion
+first (<a class="xref" href="#doc1--2-what-cohesion-is">T1 §2</a>) — a small, focused module is easy to split later; a premature
+abstraction is hard to take back.</p>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>If &quot;no&quot;…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Is there a second implementation, or soon?</td>
+<td>Skip the interface</td>
+</tr>
+<tr>
+<td>Does the layer catch a real failure?</td>
+<td>Drop the layer</td>
+</tr>
+<tr>
+<td>Would a junior find this faster?</td>
+<td>Reconsider the split</td>
+</tr>
+</tbody>
+</table>
 </article>
   </main>
 </div>

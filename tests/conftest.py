@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pytest
 
-DATA_DIR = Path(__file__).parent / "data"
+EXAMPLES_DIR = Path(__file__).resolve().parents[1] / "examples"
 
 
 @pytest.fixture
 def sample_files() -> list[Path]:
-    """The sample .md files, in order (volume1, volume2)."""
-    return [DATA_DIR / "volume1.md", DATA_DIR / "volume2.md"]
+    """The example .md files (the clean-architecture guide), in order."""
+    return sorted(EXAMPLES_DIR.glob("*.md"))
