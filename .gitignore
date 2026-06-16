@@ -6,6 +6,9 @@ dist/
 wheels/
 *.egg-info
 
+# HTML generado por mdbook en la raíz (la salida por defecto)
+/*.html
+
 # Virtual environments
 .venv
 
