@@ -42,6 +42,26 @@ uv run mdbook build --input examples --title "Clean Architecture — a short gui
   --theme dark --cross-refs --output examples/demo.html
 ```
 
+## Using the app (no Python needed)
+
+The desktop app is a single `mdbook.exe` — nothing to install, no Python. If
+someone handed you the file, double-click it. To build it yourself, see
+[Executable (.exe)](#executable-exe).
+
+The first time you open it, Windows SmartScreen may say "Windows protected your
+PC", because the binary isn't code-signed. Click **More info**, then **Run
+anyway**.
+
+Then:
+
+1. **Add files…** or **Add folder…** to choose your `.md` files.
+2. Reorder them with **Up**/**Down** — that order is the order in the output.
+3. Type a **title**, pick a **theme**, and tick **cross-references** if your text
+   uses the `T1 §3` syntax.
+4. Click **Compile**, then **Open in browser**.
+
+Prefer the terminal? There's a CLI for that — see [Usage](#usage).
+
 ## Install
 
 Needs [uv](https://docs.astral.sh/uv/) and Python 3.12+.
