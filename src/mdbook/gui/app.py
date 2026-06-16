@@ -40,6 +40,8 @@ class MdbookApp:
 
         self.title_var = tk.StringVar(value="Mi obra de estudio")
         self.output_var = tk.StringVar(value=str(Path.cwd() / "mdbook.html"))
+        self.theme_var = tk.StringVar(value="claro")
+        self.crossref_var = tk.BooleanVar(value=False)
         self.status_var = tk.StringVar(value="Elige una carpeta o archivos .md para empezar.")
 
         self._build_ui()
@@ -115,9 +117,22 @@ class MdbookApp:
             row=0, column=2, padx=(0, 8), pady=8
         )
 
+        # Opciones de compilación (tema y referencias cruzadas)
+        opciones = ctk.CTkFrame(self.root)
+        opciones.grid(row=5, column=0, sticky="ew", padx=12, pady=6)
+        ctk.CTkLabel(opciones, text="Tema por defecto:").pack(side="left", padx=(8, 6), pady=8)
+        ctk.CTkOptionMenu(
+            opciones, values=["claro", "oscuro"], variable=self.theme_var, width=120
+        ).pack(side="left", padx=(0, 16), pady=8)
+        ctk.CTkCheckBox(
+            opciones,
+            text="Referencias cruzadas (p. ej. T1 §6)",
+            variable=self.crossref_var,
+        ).pack(side="left", padx=6, pady=8)
+
         # Acciones
         actions = ctk.CTkFrame(self.root)
-        actions.grid(row=5, column=0, sticky="ew", padx=12, pady=6)
+        actions.grid(row=6, column=0, sticky="ew", padx=12, pady=6)
         ctk.CTkButton(actions, text="Compilar", command=self.compile, height=40, width=160).pack(
             side="left", padx=8, pady=10
         )
@@ -132,7 +147,7 @@ class MdbookApp:
         self.open_btn.pack(side="left", padx=8, pady=10)
 
         ctk.CTkLabel(self.root, textvariable=self.status_var, anchor="w").grid(
-            row=6, column=0, sticky="ew", padx=18, pady=(0, 12)
+            row=7, column=0, sticky="ew", padx=18, pady=(0, 12)
         )
 
     # --- Estado de la lista ----------------------------------------------
@@ -230,6 +245,8 @@ class MdbookApp:
                 title=self.title_var.get(),
                 inputs=list(self.files),
                 output=Path(self.output_var.get()),
+                theme=self.theme_var.get(),  # type: ignore[arg-type]  # validado por Pydantic
+                cross_references=self.crossref_var.get(),
             )
         except ValidationError as exc:
             messagebox.showerror("Opciones inválidas", _format_validation_error(exc))
