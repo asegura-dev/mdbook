@@ -39,7 +39,7 @@ def _selftest() -> int:
             )
         )
         html = written.read_text(encoding="utf-8")
-        ok_assets = '<style>' in html and 'data-theme="dark"' in html
+        ok_assets = "<style>" in html and 'data-theme="dark"' in html
         ok_browser = bool(webbrowser.open(written.as_uri()))
         log.write_text(
             f"compile={ok_assets} browser={ok_browser} output={written}\n",

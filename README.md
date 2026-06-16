@@ -1,56 +1,155 @@
 # mdbook
 
-Convierte archivos Markdown (`.md`) en **un único HTML de estudio**:
-autocontenido (CSS y JS embebidos), navegable, con búsqueda instantánea,
-tema claro/oscuro recordado y botón de copiar en cada bloque de código.
-Pensado para leer documentación cómodamente en el celular y enriquecer repos.
+> Convierte varios archivos Markdown (`.md`) en **un único HTML de estudio**:
+> autocontenido, navegable, con búsqueda instantánea, tema claro/oscuro y botón
+> de copiar en cada bloque de código.
 
-## Arquitectura
+![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
+![Type-checked](https://img.shields.io/badge/mypy-strict-2a6db2)
+![Lint](https://img.shields.io/badge/ruff-passing-success)
 
-- **Motor puro** (`mdbook.engine`): recibe opciones validadas y produce el
-  HTML. No depende de la GUI ni de la CLI; se prueba y ejecuta solo.
-- **Frontera de validación** (`mdbook.config`): el contrato Pydantic
-  `BuildOptions` que comparten ambas interfaces.
-- **Interfaces**: la **CLI** (`mdbook.cli`, Typer + Rich) y, más adelante, la
-  **GUI** (CustomTkinter). Ambas construyen el mismo `BuildOptions` y llaman al
-  motor.
+Pensado para **leer documentación cómodamente en el celular** y **enriquecer
+repos de GitHub**: compilas tus apuntes o manuales en un solo `.html` que se
+abre en cualquier navegador, sin servidor ni dependencias externas.
 
-## Uso (CLI)
+![La aplicación de escritorio](docs/img/gui.png)
+
+## Características
+
+- 📄 **Uno o varios `.md`** en un solo HTML; el primer `#` de cada archivo es su
+  título en la navegación.
+- 🧭 **Portada + índice + barra lateral** con secciones y subsecciones.
+- 🔎 **Búsqueda instantánea** que filtra y **resalta** coincidencias.
+- 🌗 **Tema claro/oscuro** que **recuerda** tu preferencia.
+- 📋 **Botón "Copiar"** en cada bloque de código (con su lenguaje).
+- 🔗 **Referencias cruzadas** opcionales: `T1 §3` se vuelve un enlace interno.
+- 📦 **Autocontenido**: CSS y JS embebidos, **cero URLs externas**. Ideal para
+  abrir desde el celular o servir desde un repo.
+- 🖥️ **Dos interfaces sobre el mismo motor**: app de escritorio (CustomTkinter)
+  y línea de comandos (Typer).
+
+Markdown soportado: encabezados (`#`..`######`), párrafos, listas (anidadas),
+tablas, bloques de código con ` ``` ` (preservando el lenguaje), citas (`>`),
+**negrita**, *cursiva* e `inline code`.
+
+## Demo
+
+En [`examples/`](examples/) hay dos tomos de ejemplo con secciones numeradas y
+referencias cruzadas. El resultado ya compilado está en
+[`examples/demo.html`](examples/demo.html): descárgalo y ábrelo en tu navegador.
+
+![El HTML resultante en tema oscuro](docs/img/demo-oscuro.png)
+
+Para regenerarlo:
+
+```bash
+uv run mdbook build --input examples --title "Curso de Python — Demo mdbook" \
+  --theme oscuro --cross-refs --output examples/demo.html
+```
+
+## Instalación
+
+Requiere [uv](https://docs.astral.sh/uv/) y Python 3.12+.
+
+```bash
+git clone <url-del-repo>
+cd mdbook
+uv sync          # crea el entorno e instala todo
+```
+
+## Uso
+
+### App de escritorio (GUI)
+
+```bash
+uv run mdbook-gui
+```
+
+1. **Agregar carpeta…** (toma todos los `.md`) o **Agregar archivos…** (sueltos).
+2. Reordena la lista con **▲ Subir / ▼ Bajar** (el orden define el del HTML).
+3. Escribe el **título**, elige **tema** y, si quieres, marca **referencias
+   cruzadas**.
+4. **Compilar** → te dice dónde quedó el HTML.
+5. **Abrir en navegador** → lo abre con el navegador del sistema.
+
+### Línea de comandos (CLI)
 
 ```bash
 # Una carpeta: toma todos los .md (orden alfabético)
 uv run mdbook build --input docs --title "Mi Obra" --theme oscuro --output libro.html
 
-# Archivos sueltos (el orden define el orden del HTML)
+# Archivos sueltos: el orden de los -f define el orden del HTML
 uv run mdbook build -f intro.md -f cap1.md -t "Curso" --cross-refs -o curso.html
 ```
 
-Opciones: `--input/-i` (carpeta), `--file/-f` (archivo, repetible),
-`--title/-t`, `--theme` (`claro`|`oscuro`), `--cross-refs/--no-cross-refs`,
-`--output/-o`.
+| Opción | Descripción |
+| ------ | ----------- |
+| `--input/-i` | Carpeta: toma todos los `.md` (orden alfabético). |
+| `--file/-f` | Archivo `.md` suelto (repetible; define el orden). |
+| `--title/-t` | Título de la obra. |
+| `--theme` | `claro` o `oscuro` (por defecto `claro`). |
+| `--cross-refs / --no-cross-refs` | Activa/desactiva las referencias cruzadas. |
+| `--output/-o` | Ruta del HTML de salida (`.html`). |
 
 ### Referencias cruzadas
 
-Con `--cross-refs`, patrones como `T1 §6` se convierten en enlaces internos.
-Convención: `T<n>` = documento `n` (1-based, según el orden); `§<m>` = la
-**sección numerada `m`**, es decir el encabezado cuyo texto empieza con `m.`
-(por ejemplo `## 6. Validar la configuración` es §6). Los subencabezados sin
-número **no** cuentan. Si el destino no existe, el texto se deja igual.
+Con las referencias activadas, patrones como `T1 §3` se convierten en enlaces
+internos:
+
+- `T<n>` = el documento número `n` (1-based, según el orden de la obra).
+- `§<m>` = la **sección numerada `m`**: el encabezado cuyo texto empieza con
+  `m.` (p. ej. `## 3. Funciones` es §3). Los subencabezados sin número **no**
+  cuentan.
+
+Si el destino no existe, el texto se deja tal cual.
+
+## Ejecutable (.exe)
+
+Para generar un único ejecutable de escritorio (Windows) con PyInstaller:
+
+```bash
+uv run pyinstaller packaging/mdbook.spec
+```
+
+El binario queda en `dist/mdbook.exe`: una sola ventana, sin consola, con los
+assets embebidos. No requiere Python instalado para usarse.
+
+## Arquitectura
+
+La lógica **no depende de la interfaz**; es la decisión de diseño central.
+
+```
+src/mdbook/
+├── config.py        # Frontera de validación: BuildOptions (Pydantic)
+├── engine/          # MOTOR puro (no importa GUI ni CLI)
+│   ├── parser.py    #   Markdown -> tokens (markdown-it-py) + secciones
+│   ├── model.py     #   modelo interno (Book, Document, Section)
+│   ├── crossref.py  #   referencias "T1 §3"
+│   ├── renderer.py  #   modelo -> HTML autocontenido
+│   ├── compiler.py  #   orquestación
+│   └── assets/      #   template.html, style.css, app.js (se embeben)
+├── cli.py           # Interfaz: Typer + Rich
+└── gui/app.py       # Interfaz: CustomTkinter
+```
+
+- **`config.py`** es la única frontera de validación: tanto la GUI como la CLI
+  construyen el mismo `BuildOptions` validado y se lo pasan al motor, que confía
+  en él.
+- El motor se puede probar y ejecutar **sin la interfaz**.
+- [`tests/unit/test_architecture.py`](tests/unit/test_architecture.py) hace
+  **verificable** esta separación: falla si el motor importa una interfaz o si
+  la GUI toca el parseo/render.
 
 ## Desarrollo
 
 ```bash
-uv sync                 # instala runtime + dev
-uv run pytest           # todas las pruebas
-uv run pytest -m unit   # solo unitarias (markers: unit, smoke, regression)
-uv run ruff check .     # lint
-uv run ruff format .    # formato
-uv run mypy             # tipos (estricto)
+uv run pytest            # todas las pruebas
+uv run pytest -m unit    # markers: unit | smoke | regression
+uv run ruff check .      # lint
+uv run ruff format .     # formato
+uv run mypy              # tipos (estricto)
 ```
 
-## Estado
+## Licencia
 
-- [x] **Fase 1**: contrato Pydantic + motor + CLI + pruebas.
-- [ ] Fase 2: GUI mínima (elegir archivos, título, compilar, abrir).
-- [ ] Fase 3: opciones (tema, referencias cruzadas, reordenar).
-- [ ] Fase 4: empaquetado con PyInstaller.
+Pendiente de definir.
