@@ -1,7 +1,7 @@
-"""Ensambla el ``Book`` en un único HTML autocontenido.
+"""Assemble a ``Book`` into a single self-contained HTML file.
 
-Lee los assets (``template.html``, ``style.css``, ``app.js``) desde el paquete
-y los inlinea, de modo que el resultado no tenga dependencias externas.
+Reads the assets (``template.html``, ``style.css``, ``app.js``) from the
+package and inlines them, so the result has no external dependencies.
 """
 
 from __future__ import annotations
@@ -10,8 +10,6 @@ from html import escape
 from importlib.resources import files
 
 from mdbook.engine.model import Book
-
-_THEME_TO_HTML = {"claro": "light", "oscuro": "dark"}
 
 
 def _asset(name: str) -> str:
@@ -49,7 +47,7 @@ def _build_content(book: Book) -> str:
     cover = (
         '<header class="cover">'
         f"<h1>{escape(book.title)}</h1>"
-        '<nav class="index"><h2>Índice</h2>'
+        '<nav class="index"><h2>Contents</h2>'
         f"{_build_index(book)}</nav>"
         "</header>"
     )
@@ -60,15 +58,14 @@ def _build_content(book: Book) -> str:
 
 
 def build_html(book: Book) -> str:
-    """Devuelve el HTML completo de la obra."""
+    """Return the full HTML for the work."""
     template = _asset("template.html")
     style = _asset("style.css")
     script = _asset("app.js")
-    theme = _THEME_TO_HTML.get(book.theme, "light")
 
     replacements = {
         "{{TITLE}}": escape(book.title),
-        "{{DEFAULT_THEME}}": theme,
+        "{{DEFAULT_THEME}}": book.theme,
         "{{STYLE}}": style,
         "{{SIDEBAR}}": _build_sidebar(book),
         "{{CONTENT}}": _build_content(book),

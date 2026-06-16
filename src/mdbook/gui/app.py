@@ -1,7 +1,8 @@
-"""GUI mínima de mdbook (Fase 2).
+"""Minimal mdbook GUI.
 
-Solo orquesta: recoge entradas del usuario, construye un ``BuildOptions``
-validado y delega en ``compile_book``. No parsea Markdown ni genera HTML.
+It only orchestrates: collect the user's input, build a validated
+``BuildOptions`` and hand it to ``compile_book``. It does not parse Markdown or
+generate HTML.
 """
 
 from __future__ import annotations
@@ -19,65 +20,65 @@ from mdbook.engine import compile_book
 
 
 def _format_validation_error(exc: ValidationError) -> str:
-    lineas = []
+    lines = []
     for error in exc.errors():
-        loc = ".".join(str(p) for p in error["loc"]) or "(opciones)"
-        lineas.append(f"• {loc}: {error['msg']}")
-    return "\n".join(lineas)
+        loc = ".".join(str(p) for p in error["loc"]) or "(options)"
+        lines.append(f"• {loc}: {error['msg']}")
+    return "\n".join(lines)
 
 
 class MdbookApp:
-    """Ventana principal. Mantiene el estado mínimo de la interfaz."""
+    """Main window. Holds the minimal interface state."""
 
     def __init__(self) -> None:
         self.files: list[Path] = []
         self.last_output: Path | None = None
 
         self.root = ctk.CTk()
-        self.root.title("mdbook — Markdown a HTML de estudio")
+        self.root.title("mdbook — Markdown to HTML study file")
         self.root.geometry("760x600")
         self.root.minsize(640, 520)
 
-        self.title_var = tk.StringVar(value="Mi obra de estudio")
+        self.title_var = tk.StringVar(value="My study book")
         self.output_var = tk.StringVar(value=str(Path.cwd() / "mdbook.html"))
-        self.theme_var = tk.StringVar(value="claro")
+        self.theme_var = tk.StringVar(value="light")
         self.crossref_var = tk.BooleanVar(value=False)
-        self.status_var = tk.StringVar(value="Elige una carpeta o archivos .md para empezar.")
+        self.status_var = tk.StringVar(value="Pick a folder or .md files to start.")
 
         self._build_ui()
 
-    # --- Construcción de la interfaz --------------------------------------
+    # --- UI construction --------------------------------------------------
     def _build_ui(self) -> None:
         self.root.grid_columnconfigure(0, weight=1)
         self.root.grid_rowconfigure(3, weight=1)
 
-        # Título de la obra
+        # Title of the work
         top = ctk.CTkFrame(self.root)
         top.grid(row=0, column=0, sticky="ew", padx=12, pady=(12, 6))
         top.grid_columnconfigure(1, weight=1)
-        ctk.CTkLabel(top, text="Título de la obra:").grid(row=0, column=0, padx=(8, 8), pady=8)
+        ctk.CTkLabel(top, text="Title:").grid(row=0, column=0, padx=(8, 8), pady=8)
         ctk.CTkEntry(top, textvariable=self.title_var).grid(
             row=0, column=1, sticky="ew", padx=(0, 8), pady=8
         )
 
-        # Botones de selección de archivos
+        # File selection buttons
         picker = ctk.CTkFrame(self.root)
         picker.grid(row=1, column=0, sticky="ew", padx=12, pady=6)
-        ctk.CTkButton(picker, text="Agregar carpeta…", command=self.add_folder).pack(
+        ctk.CTkButton(picker, text="Add folder…", command=self.add_folder).pack(
             side="left", padx=6, pady=8
         )
-        ctk.CTkButton(picker, text="Agregar archivos…", command=self.add_files).pack(
+        ctk.CTkButton(picker, text="Add files…", command=self.add_files).pack(
             side="left", padx=6, pady=8
         )
-        ctk.CTkButton(
-            picker, text="Limpiar lista", fg_color="gray40", command=self.clear_files
-        ).pack(side="right", padx=6, pady=8)
+        ctk.CTkButton(picker, text="Clear list", fg_color="gray40", command=self.clear_files).pack(
+            side="right", padx=6, pady=8
+        )
 
-        ctk.CTkLabel(self.root, text="Documentos (el orden define el orden en el HTML):").grid(
+        ctk.CTkLabel(self.root, text="Documents (the order sets the order in the HTML):").grid(
             row=2, column=0, sticky="w", padx=18, pady=(6, 0)
         )
 
-        # Lista de archivos + botones de orden
+        # File list + ordering buttons
         body = ctk.CTkFrame(self.root)
         body.grid(row=3, column=0, sticky="nsew", padx=12, pady=6)
         body.grid_columnconfigure(0, weight=1)
@@ -97,48 +98,46 @@ class MdbookApp:
 
         order = ctk.CTkFrame(body, fg_color="transparent")
         order.grid(row=0, column=2, sticky="ns", padx=(4, 8), pady=8)
-        ctk.CTkButton(order, text="▲ Subir", width=96, command=self.move_up).pack(
-            padx=4, pady=(0, 6)
-        )
-        ctk.CTkButton(order, text="▼ Bajar", width=96, command=self.move_down).pack(padx=4, pady=6)
+        ctk.CTkButton(order, text="▲ Up", width=96, command=self.move_up).pack(padx=4, pady=(0, 6))
+        ctk.CTkButton(order, text="▼ Down", width=96, command=self.move_down).pack(padx=4, pady=6)
         ctk.CTkButton(
-            order, text="Quitar", width=96, fg_color="gray40", command=self.remove_selected
+            order, text="Remove", width=96, fg_color="gray40", command=self.remove_selected
         ).pack(padx=4, pady=6)
 
-        # Salida
+        # Output
         out = ctk.CTkFrame(self.root)
         out.grid(row=4, column=0, sticky="ew", padx=12, pady=6)
         out.grid_columnconfigure(1, weight=1)
-        ctk.CTkLabel(out, text="Salida (.html):").grid(row=0, column=0, padx=(8, 8), pady=8)
+        ctk.CTkLabel(out, text="Output (.html):").grid(row=0, column=0, padx=(8, 8), pady=8)
         ctk.CTkEntry(out, textvariable=self.output_var).grid(
             row=0, column=1, sticky="ew", padx=(0, 8), pady=8
         )
-        ctk.CTkButton(out, text="Elegir…", width=90, command=self.choose_output).grid(
+        ctk.CTkButton(out, text="Choose…", width=90, command=self.choose_output).grid(
             row=0, column=2, padx=(0, 8), pady=8
         )
 
-        # Opciones de compilación (tema y referencias cruzadas)
-        opciones = ctk.CTkFrame(self.root)
-        opciones.grid(row=5, column=0, sticky="ew", padx=12, pady=6)
-        ctk.CTkLabel(opciones, text="Tema por defecto:").pack(side="left", padx=(8, 6), pady=8)
+        # Build options (theme and cross-references)
+        options_frame = ctk.CTkFrame(self.root)
+        options_frame.grid(row=5, column=0, sticky="ew", padx=12, pady=6)
+        ctk.CTkLabel(options_frame, text="Default theme:").pack(side="left", padx=(8, 6), pady=8)
         ctk.CTkOptionMenu(
-            opciones, values=["claro", "oscuro"], variable=self.theme_var, width=120
+            options_frame, values=["light", "dark"], variable=self.theme_var, width=120
         ).pack(side="left", padx=(0, 16), pady=8)
         ctk.CTkCheckBox(
-            opciones,
-            text="Referencias cruzadas (p. ej. T1 §6)",
+            options_frame,
+            text="Cross-references (e.g. T1 §6)",
             variable=self.crossref_var,
         ).pack(side="left", padx=6, pady=8)
 
-        # Acciones
+        # Actions
         actions = ctk.CTkFrame(self.root)
         actions.grid(row=6, column=0, sticky="ew", padx=12, pady=6)
-        ctk.CTkButton(actions, text="Compilar", command=self.compile, height=40, width=160).pack(
+        ctk.CTkButton(actions, text="Compile", command=self.compile, height=40, width=160).pack(
             side="left", padx=8, pady=10
         )
         self.open_btn = ctk.CTkButton(
             actions,
-            text="Abrir en navegador",
+            text="Open in browser",
             command=self.open_browser,
             height=40,
             width=180,
@@ -150,7 +149,7 @@ class MdbookApp:
             row=7, column=0, sticky="ew", padx=18, pady=(0, 12)
         )
 
-    # --- Estado de la lista ----------------------------------------------
+    # --- List state -------------------------------------------------------
     def _refresh_list(self, select: int | None = None) -> None:
         self.listbox.delete(0, tk.END)
         for path in self.files:
@@ -159,46 +158,46 @@ class MdbookApp:
             self.listbox.selection_clear(0, tk.END)
             self.listbox.selection_set(select)
             self.listbox.activate(select)
-        self.status_var.set(f"{len(self.files)} documento(s) en la lista.")
+        self.status_var.set(f"{len(self.files)} document(s) in the list.")
 
     def _selected_index(self) -> int | None:
-        seleccion = self.listbox.curselection()  # type: ignore[no-untyped-call]
-        return int(seleccion[0]) if seleccion else None
+        selection = self.listbox.curselection()  # type: ignore[no-untyped-call]
+        return int(selection[0]) if selection else None
 
-    def _add_paths(self, nuevos: list[Path]) -> None:
-        agregados = 0
-        for path in nuevos:
+    def _add_paths(self, new_paths: list[Path]) -> None:
+        added = 0
+        for path in new_paths:
             resolved = path.resolve()
             if resolved not in self.files:
                 self.files.append(resolved)
-                agregados += 1
+                added += 1
         self._refresh_list(select=len(self.files) - 1 if self.files else None)
-        if nuevos and agregados == 0:
-            self.status_var.set("Esos archivos ya estaban en la lista.")
+        if new_paths and added == 0:
+            self.status_var.set("Those files were already in the list.")
 
-    # --- Acciones de selección -------------------------------------------
+    # --- Selection actions ------------------------------------------------
     def add_folder(self) -> None:
-        carpeta = filedialog.askdirectory(title="Elige una carpeta con archivos .md")
-        if not carpeta:
+        folder = filedialog.askdirectory(title="Pick a folder with .md files")
+        if not folder:
             return
         try:
-            encontrados = discover_markdown(Path(carpeta))
+            found = discover_markdown(Path(folder))
         except ValueError as exc:
-            messagebox.showerror("Carpeta inválida", str(exc))
+            messagebox.showerror("Invalid folder", str(exc))
             return
-        if not encontrados:
-            messagebox.showwarning("Sin archivos", "La carpeta no contiene archivos .md.")
+        if not found:
+            messagebox.showwarning("No files", "The folder has no .md files.")
             return
-        self._add_paths(encontrados)
+        self._add_paths(found)
 
     def add_files(self) -> None:
-        rutas = filedialog.askopenfilenames(
-            title="Elige archivos .md",
-            filetypes=[("Markdown", "*.md"), ("Todos", "*.*")],
+        paths = filedialog.askopenfilenames(
+            title="Pick .md files",
+            filetypes=[("Markdown", "*.md"), ("All files", "*.*")],
         )
-        if not rutas:
+        if not paths:
             return
-        self._add_paths([Path(r) for r in rutas])
+        self._add_paths([Path(p) for p in paths])
 
     def remove_selected(self) -> None:
         idx = self._selected_index()
@@ -226,42 +225,42 @@ class MdbookApp:
         self._refresh_list()
 
     def choose_output(self) -> None:
-        ruta = filedialog.asksaveasfilename(
-            title="Guardar HTML como…",
+        path = filedialog.asksaveasfilename(
+            title="Save HTML as…",
             defaultextension=".html",
             filetypes=[("HTML", "*.html")],
             initialfile="mdbook.html",
         )
-        if ruta:
-            self.output_var.set(ruta)
+        if path:
+            self.output_var.set(path)
 
-    # --- Compilar / abrir -------------------------------------------------
+    # --- Compile / open ---------------------------------------------------
     def compile(self) -> None:
         if not self.files:
-            messagebox.showwarning("Sin documentos", "Agrega al menos un archivo .md.")
+            messagebox.showwarning("No documents", "Add at least one .md file.")
             return
         try:
             options = BuildOptions(
                 title=self.title_var.get(),
                 inputs=list(self.files),
                 output=Path(self.output_var.get()),
-                theme=self.theme_var.get(),  # type: ignore[arg-type]  # validado por Pydantic
+                theme=self.theme_var.get(),  # type: ignore[arg-type]  # validated by Pydantic
                 cross_references=self.crossref_var.get(),
             )
         except ValidationError as exc:
-            messagebox.showerror("Opciones inválidas", _format_validation_error(exc))
+            messagebox.showerror("Invalid options", _format_validation_error(exc))
             return
 
         try:
             written = compile_book(options)
-        except Exception as exc:  # reportamos cualquier fallo al usuario
-            messagebox.showerror("Error al compilar", str(exc))
+        except Exception as exc:  # surface any failure to the user
+            messagebox.showerror("Build failed", str(exc))
             return
 
         self.last_output = written
         self.open_btn.configure(state="normal")
-        self.status_var.set(f"Compilado: {written}")
-        messagebox.showinfo("Listo", f"HTML generado en:\n{written}")
+        self.status_var.set(f"Built: {written}")
+        messagebox.showinfo("Done", f"HTML written to:\n{written}")
 
     def open_browser(self) -> None:
         if self.last_output is None:
@@ -273,7 +272,7 @@ class MdbookApp:
 
 
 def main() -> None:
-    """Entry point de la GUI (script ``mdbook-gui``)."""
+    """GUI entry point (the ``mdbook-gui`` script)."""
     ctk.set_appearance_mode("system")
     ctk.set_default_color_theme("blue")
     MdbookApp().run()

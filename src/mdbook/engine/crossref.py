@@ -1,13 +1,13 @@
-"""Referencias cruzadas: detecta patrones tipo ``T1 §6`` y los enlaza.
+"""Cross-references: find patterns like ``T1 §6`` and turn them into links.
 
-Convención:
+Convention:
 
-- ``T<n>`` = el documento número ``n`` según el orden de la obra (1-based).
-- ``§<m>`` = la SECCIÓN NUMERADA ``m`` de ese documento, es decir el encabezado
-  cuyo texto empieza con ``m.`` (p. ej. ``## 6. Validar la configuración`` es
-  §6). Los subencabezados sin número no cuentan.
+- ``T<n>`` = document number ``n`` in the order of the work (1-based).
+- ``§<m>`` = NUMBERED SECTION ``m`` of that document, i.e. the heading whose
+  text starts with ``m.`` (e.g. ``## 6. Validate the config`` is §6).
+  Unnumbered subheadings do not count.
 
-Si el destino no existe, el texto se deja igual.
+If the target does not exist, the text is left untouched.
 """
 
 from __future__ import annotations
@@ -19,27 +19,27 @@ from mdbook.engine.model import Section
 
 CrossRefMap = dict[tuple[int, int], str]
 
-# Acepta "T1 §6", "T1§6", "T1 § 6".
+# Accepts "T1 §6", "T1§6", "T1 § 6".
 CROSSREF_RE = re.compile(r"\bT(\d+)\s*§\s*(\d+)")
 
 
 def build_crossref_map(documents_sections: Iterable[list[Section]]) -> CrossRefMap:
-    """Construye el mapa (documento, sección) -> id de ancla.
+    """Build the (document, section) -> anchor id map.
 
-    ``documents_sections`` debe venir en el orden de la obra.
+    ``documents_sections`` must come in the order of the work.
     """
     mapping: CrossRefMap = {}
     for doc_index, sections in enumerate(documents_sections, start=1):
         for section in sections:
             key = (doc_index, section.number)
-            # Si una sección numerada se repite, gana la primera aparición.
+            # If a numbered section repeats, the first occurrence wins.
             if section.number > 0 and key not in mapping:
                 mapping[key] = section.id
     return mapping
 
 
 def apply_crossref(escaped_text: str, mapping: CrossRefMap) -> str:
-    """Reemplaza las referencias por enlaces internos sobre texto ya escapado."""
+    """Replace references with internal links over already-escaped text."""
 
     def repl(match: re.Match[str]) -> str:
         doc_n = int(match.group(1))

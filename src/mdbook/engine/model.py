@@ -1,7 +1,8 @@
-"""Modelo interno del motor: representación intermedia entre el parseo y el HTML.
+"""Engine's internal model: the intermediate representation between parsing
+and HTML.
 
-Son estructuras planas y sin dependencias externas. No conocen Pydantic ni
-las interfaces.
+Flat structures with no external dependencies. They know nothing about Pydantic
+or the interfaces.
 """
 
 from __future__ import annotations
@@ -11,12 +12,12 @@ from dataclasses import dataclass, field
 
 @dataclass(frozen=True)
 class Section:
-    """Un encabezado dentro de un documento.
+    """A heading inside a document.
 
-    ``number`` es el número de SECCIÓN NUMERADA leído del propio texto del
-    encabezado: el que empieza con ``N.`` (p. ej. ``## 6. Validar`` → 6). Vale
-    0 para el título y para los encabezados no numerados. Se usa para las
-    referencias cruzadas tipo ``T1 §6`` (la sección 6 del documento 1).
+    ``number`` is the numbered-section number read from the heading text
+    itself: the one that starts with ``N.`` (e.g. ``## 6. Validate`` -> 6). It
+    is 0 for the title and for unnumbered headings. Cross-references like
+    ``T1 §6`` (section 6 of document 1) rely on it.
     """
 
     id: str
@@ -28,7 +29,7 @@ class Section:
 
 @dataclass
 class Document:
-    """Un .md ya convertido: su título, su HTML y su lista de secciones."""
+    """A converted .md file: its title, its HTML and its list of sections."""
 
     id: str
     title: str
@@ -38,7 +39,7 @@ class Document:
 
 @dataclass
 class Book:
-    """La obra completa lista para volcarse a la plantilla HTML."""
+    """The whole work, ready to pour into the HTML template."""
 
     title: str
     theme: str

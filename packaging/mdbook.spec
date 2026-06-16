@@ -1,8 +1,8 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""Spec de PyInstaller: empaqueta la GUI de mdbook en un único .exe.
+"""PyInstaller spec: bundle the mdbook GUI into a single .exe.
 
-Incluye los assets embebidos del motor (template.html, style.css, app.js) y los
-datos de customtkinter. Construir desde la raíz del proyecto:
+Includes the engine's embedded assets (template.html, style.css, app.js) and
+customtkinter's data files. Build from the project root:
 
     uv run pyinstaller packaging/mdbook.spec
 """
@@ -11,7 +11,7 @@ import os
 
 from PyInstaller.utils.hooks import collect_data_files
 
-ROOT = os.path.dirname(SPECPATH)  # noqa: F821 - SPECPATH lo inyecta PyInstaller
+ROOT = os.path.dirname(SPECPATH)  # noqa: F821 - SPECPATH is injected by PyInstaller
 ASSETS = os.path.join(ROOT, "src", "mdbook", "engine", "assets")
 
 datas = [

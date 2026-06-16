@@ -1,13 +1,13 @@
 [project]
 name = "mdbook"
 version = "1.0.0"
-description = "Convierte archivos Markdown en un único HTML de estudio: navegable, con búsqueda, tema claro/oscuro y copiar código."
+description = "Compile Markdown files into a single HTML study file: navigable, searchable, light/dark theme, copy-code buttons."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.12"
 authors = [
-    { name = "BallonSb", email = "Alejandro_segura85@hotmail.com" }
+    { name = "Alejandro Segura", email = "Alejandro_segura85@hotmail.com" }
 ]
 dependencies = [
     "pydantic>=2.6",
@@ -36,9 +36,9 @@ build-backend = "uv_build"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = [
-    "unit: pruebas unitarias del motor (parser, crossref, config)",
-    "smoke: prueba de humo end-to-end que compila .md de ejemplo",
-    "regression: pruebas que fijan un bug ya corregido",
+    "unit: unit tests of the engine (parser, crossref, config)",
+    "smoke: end-to-end smoke test that compiles the sample .md files",
+    "regression: tests that pin down an already-fixed bug",
 ]
 
 [tool.ruff]
@@ -54,8 +54,8 @@ python_version = "3.12"
 strict = true
 files = ["src", "tests"]
 
-# El motor, la config y las interfaces se verifican en modo estricto (arriba).
-# customtkinter no trae stubs de tipos: lo ignoramos puntualmente.
+# Engine, config and interfaces are checked in strict mode (above).
+# customtkinter ships no type stubs, so we ignore it here only.
 [[tool.mypy.overrides]]
 module = ["customtkinter.*"]
 ignore_missing_imports = true

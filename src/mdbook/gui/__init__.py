@@ -1,8 +1,7 @@
-"""Interfaz gráfica (CustomTkinter) de mdbook.
+"""mdbook graphical interface (CustomTkinter).
 
-Es una interfaz delgada: construye un :class:`mdbook.config.BuildOptions`
-validado y llama al motor. No contiene lógica de parseo ni de generación de
-HTML.
+A thin interface: it builds a validated :class:`mdbook.config.BuildOptions` and
+calls the engine. It contains no parsing or HTML-generation logic.
 """
 
 from __future__ import annotations

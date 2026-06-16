@@ -1,7 +1,7 @@
-"""Motor puro de compilación de mdbook (sin GUI ni CLI).
+"""Pure compilation engine for mdbook (no GUI, no CLI).
 
-Punto de entrada público: :func:`compile_book` (escribe el HTML) y
-:func:`compile_html` (lo devuelve como cadena).
+Public entry points: :func:`compile_book` (writes the HTML) and
+:func:`compile_html` (returns it as a string).
 """
 
 from __future__ import annotations

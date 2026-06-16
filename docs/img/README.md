@@ -1,11 +1,11 @@
-# Capturas para el README
+# Screenshots for the README
 
-Coloca aquí los PNG. El README principal ya los enlaza con estos nombres:
+Drop the PNGs here. The main README already links them by these names:
 
-| Archivo            | Qué mostrar                                                        |
-| ------------------ | ----------------------------------------------------------------- |
-| `gui.png`          | La ventana de la app (`uv run mdbook-gui` o `dist/mdbook.exe`) con archivos cargados, un título escrito y el tema/checkbox visibles. |
-| `demo-oscuro.png`  | El HTML resultante en tema **oscuro**: portada/índice + barra lateral + un bloque de código con el botón "Copiar". |
-| `demo-busqueda.png`| (Opcional) El HTML con la barra de búsqueda usada y coincidencias resaltadas. |
+| File               | What to show                                                      |
+| ------------------ | ---------------------------------------------------------------- |
+| `gui.png`          | The app window (`uv run mdbook-gui` or `dist/mdbook.exe`) with files loaded, a title typed, and the theme/checkbox visible. |
+| `demo-dark.png`    | The resulting HTML in **dark** theme: cover/index + sidebar + a code block with the "Copy" button. |
+| `demo-search.png`  | (Optional) the HTML with the search bar in use and matches highlighted. |
 
-Sugerencia: ancho ~1200 px. Una vez los pegues, se ven automáticamente en GitHub.
+Aim for ~1200 px wide. Once you drop them in, they show up on GitHub.

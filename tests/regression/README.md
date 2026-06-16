@@ -1,8 +1,8 @@
-# Pruebas de regresión
+# Regression tests
 
-Convención: cuando corrijamos un bug, añadimos aquí un test que falle con el
-bug presente y pase con el arreglo. Márcalos con `@pytest.mark.regression` (o
-`pytestmark = pytest.mark.regression` a nivel de módulo) y nómbralos según el
-síntoma, p. ej. `test_fence_sin_lenguaje_no_rompe.py`.
+Convention: when we fix a bug, add a test here that fails with the bug present
+and passes once it's fixed. Mark them with `@pytest.mark.regression` (or
+`pytestmark = pytest.mark.regression` at module level) and name them after the
+symptom, e.g. `test_fence_without_language_does_not_break.py`.
 
-Aún no hay regresiones registradas.
+No regressions recorded yet.

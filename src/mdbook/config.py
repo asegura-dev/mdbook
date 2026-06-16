@@ -1,8 +1,7 @@
-"""Frontera de validación: el contrato Pydantic que comparten GUI y CLI.
+"""Validation boundary: the Pydantic contract shared by the GUI and the CLI.
 
-Tanto la interfaz gráfica como la línea de comandos construyen un
-:class:`BuildOptions` y se lo pasan al motor. El motor confía en él y no
-vuelve a validar.
+Both interfaces build a :class:`BuildOptions` and hand it to the engine. The
+engine trusts it and does not validate again.
 """
 
 from __future__ import annotations
@@ -12,71 +11,71 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-Theme = Literal["claro", "oscuro"]
-"""Únicos temas admitidos por el contrato."""
+Theme = Literal["light", "dark"]
+"""The only themes the contract accepts."""
 
 
 class BuildOptions(BaseModel):
-    """Opciones validadas de una compilación.
+    """Validated options for one build.
 
-    Es inmutable a propósito: una vez validada, no debe mutarse antes de
-    llegar al motor.
+    Frozen on purpose: once validated, nothing should mutate it before it
+    reaches the engine.
     """
 
     model_config = ConfigDict(frozen=True)
 
-    title: str = Field(min_length=1, description="Título de la obra.")
-    inputs: list[Path] = Field(min_length=1, description="Archivos .md en orden.")
-    output: Path = Field(description="Ruta del HTML a generar (.html).")
-    theme: Theme = Field(default="claro", description="Tema por defecto.")
+    title: str = Field(min_length=1, description="Title of the work.")
+    inputs: list[Path] = Field(min_length=1, description="Markdown files, in order.")
+    output: Path = Field(description="Path of the HTML file to write (.html).")
+    theme: Theme = Field(default="light", description="Default theme.")
     cross_references: bool = Field(
         default=False,
-        description="Si está activo, convierte patrones tipo 'T1 §6' en enlaces internos.",
+        description="When on, turns patterns like 'T1 §6' into internal links.",
     )
 
     @field_validator("title")
     @classmethod
-    def _title_no_vacio(cls, value: str) -> str:
+    def _strip_title(cls, value: str) -> str:
         stripped = value.strip()
         if not stripped:
-            raise ValueError("El título no puede estar vacío.")
+            raise ValueError("Title must not be empty.")
         return stripped
 
     @field_validator("inputs")
     @classmethod
-    def _inputs_validos(cls, value: list[Path]) -> list[Path]:
+    def _check_inputs(cls, value: list[Path]) -> list[Path]:
         if not value:
-            raise ValueError("Se requiere al menos un archivo .md.")
-        resueltos: list[Path] = []
-        for ruta in value:
-            ruta = ruta.expanduser()
-            if not ruta.exists():
-                raise ValueError(f"El archivo no existe: {ruta}")
-            if not ruta.is_file():
-                raise ValueError(f"No es un archivo: {ruta}")
-            if ruta.suffix.lower() != ".md":
-                raise ValueError(f"No es un archivo .md: {ruta}")
-            resueltos.append(ruta.resolve())
-        return resueltos
+            raise ValueError("At least one .md file is required.")
+        resolved: list[Path] = []
+        for raw in value:
+            path = raw.expanduser()
+            if not path.exists():
+                raise ValueError(f"File does not exist: {path}")
+            if not path.is_file():
+                raise ValueError(f"Not a file: {path}")
+            if path.suffix.lower() != ".md":
+                raise ValueError(f"Not a .md file: {path}")
+            resolved.append(path.resolve())
+        return resolved
 
     @field_validator("output")
     @classmethod
-    def _output_valido(cls, value: Path) -> Path:
+    def _check_output(cls, value: Path) -> Path:
         value = value.expanduser()
         if value.suffix.lower() != ".html":
-            raise ValueError(f"La salida debe terminar en .html: {value}")
+            raise ValueError(f"Output must end in .html: {value}")
         return value
 
 
 def discover_markdown(folder: Path) -> list[Path]:
-    """Devuelve los .md de una carpeta, ordenados por nombre.
+    """Return the .md files in a folder, sorted by name.
 
-    Helper de las interfaces (GUI/CLI) para el modo "elegir carpeta". No es
-    parte del motor: solo descubre archivos, no compila.
+    Helper for the interfaces (GUI/CLI) in "pick a folder" mode. Not part of
+    the engine: it only finds files, it does not compile.
     """
     folder = folder.expanduser()
     if not folder.is_dir():
-        raise ValueError(f"No es una carpeta: {folder}")
+        raise ValueError(f"Not a folder: {folder}")
     return sorted(
         (p for p in folder.iterdir() if p.is_file() and p.suffix.lower() == ".md"),
         key=lambda p: p.name.lower(),

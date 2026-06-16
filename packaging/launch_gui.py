@@ -1,9 +1,9 @@
-"""Punto de entrada del ejecutable empaquetado (PyInstaller).
+"""Entry point for the packaged executable (PyInstaller).
 
-Lanza la GUI. Con ``--selftest`` ejecuta una verificación sin interfaz: compila
-un Markdown mínimo (lo que prueba que los assets embebidos se cargan desde el
-bundle) y abre el navegador (lo que prueba ``webbrowser`` desde el .exe),
-dejando el resultado en ``%TEMP%/mdbook_selftest.log``.
+Launches the GUI. With ``--selftest`` it runs a headless check: it compiles a
+minimal Markdown file (which proves the embedded assets load from the bundle)
+and opens the browser (which proves ``webbrowser`` works from the .exe),
+writing the result to ``%TEMP%/mdbook_selftest.log``.
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ def _selftest() -> int:
         work = Path(tempfile.mkdtemp(prefix="mdbook_selftest_"))
         md = work / "demo.md"
         md.write_text(
-            "# Demo\n\n## 1. Intro\n\nContenido de prueba; ver T1 §1.\n",
+            "# Demo\n\n## 1. Intro\n\nSample content; see T1 §1.\n",
             encoding="utf-8",
         )
         out = work / "demo.html"
@@ -34,7 +34,7 @@ def _selftest() -> int:
                 title="Selftest",
                 inputs=[md],
                 output=out,
-                theme="oscuro",
+                theme="dark",
                 cross_references=True,
             )
         )

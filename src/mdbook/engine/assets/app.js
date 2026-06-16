@@ -4,7 +4,7 @@
   var root = document.documentElement;
   var THEME_KEY = "mdbook-theme";
 
-  // --- Tema (recuerda la preferencia) -----------------------------------
+  // --- Theme (remembers the preference) ---------------------------------
   function applyTheme(theme) {
     root.setAttribute("data-theme", theme);
     var btn = document.querySelector(".theme-btn");
@@ -23,7 +23,7 @@
     });
   }
 
-  // --- Menú lateral (celular) -------------------------------------------
+  // --- Sidebar menu (mobile) --------------------------------------------
   var menuBtn = document.querySelector(".menu-btn");
   var backdrop = document.querySelector(".backdrop");
   function closeSidebar() { document.body.classList.remove("sidebar-open"); }
@@ -37,7 +37,7 @@
     a.addEventListener("click", closeSidebar);
   });
 
-  // --- Copiar código -----------------------------------------------------
+  // --- Copy code ---------------------------------------------------------
   document.querySelectorAll(".copy-btn").forEach(function (btn) {
     btn.addEventListener("click", function () {
       var block = btn.closest(".code-block");
@@ -45,10 +45,10 @@
       if (!pre) return;
       var text = pre.innerText;
       function done() {
-        btn.textContent = "Copiado";
+        btn.textContent = "Copied";
         btn.classList.add("done");
         setTimeout(function () {
-          btn.textContent = "Copiar";
+          btn.textContent = "Copy";
           btn.classList.remove("done");
         }, 1500);
       }
@@ -71,7 +71,7 @@
     });
   });
 
-  // --- Agrupar contenido por sección (para filtrar en la búsqueda) ------
+  // --- Group content by section (so search can filter) ------------------
   document.querySelectorAll(".doc").forEach(function (doc) {
     var current = doc.id;
     Array.prototype.forEach.call(doc.children, function (el) {
@@ -80,7 +80,7 @@
     });
   });
 
-  // --- Búsqueda instantánea (filtra y resalta) --------------------------
+  // --- Instant search (filter and highlight) ----------------------------
   var content = document.querySelector(".content");
   var cover = document.querySelector(".cover");
   var searchInput = document.querySelector(".search");
@@ -170,7 +170,7 @@
     searchInput.addEventListener("input", function () { runSearch(searchInput.value); });
   }
 
-  // --- Scrollspy: marca la sección activa en el índice ------------------
+  // --- Scrollspy: mark the active section in the table of contents -------
   var tocLinks = {};
   document.querySelectorAll(".toc a").forEach(function (a) {
     tocLinks[a.getAttribute("href").slice(1)] = a;

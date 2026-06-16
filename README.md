@@ -1,160 +1,148 @@
 # mdbook
 
-> Convierte varios archivos Markdown (`.md`) en **un único HTML de estudio**:
-> autocontenido, navegable, con búsqueda instantánea, tema claro/oscuro y botón
-> de copiar en cada bloque de código.
+Compile several Markdown files into one self-contained HTML file: navigable,
+searchable, with a light/dark theme and a copy button on every code block.
 
-![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
-![Type-checked](https://img.shields.io/badge/mypy-strict-2a6db2)
-![Lint](https://img.shields.io/badge/ruff-passing-success)
+It exists for two things: reading docs comfortably on a phone, and shipping a
+single browsable `.html` inside a repo. No server, no external dependencies in
+the output.
 
-Pensado para **leer documentación cómodamente en el celular** y **enriquecer
-repos de GitHub**: compilas tus apuntes o manuales en un solo `.html` que se
-abre en cualquier navegador, sin servidor ni dependencias externas.
+![The desktop app](docs/img/gui.png)
 
-![La aplicación de escritorio](docs/img/gui.png)
+## Features
 
-## Características
+- One or more `.md` files in a single HTML file. The first `#` of each file
+  becomes its title in the navigation.
+- Cover, table of contents and a sidebar with sections and subsections.
+- Instant search that filters and highlights matches.
+- Light/dark theme that remembers your choice.
+- A "Copy" button on every code block, with its language label.
+- Optional cross-references: `T1 §3` turns into an internal link.
+- Self-contained output: CSS and JS are inlined, no external URLs.
+- Two interfaces over one engine: a desktop app (CustomTkinter) and a CLI
+  (Typer).
 
-- 📄 **Uno o varios `.md`** en un solo HTML; el primer `#` de cada archivo es su
-  título en la navegación.
-- 🧭 **Portada + índice + barra lateral** con secciones y subsecciones.
-- 🔎 **Búsqueda instantánea** que filtra y **resalta** coincidencias.
-- 🌗 **Tema claro/oscuro** que **recuerda** tu preferencia.
-- 📋 **Botón "Copiar"** en cada bloque de código (con su lenguaje).
-- 🔗 **Referencias cruzadas** opcionales: `T1 §3` se vuelve un enlace interno.
-- 📦 **Autocontenido**: CSS y JS embebidos, **cero URLs externas**. Ideal para
-  abrir desde el celular o servir desde un repo.
-- 🖥️ **Dos interfaces sobre el mismo motor**: app de escritorio (CustomTkinter)
-  y línea de comandos (Typer).
-
-Markdown soportado: encabezados (`#`..`######`), párrafos, listas (anidadas),
-tablas, bloques de código con ` ``` ` (preservando el lenguaje), citas (`>`),
-**negrita**, *cursiva* e `inline code`.
+Supported Markdown: headings (`#`..`######`), paragraphs, nested lists, tables,
+fenced code blocks with the language preserved, blockquotes (`>`), **bold**,
+*italic* and `inline code`.
 
 ## Demo
 
-En [`examples/`](examples/) hay dos tomos de ejemplo con secciones numeradas y
-referencias cruzadas. El resultado ya compilado está en
-[`examples/demo.html`](examples/demo.html): descárgalo y ábrelo en tu navegador.
+[`examples/`](examples/) has two volumes with numbered sections and
+cross-references. The compiled result is in [`examples/demo.html`](examples/demo.html):
+download it and open it in a browser.
 
-![El HTML resultante en tema oscuro](docs/img/demo-oscuro.png)
+![The HTML output in dark theme](docs/img/demo-dark.png)
 
-Para regenerarlo:
+To regenerate it:
 
 ```bash
-uv run mdbook build --input examples --title "Curso de Python — Demo mdbook" \
-  --theme oscuro --cross-refs --output examples/demo.html
+uv run mdbook build --input examples --title "Python Course — mdbook demo" \
+  --theme dark --cross-refs --output examples/demo.html
 ```
 
-## Instalación
+## Install
 
-Requiere [uv](https://docs.astral.sh/uv/) y Python 3.12+.
+Needs [uv](https://docs.astral.sh/uv/) and Python 3.12+.
 
 ```bash
-git clone <url-del-repo>
+git clone <repo-url>
 cd mdbook
-uv sync          # crea el entorno e instala todo
+uv sync
 ```
 
-## Uso
+## Usage
 
-### App de escritorio (GUI)
+### Desktop app (GUI)
 
 ```bash
 uv run mdbook-gui
 ```
 
-1. **Agregar carpeta…** (toma todos los `.md`) o **Agregar archivos…** (sueltos).
-2. Reordena la lista con **▲ Subir / ▼ Bajar** (el orden define el del HTML).
-3. Escribe el **título**, elige **tema** y, si quieres, marca **referencias
-   cruzadas**.
-4. **Compilar** → te dice dónde quedó el HTML.
-5. **Abrir en navegador** → lo abre con el navegador del sistema.
+Add a folder (all its `.md`) or individual files, reorder them with the Up/Down
+buttons (the order is the order in the HTML), type a title, pick a theme,
+optionally turn on cross-references, then Compile. "Open in browser" hands the
+result to the system browser.
 
-### Línea de comandos (CLI)
+### Command line (CLI)
 
 ```bash
-# Una carpeta: toma todos los .md (orden alfabético)
-uv run mdbook build --input docs --title "Mi Obra" --theme oscuro --output libro.html
+# A folder: takes every .md (alphabetical order)
+uv run mdbook build --input docs --title "My Book" --theme dark --output book.html
 
-# Archivos sueltos: el orden de los -f define el orden del HTML
-uv run mdbook build -f intro.md -f cap1.md -t "Curso" --cross-refs -o curso.html
+# Individual files: the order of the -f flags is the order in the HTML
+uv run mdbook build -f intro.md -f chap1.md -t "Course" --cross-refs -o course.html
 ```
 
-| Opción | Descripción |
+| Option | Description |
 | ------ | ----------- |
-| `--input/-i` | Carpeta: toma todos los `.md` (orden alfabético). |
-| `--file/-f` | Archivo `.md` suelto (repetible; define el orden). |
-| `--title/-t` | Título de la obra. |
-| `--theme` | `claro` o `oscuro` (por defecto `claro`). |
-| `--cross-refs / --no-cross-refs` | Activa/desactiva las referencias cruzadas. |
-| `--output/-o` | Ruta del HTML de salida (`.html`). |
+| `--input/-i` | Folder: take every `.md` (alphabetical order). |
+| `--file/-f` | A single `.md` file (repeatable; sets the order). |
+| `--title/-t` | Title of the work. |
+| `--theme` | `light` or `dark` (default `light`). |
+| `--cross-refs / --no-cross-refs` | Turn cross-references on/off. |
+| `--output/-o` | Output HTML path (`.html`). |
 
-### Referencias cruzadas
+### Cross-references
 
-Con las referencias activadas, patrones como `T1 §3` se convierten en enlaces
-internos:
+With cross-references on, patterns like `T1 §3` become internal links:
 
-- `T<n>` = el documento número `n` (1-based, según el orden de la obra).
-- `§<m>` = la **sección numerada `m`**: el encabezado cuyo texto empieza con
-  `m.` (p. ej. `## 3. Funciones` es §3). Los subencabezados sin número **no**
-  cuentan.
+- `T<n>` is document number `n` (1-based, in the order of the work).
+- `§<m>` is the numbered section `m`: the heading whose text starts with `m.`
+  (e.g. `## 3. Functions` is §3). Unnumbered subheadings don't count.
 
-Si el destino no existe, el texto se deja tal cual.
+If the target doesn't exist, the text is left as is.
 
-## Ejecutable (.exe)
+## Executable (.exe)
 
-Para generar un único ejecutable de escritorio (Windows) con PyInstaller:
+To produce a single desktop executable (Windows) with PyInstaller:
 
 ```bash
 uv run pyinstaller packaging/mdbook.spec
 ```
 
-El binario queda en `dist/mdbook.exe`: una sola ventana, sin consola, con los
-assets embebidos. No requiere Python instalado para usarse.
+The binary lands in `dist/mdbook.exe`: one window, no console, assets embedded.
+It doesn't need Python installed to run.
 
-## Arquitectura
+## Architecture
 
-La lógica **no depende de la interfaz**; es la decisión de diseño central.
+The logic does not depend on the interface. That's the main design decision.
 
 ```
 src/mdbook/
-├── config.py        # Frontera de validación: BuildOptions (Pydantic)
-├── engine/          # MOTOR puro (no importa GUI ni CLI)
-│   ├── parser.py    #   Markdown -> tokens (markdown-it-py) + secciones
-│   ├── model.py     #   modelo interno (Book, Document, Section)
-│   ├── crossref.py  #   referencias "T1 §3"
-│   ├── renderer.py  #   modelo -> HTML autocontenido
-│   ├── compiler.py  #   orquestación
-│   └── assets/      #   template.html, style.css, app.js (se embeben)
-├── cli.py           # Interfaz: Typer + Rich
-└── gui/app.py       # Interfaz: CustomTkinter
+├── config.py        # Validation boundary: BuildOptions (Pydantic)
+├── engine/          # Pure engine (imports no GUI, no CLI)
+│   ├── parser.py    #   Markdown -> tokens (markdown-it-py) + sections
+│   ├── model.py     #   internal model (Book, Document, Section)
+│   ├── crossref.py  #   "T1 §3" references
+│   ├── renderer.py  #   model -> self-contained HTML
+│   ├── compiler.py  #   orchestration
+│   └── assets/      #   template.html, style.css, app.js (inlined)
+├── cli.py           # Interface: Typer + Rich
+└── gui/app.py       # Interface: CustomTkinter
 ```
 
-- **`config.py`** es la única frontera de validación: tanto la GUI como la CLI
-  construyen el mismo `BuildOptions` validado y se lo pasan al motor, que confía
-  en él.
-- El motor se puede probar y ejecutar **sin la interfaz**.
-- [`tests/unit/test_architecture.py`](tests/unit/test_architecture.py) hace
-  **verificable** esta separación: falla si el motor importa una interfaz o si
-  la GUI toca el parseo/render.
+`config.py` is the single validation boundary: the GUI and the CLI both build
+the same validated `BuildOptions` and hand it to the engine, which trusts it.
+The engine runs and is tested without any interface.
+[`tests/unit/test_architecture.py`](tests/unit/test_architecture.py) makes that
+separation enforceable: it fails if the engine imports an interface or if the
+GUI reaches into parsing or rendering.
 
-## Desarrollo
+## Development
 
 ```bash
-uv run pytest            # todas las pruebas
+uv run pytest            # all tests
 uv run pytest -m unit    # markers: unit | smoke | regression
 uv run ruff check .      # lint
-uv run ruff format .     # formato
-uv run mypy              # tipos (estricto)
+uv run ruff format .     # format
+uv run mypy              # types (strict)
 ```
 
-> **Nota:** clona y trabaja el repo **fuera** de carpetas sincronizadas
-> (OneDrive, Dropbox, Google Drive). El cliente de sincronización bloquea
-> archivos dentro de `.venv` y provoca fallos intermitentes al instalar o
-> reinstalar dependencias con `uv`.
+Clone and work on the repo outside synced folders (OneDrive, Dropbox, Google
+Drive). The sync client locks files under `.venv` and causes intermittent
+failures when `uv` installs or reinstalls dependencies.
 
-## Licencia
+## License
 
 [MIT](LICENSE) © 2026 Alejandro Segura.

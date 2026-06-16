@@ -1,4 +1,4 @@
-"""Orquestación del motor: de una lista de .md validada al HTML final."""
+"""Engine orchestration: from a validated list of .md files to the final HTML."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from mdbook.engine.renderer import build_html
 
 
 def compile_html(options: BuildOptions) -> str:
-    """Compila las opciones a la cadena HTML completa (sin escribir a disco)."""
+    """Compile the options into the full HTML string (without writing to disk)."""
     md = build_md()
 
     parsed_docs: list[ParsedDocument] = []
@@ -37,7 +37,7 @@ def compile_html(options: BuildOptions) -> str:
 
 
 def compile_book(options: BuildOptions) -> Path:
-    """Compila y escribe el HTML en ``options.output``. Devuelve la ruta escrita."""
+    """Compile and write the HTML to ``options.output``. Returns the path written."""
     html = compile_html(options)
     output = options.output.expanduser()
     output.parent.mkdir(parents=True, exist_ok=True)

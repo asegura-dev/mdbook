@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark" data-default-theme="dark">
+<html lang="en" data-theme="dark" data-default-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Curso de Python — Demo mdbook</title>
+<title>Python Course — mdbook demo</title>
 <style>
 :root {
   --bg: #ffffff;
@@ -201,7 +201,7 @@ mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
 .code-block pre { margin: 0; padding: 14px 16px; overflow-x: auto; }
 .code-block pre code { background: none; padding: 0; font-size: 0.88rem; line-height: 1.5; }
 
-/* Responsive: celular */
+/* Responsive: mobile */
 @media (max-width: 820px) {
   .menu-btn { display: inline-block; }
   .topbar-title { display: none; }
@@ -229,32 +229,32 @@ mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
 </head>
 <body>
 <header class="topbar">
-  <button class="icon-btn menu-btn" type="button" aria-label="Menú">&#9776;</button>
-  <span class="topbar-title">Curso de Python — Demo mdbook</span>
-  <input type="search" class="search" placeholder="Buscar…" aria-label="Buscar" autocomplete="off">
-  <button class="icon-btn theme-btn" type="button" aria-label="Cambiar tema">&#9788;</button>
+  <button class="icon-btn menu-btn" type="button" aria-label="Menu">&#9776;</button>
+  <span class="topbar-title">Python Course — mdbook demo</span>
+  <input type="search" class="search" placeholder="Search…" aria-label="Search" autocomplete="off">
+  <button class="icon-btn theme-btn" type="button" aria-label="Toggle theme">&#9788;</button>
 </header>
 <div class="layout">
-  <nav class="sidebar" aria-label="Navegación">
-    <ul class="toc"><li class="toc-doc" data-doc="doc1"><a href="#doc1" class="toc-doc-link">Tomo 1: Fundamentos de Python</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc1--1-variables-y-tipos"><a href="#doc1--1-variables-y-tipos">1. Variables y tipos</a></li><li class="toc-sec lvl2" data-target="doc1--2-estructuras-de-control"><a href="#doc1--2-estructuras-de-control">2. Estructuras de control</a></li><li class="toc-sec lvl2" data-target="doc1--3-funciones"><a href="#doc1--3-funciones">3. Funciones</a></li><li class="toc-sec lvl2" data-target="doc1--4-colecciones"><a href="#doc1--4-colecciones">4. Colecciones</a></li></ul></li><li class="toc-doc" data-doc="doc2"><a href="#doc2" class="toc-doc-link">Tomo 2: Python avanzado</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc2--1-decoradores"><a href="#doc2--1-decoradores">1. Decoradores</a></li><li class="toc-sec lvl2" data-target="doc2--2-generadores"><a href="#doc2--2-generadores">2. Generadores</a></li><li class="toc-sec lvl2" data-target="doc2--3-manejo-de-contexto"><a href="#doc2--3-manejo-de-contexto">3. Manejo de contexto</a></li></ul></li></ul>
+  <nav class="sidebar" aria-label="Navigation">
+    <ul class="toc"><li class="toc-doc" data-doc="doc1"><a href="#doc1" class="toc-doc-link">Volume 1: Python fundamentals</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc1--1-variables-and-types"><a href="#doc1--1-variables-and-types">1. Variables and types</a></li><li class="toc-sec lvl2" data-target="doc1--2-control-flow"><a href="#doc1--2-control-flow">2. Control flow</a></li><li class="toc-sec lvl2" data-target="doc1--3-functions"><a href="#doc1--3-functions">3. Functions</a></li><li class="toc-sec lvl2" data-target="doc1--4-collections"><a href="#doc1--4-collections">4. Collections</a></li></ul></li><li class="toc-doc" data-doc="doc2"><a href="#doc2" class="toc-doc-link">Volume 2: Advanced Python</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc2--1-decorators"><a href="#doc2--1-decorators">1. Decorators</a></li><li class="toc-sec lvl2" data-target="doc2--2-generators"><a href="#doc2--2-generators">2. Generators</a></li><li class="toc-sec lvl2" data-target="doc2--3-context-managers"><a href="#doc2--3-context-managers">3. Context managers</a></li></ul></li></ul>
   </nav>
   <div class="backdrop"></div>
   <main class="content">
-    <header class="cover"><h1>Curso de Python — Demo mdbook</h1><nav class="index"><h2>Índice</h2><ol class="index-list"><li><a href="#doc1">Tomo 1: Fundamentos de Python</a></li><li><a href="#doc2">Tomo 2: Python avanzado</a></li></ol></nav></header><article class="doc" id="doc1"><h1 id="doc1--tomo-1-fundamentos-de-python">Tomo 1: Fundamentos de Python</h1>
-<p>Este tomo cubre las bases del lenguaje. Las <strong>referencias cruzadas</strong> como
-<code>T2 §1</code> se convierten en enlaces si compilas con la opción activada.</p>
-<h2 id="doc1--1-variables-y-tipos">1. Variables y tipos</h2>
-<p>Una variable es un nombre que apunta a un valor. Python infiere el tipo:</p>
-<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copiar código">Copiar</button></div><pre><code class="language-python">nombre = &quot;Ada&quot;      # str
-edad = 36           # int
-activo = True       # bool
+    <header class="cover"><h1>Python Course — mdbook demo</h1><nav class="index"><h2>Contents</h2><ol class="index-list"><li><a href="#doc1">Volume 1: Python fundamentals</a></li><li><a href="#doc2">Volume 2: Advanced Python</a></li></ol></nav></header><article class="doc" id="doc1"><h1 id="doc1--volume-1-python-fundamentals">Volume 1: Python fundamentals</h1>
+<p>This volume covers the basics of the language. Cross-references like <code>T2 §1</code>
+become links when you compile with that option on.</p>
+<h2 id="doc1--1-variables-and-types">1. Variables and types</h2>
+<p>A variable is a name bound to a value. Python infers the type:</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-python">name = &quot;Ada&quot;        # str
+age = 36            # int
+active = True       # bool
 </code></pre></div>
-<p>Tipos básicos más usados:</p>
+<p>The types you reach for most often:</p>
 <table>
 <thead>
 <tr>
-<th>Tipo</th>
-<th>Ejemplo</th>
+<th>Type</th>
+<th>Example</th>
 <th>Mutable</th>
 </tr>
 </thead>
@@ -266,94 +266,93 @@ activo = True       # bool
 </tr>
 <tr>
 <td><code>str</code></td>
-<td><code>&quot;hola&quot;</code></td>
+<td><code>&quot;hi&quot;</code></td>
 <td>No</td>
 </tr>
 <tr>
 <td><code>list</code></td>
 <td><code>[1, 2, 3]</code></td>
-<td>Sí</td>
+<td>Yes</td>
 </tr>
 <tr>
 <td><code>dict</code></td>
 <td><code>{&quot;a&quot;: 1}</code></td>
-<td>Sí</td>
+<td>Yes</td>
 </tr>
 </tbody>
 </table>
-<h2 id="doc1--2-estructuras-de-control">2. Estructuras de control</h2>
-<p>El flujo se controla con <code>if</code>, <code>for</code> y <code>while</code>.</p>
+<h2 id="doc1--2-control-flow">2. Control flow</h2>
+<p>Flow is controlled with <code>if</code>, <code>for</code> and <code>while</code>.</p>
 <blockquote>
-<p>Recuerda: en Python la <strong>indentación</strong> define los bloques, no las llaves.</p>
+<p>In Python, <strong>indentation</strong> defines blocks, not braces.</p>
 </blockquote>
-<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copiar código">Copiar</button></div><pre><code class="language-python">for i in range(3):
+<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-python">for i in range(3):
     if i % 2 == 0:
-        print(f&quot;{i} es par&quot;)
+        print(f&quot;{i} is even&quot;)
     else:
-        print(f&quot;{i} es impar&quot;)
+        print(f&quot;{i} is odd&quot;)
 </code></pre></div>
-<h2 id="doc1--3-funciones">3. Funciones</h2>
-<p>Las funciones se definen con <code>def</code> y pueden tener <em>valores por defecto</em>:</p>
-<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copiar código">Copiar</button></div><pre><code class="language-python">def saluda(nombre: str, mayus: bool = False) -&gt; str:
-    saludo = f&quot;Hola, {nombre}&quot;
-    return saludo.upper() if mayus else saludo
+<h2 id="doc1--3-functions">3. Functions</h2>
+<p>Functions are defined with <code>def</code> and can take <em>default values</em>:</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-python">def greet(name: str, upper: bool = False) -&gt; str:
+    msg = f&quot;Hello, {name}&quot;
+    return msg.upper() if upper else msg
 </code></pre></div>
-<p>Cuando una función recibe o devuelve otra función, entramos en el terreno de
-los decoradores: para eso, ver <strong><a class="xref" href="#doc2--1-decoradores">T2 §1</a></strong>.</p>
-<h2 id="doc1--4-colecciones">4. Colecciones</h2>
-<p>Listas, tuplas, conjuntos y diccionarios:</p>
+<p>When a function takes or returns another function, you are in decorator
+territory: see <a class="xref" href="#doc2--1-decorators">T2 §1</a>.</p>
+<h2 id="doc1--4-collections">4. Collections</h2>
+<p>Lists, tuples, sets and dicts:</p>
 <ul>
-<li><strong>Listas</strong>: ordenadas y mutables.</li>
-<li><strong>Tuplas</strong>: ordenadas e inmutables.</li>
-<li><strong>Conjuntos</strong>: sin duplicados.
+<li><strong>Lists</strong>: ordered and mutable.</li>
+<li><strong>Tuples</strong>: ordered and immutable.</li>
+<li><strong>Sets</strong>: no duplicates.
 <ul>
-<li>Útiles para pertenencia rápida.</li>
+<li>Handy for fast membership tests.</li>
 </ul>
 </li>
-<li><strong>Diccionarios</strong>: pares clave-valor.</li>
+<li><strong>Dicts</strong>: key-value pairs.</li>
 </ul>
-<p>La iteración perezosa sobre colecciones se trata en <strong><a class="xref" href="#doc2--2-generadores">T2 §2</a></strong>.</p>
-</article><article class="doc" id="doc2"><h1 id="doc2--tomo-2-python-avanzado">Tomo 2: Python avanzado</h1>
-<p>Continuación de los fundamentos. Aquí encontrarás referencias de vuelta al
-primer tomo, como <code>T1 §3</code>.</p>
-<h2 id="doc2--1-decoradores">1. Decoradores</h2>
-<p>Un decorador envuelve una función para añadirle comportamiento sin tocar su
-cuerpo. Parte de lo visto en <strong><a class="xref" href="#doc1--3-funciones">T1 §3</a></strong> (funciones) es prerrequisito.</p>
-<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copiar código">Copiar</button></div><pre><code class="language-python">import functools
+<p>Lazy iteration over collections is covered in <a class="xref" href="#doc2--2-generators">T2 §2</a>.</p>
+</article><article class="doc" id="doc2"><h1 id="doc2--volume-2-advanced-python">Volume 2: Advanced Python</h1>
+<p>A follow-up to the fundamentals. This one references the first volume, like
+<code>T1 §3</code>.</p>
+<h2 id="doc2--1-decorators">1. Decorators</h2>
+<p>A decorator wraps a function to add behavior without touching its body. Part of
+<a class="xref" href="#doc1--3-functions">T1 §3</a> (functions) is a prerequisite.</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-python">import functools
 
 
-def temporiza(func):
+def timed(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        inicio = perf_counter()
+        start = perf_counter()
         try:
             return func(*args, **kwargs)
         finally:
-            print(f&quot;{func.__name__} tardó {perf_counter() - inicio:.4f}s&quot;)
+            print(f&quot;{func.__name__} took {perf_counter() - start:.4f}s&quot;)
 
     return wrapper
 </code></pre></div>
 <blockquote>
-<p>Usa <code>functools.wraps</code> para conservar el nombre y la documentación originales.</p>
+<p>Use <code>functools.wraps</code> to keep the original name and docstring.</p>
 </blockquote>
-<h2 id="doc2--2-generadores">2. Generadores</h2>
-<p>Los generadores producen valores de forma <em>perezosa</em> con <code>yield</code>, sin
-materializar toda la colección (ver <strong><a class="xref" href="#doc1--4-colecciones">T1 §4</a></strong>):</p>
-<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copiar código">Copiar</button></div><pre><code class="language-python">def naturales():
+<h2 id="doc2--2-generators">2. Generators</h2>
+<p>Generators produce values <em>lazily</em> with <code>yield</code>, without materializing the
+whole collection (see <a class="xref" href="#doc1--4-collections">T1 §4</a>):</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-python">def naturals():
     n = 1
     while True:
         yield n
         n += 1
 </code></pre></div>
-<p>Esto permite trabajar con secuencias potencialmente infinitas usando poca
-memoria.</p>
-<h2 id="doc2--3-manejo-de-contexto">3. Manejo de contexto</h2>
-<p>El bloque <code>with</code> garantiza la liberación de recursos:</p>
-<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copiar código">Copiar</button></div><pre><code class="language-python">with open(&quot;datos.txt&quot;, encoding=&quot;utf-8&quot;) as f:
-    contenido = f.read()
+<p>This lets you work with potentially infinite sequences using little memory.</p>
+<h2 id="doc2--3-context-managers">3. Context managers</h2>
+<p>The <code>with</code> block guarantees cleanup:</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">python</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-python">with open(&quot;data.txt&quot;, encoding=&quot;utf-8&quot;) as f:
+    content = f.read()
 </code></pre></div>
-<p>Puedes crear tus propios gestores con <code>contextlib.contextmanager</code>, que a su
-vez es un <strong>decorador</strong> (<a class="xref" href="#doc1--3-funciones">T1 §3</a> y <a class="xref" href="#doc2--1-decoradores">T2 §1</a>).</p>
+<p>You can write your own with <code>contextlib.contextmanager</code>, which is itself a
+<strong>decorator</strong> (<a class="xref" href="#doc1--3-functions">T1 §3</a> and <a class="xref" href="#doc2--1-decorators">T2 §1</a>).</p>
 </article>
   </main>
 </div>
@@ -364,7 +363,7 @@ vez es un <strong>decorador</strong> (<a class="xref" href="#doc1--3-funciones">
   var root = document.documentElement;
   var THEME_KEY = "mdbook-theme";
 
-  // --- Tema (recuerda la preferencia) -----------------------------------
+  // --- Theme (remembers the preference) ---------------------------------
   function applyTheme(theme) {
     root.setAttribute("data-theme", theme);
     var btn = document.querySelector(".theme-btn");
@@ -383,7 +382,7 @@ vez es un <strong>decorador</strong> (<a class="xref" href="#doc1--3-funciones">
     });
   }
 
-  // --- Menú lateral (celular) -------------------------------------------
+  // --- Sidebar menu (mobile) --------------------------------------------
   var menuBtn = document.querySelector(".menu-btn");
   var backdrop = document.querySelector(".backdrop");
   function closeSidebar() { document.body.classList.remove("sidebar-open"); }
@@ -397,7 +396,7 @@ vez es un <strong>decorador</strong> (<a class="xref" href="#doc1--3-funciones">
     a.addEventListener("click", closeSidebar);
   });
 
-  // --- Copiar código -----------------------------------------------------
+  // --- Copy code ---------------------------------------------------------
   document.querySelectorAll(".copy-btn").forEach(function (btn) {
     btn.addEventListener("click", function () {
       var block = btn.closest(".code-block");
@@ -405,10 +404,10 @@ vez es un <strong>decorador</strong> (<a class="xref" href="#doc1--3-funciones">
       if (!pre) return;
       var text = pre.innerText;
       function done() {
-        btn.textContent = "Copiado";
+        btn.textContent = "Copied";
         btn.classList.add("done");
         setTimeout(function () {
-          btn.textContent = "Copiar";
+          btn.textContent = "Copy";
           btn.classList.remove("done");
         }, 1500);
       }
@@ -431,7 +430,7 @@ vez es un <strong>decorador</strong> (<a class="xref" href="#doc1--3-funciones">
     });
   });
 
-  // --- Agrupar contenido por sección (para filtrar en la búsqueda) ------
+  // --- Group content by section (so search can filter) ------------------
   document.querySelectorAll(".doc").forEach(function (doc) {
     var current = doc.id;
     Array.prototype.forEach.call(doc.children, function (el) {
@@ -440,7 +439,7 @@ vez es un <strong>decorador</strong> (<a class="xref" href="#doc1--3-funciones">
     });
   });
 
-  // --- Búsqueda instantánea (filtra y resalta) --------------------------
+  // --- Instant search (filter and highlight) ----------------------------
   var content = document.querySelector(".content");
   var cover = document.querySelector(".cover");
   var searchInput = document.querySelector(".search");
@@ -530,7 +529,7 @@ vez es un <strong>decorador</strong> (<a class="xref" href="#doc1--3-funciones">
     searchInput.addEventListener("input", function () { runSearch(searchInput.value); });
   }
 
-  // --- Scrollspy: marca la sección activa en el índice ------------------
+  // --- Scrollspy: mark the active section in the table of contents -------
   var tocLinks = {};
   document.querySelectorAll(".toc a").forEach(function (a) {
     tocLinks[a.getAttribute("href").slice(1)] = a;

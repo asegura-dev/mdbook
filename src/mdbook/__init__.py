@@ -1,12 +1,12 @@
-"""mdbook: compila archivos Markdown en un único HTML de estudio.
+"""mdbook: compile Markdown files into a single HTML study file.
 
-El paquete se divide en dos capas independientes:
+The package has two independent layers:
 
-- ``mdbook.engine``: el MOTOR puro de compilación (sin GUI ni CLI).
-- ``mdbook.cli`` / ``mdbook.gui``: interfaces que construyen un
-  :class:`mdbook.config.BuildOptions` validado y lo pasan al motor.
+- ``mdbook.engine``: the pure compilation engine (no GUI, no CLI).
+- ``mdbook.cli`` / ``mdbook.gui``: interfaces that build a validated
+  :class:`mdbook.config.BuildOptions` and pass it to the engine.
 
-La frontera de validación es :mod:`mdbook.config`.
+The validation boundary is :mod:`mdbook.config`.
 """
 
 from __future__ import annotations
