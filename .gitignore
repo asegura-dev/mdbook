@@ -13,6 +13,5 @@ wheels/
 .venv
 
 # Editor / herramientas locales
-.claude/
 .idea/
 .vscode/
