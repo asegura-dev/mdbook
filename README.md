@@ -95,14 +95,14 @@ uv run mdbook build --input docs --title "My Book" --theme dark --output book.ht
 uv run mdbook build -f intro.md -f chap1.md -t "Course" --cross-refs -o course.html
 ```
 
-| Option | Description |
-| ------ | ----------- |
-| `--input/-i` | Folder: take every `.md` (alphabetical order). |
-| `--file/-f` | A single `.md` file (repeatable; sets the order). |
-| `--title/-t` | Title of the work. |
-| `--theme` | `light` or `dark` (default `light`). |
-| `--cross-refs / --no-cross-refs` | Turn cross-references on/off. |
-| `--output/-o` | Output HTML path (`.html`). |
+| Option                           | Description                                       |
+| -------------------------------- | ------------------------------------------------- |
+| `--input/-i`                     | Folder: take every `.md` (alphabetical order).    |
+| `--file/-f`                      | A single `.md` file (repeatable; sets the order). |
+| `--title/-t`                     | Title of the work.                                |
+| `--theme`                        | `light` or `dark` (default `light`).              |
+| `--cross-refs / --no-cross-refs` | Turn cross-references on/off.                     |
+| `--output/-o`                    | Output HTML path (`.html`).                       |
 
 ### Cross-references
 
