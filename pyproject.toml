@@ -1,0 +1,59 @@
+[project]
+name = "mdbook"
+version = "0.1.0"
+description = "Convierte archivos Markdown en un único HTML de estudio: navegable, con búsqueda, tema claro/oscuro y copiar código."
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [
+    { name = "BallonSb", email = "Alejandro_segura85@hotmail.com" }
+]
+dependencies = [
+    "pydantic>=2.6",
+    "typer>=0.12",
+    "rich>=13.7",
+    "markdown-it-py>=3.0",
+    "customtkinter>=5.2",
+]
+
+[project.scripts]
+mdbook = "mdbook.cli:app"
+mdbook-gui = "mdbook.gui.app:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+    "mypy>=1.10",
+    "pyinstaller>=6.6",
+]
+
+[build-system]
+requires = ["uv_build>=0.10.12,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "unit: pruebas unitarias del motor (parser, crossref, config)",
+    "smoke: prueba de humo end-to-end que compila .md de ejemplo",
+    "regression: pruebas que fijan un bug ya corregido",
+]
+
+[tool.ruff]
+src = ["src", "tests"]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "tests"]
+
+# El motor, la config y las interfaces se verifican en modo estricto (arriba).
+# customtkinter no trae stubs de tipos: lo ignoramos puntualmente.
+[[tool.mypy.overrides]]
+module = ["customtkinter.*"]
+ignore_missing_imports = true

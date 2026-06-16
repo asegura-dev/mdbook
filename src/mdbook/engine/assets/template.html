@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="{{DEFAULT_THEME}}" data-default-theme="{{DEFAULT_THEME}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<style>
+{{STYLE}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" aria-label="Menú">&#9776;</button>
+  <span class="topbar-title">{{TITLE}}</span>
+  <input type="search" class="search" placeholder="Buscar…" aria-label="Buscar" autocomplete="off">
+  <button class="icon-btn theme-btn" type="button" aria-label="Cambiar tema">&#9788;</button>
+</header>
+<div class="layout">
+  <nav class="sidebar" aria-label="Navegación">
+    {{SIDEBAR}}
+  </nav>
+  <div class="backdrop"></div>
+  <main class="content">
+    {{CONTENT}}
+  </main>
+</div>
+<script>
+{{SCRIPT}}
+</script>
+</body>
+</html>
