@@ -104,6 +104,12 @@ uv run pyinstaller packaging/mdbook.spec
 The binary lands in `dist/mdbook.exe`: one window, no console, assets embedded.
 It doesn't need Python installed to run.
 
+## Documentation
+
+[`docs/manual.html`](docs/manual.html) is the project's own documentation,
+compiled with mdbook itself. The sources are the `docs/*.md` files. See
+[docs/01-overview.md](docs/01-overview.md) to start.
+
 ## Architecture
 
 The logic does not depend on the interface. That's the main design decision.

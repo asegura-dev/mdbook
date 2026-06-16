@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-default-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mdbook — Internal Documentation</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --bg-soft: #f5f6f8;
+  --bg-code: #f3f4f6;
+  --text: #1f2328;
+  --text-soft: #57606a;
+  --border: #d7dce1;
+  --accent: #2563eb;
+  --accent-soft: rgba(37, 99, 235, 0.12);
+  --mark: #fde68a;
+  --sidebar-w: 300px;
+  --topbar-h: 54px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+[data-theme="dark"] {
+  --bg: #0d1117;
+  --bg-soft: #161b22;
+  --bg-code: #161b22;
+  --text: #e6edf3;
+  --text-soft: #9da7b3;
+  --border: #30363d;
+  --accent: #58a6ff;
+  --accent-soft: rgba(88, 166, 255, 0.15);
+  --mark: #9a6700;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Topbar */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--border);
+}
+.topbar-title {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 0 1 auto;
+}
+.search {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 420px;
+  margin-left: auto;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+}
+.search:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+.icon-btn {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+}
+.icon-btn:hover { background: var(--accent-soft); }
+.menu-btn { display: none; }
+
+/* Layout */
+.layout { display: flex; align-items: flex-start; }
+.sidebar {
+  position: sticky;
+  top: var(--topbar-h);
+  flex: 0 0 var(--sidebar-w);
+  width: var(--sidebar-w);
+  height: calc(100vh - var(--topbar-h));
+  overflow-y: auto;
+  padding: 16px 12px 40px;
+  border-right: 1px solid var(--border);
+  background: var(--bg-soft);
+}
+.content {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 28px 28px 120px;
+}
+.backdrop { display: none; }
+
+/* TOC */
+.toc, .toc-subs { list-style: none; margin: 0; padding: 0; }
+.toc-doc { margin-bottom: 10px; }
+.toc a {
+  display: block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: var(--text-soft);
+  text-decoration: none;
+  font-size: 14px;
+}
+.toc a:hover { background: var(--accent-soft); color: var(--text); }
+.toc a.active { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+.toc-doc-link { color: var(--text); font-weight: 600; }
+.toc-sec.lvl2 a { padding-left: 16px; }
+.toc-sec.lvl3 a { padding-left: 28px; }
+.toc-sec.lvl4 a { padding-left: 40px; }
+.toc-sec.lvl5 a, .toc-sec.lvl6 a { padding-left: 52px; }
+
+/* Cover */
+.cover {
+  padding: 24px 0 32px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+.cover h1 { font-size: 2.2rem; margin: 0 0 8px; }
+.index h2 { font-size: 1.1rem; color: var(--text-soft); }
+.index-list { line-height: 2; }
+
+/* Content typography */
+.content h1, .content h2, .content h3,
+.content h4, .content h5, .content h6 {
+  scroll-margin-top: calc(var(--topbar-h) + 12px);
+  line-height: 1.3;
+}
+.content h1 { font-size: 1.9rem; margin-top: 0.4em; }
+.content h2 { font-size: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+.content h3 { font-size: 1.25rem; }
+.doc { padding-top: 8px; }
+.doc + .doc { margin-top: 48px; border-top: 2px solid var(--border); padding-top: 32px; }
+.content a { color: var(--accent); }
+.content blockquote {
+  margin: 16px 0;
+  padding: 4px 16px;
+  border-left: 4px solid var(--accent);
+  background: var(--bg-soft);
+  color: var(--text-soft);
+}
+.content table { border-collapse: collapse; width: 100%; margin: 16px 0; display: block; overflow-x: auto; }
+.content th, .content td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
+.content th { background: var(--bg-soft); }
+.content code {
+  background: var(--bg-code);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
+
+/* Code blocks */
+.code-block {
+  margin: 16px 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-code);
+}
+.code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.code-lang { color: var(--text-soft); text-transform: lowercase; letter-spacing: 0.03em; }
+.copy-btn {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.copy-btn:hover { background: var(--accent-soft); }
+.copy-btn.done { color: var(--accent); border-color: var(--accent); }
+.code-block pre { margin: 0; padding: 14px 16px; overflow-x: auto; }
+.code-block pre code { background: none; padding: 0; font-size: 0.88rem; line-height: 1.5; }
+
+/* Responsive: mobile */
+@media (max-width: 820px) {
+  .menu-btn { display: inline-block; }
+  .topbar-title { display: none; }
+  .sidebar {
+    position: fixed;
+    top: var(--topbar-h);
+    left: 0;
+    z-index: 25;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
+  }
+  body.sidebar-open .sidebar { transform: translateX(0); }
+  body.sidebar-open .backdrop {
+    display: block;
+    position: fixed;
+    inset: var(--topbar-h) 0 0 0;
+    z-index: 20;
+    background: rgba(0, 0, 0, 0.4);
+  }
+  .content { padding: 20px 16px 100px; }
+}
+
+</style>
+</head>
+<body>
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" aria-label="Menu">&#9776;</button>
+  <span class="topbar-title">mdbook — Internal Documentation</span>
+  <input type="search" class="search" placeholder="Search…" aria-label="Search" autocomplete="off">
+  <button class="icon-btn theme-btn" type="button" aria-label="Toggle theme">&#9788;</button>
+</header>
+<div class="layout">
+  <nav class="sidebar" aria-label="Navigation">
+    <ul class="toc"><li class="toc-doc" data-doc="doc1"><a href="#doc1" class="toc-doc-link">Overview</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc1--1-what-it-does"><a href="#doc1--1-what-it-does">1. What it does</a></li><li class="toc-sec lvl2" data-target="doc1--2-when-to-use-it"><a href="#doc1--2-when-to-use-it">2. When to use it</a></li><li class="toc-sec lvl2" data-target="doc1--3-how-the-pieces-fit"><a href="#doc1--3-how-the-pieces-fit">3. How the pieces fit</a></li></ul></li><li class="toc-doc" data-doc="doc2"><a href="#doc2" class="toc-doc-link">Architecture</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc2--1-the-engine"><a href="#doc2--1-the-engine">1. The engine</a></li><li class="toc-sec lvl2" data-target="doc2--2-the-validation-boundary"><a href="#doc2--2-the-validation-boundary">2. The validation boundary</a></li><li class="toc-sec lvl2" data-target="doc2--3-the-interfaces"><a href="#doc2--3-the-interfaces">3. The interfaces</a></li><li class="toc-sec lvl2" data-target="doc2--4-why-the-separation"><a href="#doc2--4-why-the-separation">4. Why the separation</a></li></ul></li><li class="toc-doc" data-doc="doc3"><a href="#doc3" class="toc-doc-link">Compilation flow</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc3--1-two-passes"><a href="#doc3--1-two-passes">1. Two passes</a></li><li class="toc-sec lvl2" data-target="doc3--2-pass-one-parse-and-index"><a href="#doc3--2-pass-one-parse-and-index">2. Pass one: parse and index</a></li><li class="toc-sec lvl2" data-target="doc3--3-pass-two-render"><a href="#doc3--3-pass-two-render">3. Pass two: render</a></li><li class="toc-sec lvl2" data-target="doc3--4-assembly-and-output"><a href="#doc3--4-assembly-and-output">4. Assembly and output</a></li></ul></li><li class="toc-doc" data-doc="doc4"><a href="#doc4" class="toc-doc-link">Cross-references</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc4--1-syntax"><a href="#doc4--1-syntax">1. Syntax</a></li><li class="toc-sec lvl2" data-target="doc4--2-how-section-numbers-are-resolved"><a href="#doc4--2-how-section-numbers-are-resolved">2. How section numbers are resolved</a></li><li class="toc-sec lvl2" data-target="doc4--3-behavior-when-a-target-is-missing"><a href="#doc4--3-behavior-when-a-target-is-missing">3. Behavior when a target is missing</a></li></ul></li><li class="toc-doc" data-doc="doc5"><a href="#doc5" class="toc-doc-link">Interfaces</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc5--1-the-cli"><a href="#doc5--1-the-cli">1. The CLI</a></li><li class="toc-sec lvl2" data-target="doc5--2-the-gui"><a href="#doc5--2-the-gui">2. The GUI</a></li><li class="toc-sec lvl2" data-target="doc5--3-the-shared-contract"><a href="#doc5--3-the-shared-contract">3. The shared contract</a></li></ul></li><li class="toc-doc" data-doc="doc6"><a href="#doc6" class="toc-doc-link">Extending mdbook</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc6--1-add-a-markdown-feature"><a href="#doc6--1-add-a-markdown-feature">1. Add a Markdown feature</a></li><li class="toc-sec lvl2" data-target="doc6--2-add-a-build-option"><a href="#doc6--2-add-a-build-option">2. Add a build option</a></li><li class="toc-sec lvl2" data-target="doc6--3-tests-to-keep-green"><a href="#doc6--3-tests-to-keep-green">3. Tests to keep green</a></li></ul></li></ul>
+  </nav>
+  <div class="backdrop"></div>
+  <main class="content">
+    <header class="cover"><h1>mdbook — Internal Documentation</h1><nav class="index"><h2>Contents</h2><ol class="index-list"><li><a href="#doc1">Overview</a></li><li><a href="#doc2">Architecture</a></li><li><a href="#doc3">Compilation flow</a></li><li><a href="#doc4">Cross-references</a></li><li><a href="#doc5">Interfaces</a></li><li><a href="#doc6">Extending mdbook</a></li></ol></nav></header><article class="doc" id="doc1"><h1 id="doc1--overview">Overview</h1>
+<p>mdbook takes a set of Markdown files and produces one HTML file you can open
+anywhere. This manual is itself built with mdbook, so it doubles as a working
+sample of the cross-references and navigation.</p>
+<h2 id="doc1--1-what-it-does">1. What it does</h2>
+<p>You give it an ordered list of <code>.md</code> files and a few options. It parses a fixed
+subset of Markdown, builds a table of contents from the headings, and writes a
+single self-contained <code>.html</code>: styles and scripts are inlined, so there are no
+external requests. The output has a cover, a sidebar, instant search, a
+light/dark toggle, and a copy button on each code block.</p>
+<p>There is no project config file and no plugin system. The feature set is fixed
+on purpose.</p>
+<h2 id="doc1--2-when-to-use-it">2. When to use it</h2>
+<p>It fits two cases. The first is reading long documentation on a phone: one file,
+no server, search built in. The second is shipping browsable docs inside a repo
+without a static-site toolchain.</p>
+<p>If you need themes beyond light/dark, embedded images, or PDF export, this isn't
+the tool — and adding them is out of scope.</p>
+<h2 id="doc1--3-how-the-pieces-fit">3. How the pieces fit</h2>
+<p>There are three parts: a pure engine, a validation boundary, and two interfaces
+on top. The engine is described in <a class="xref" href="#doc2--1-the-engine">T2 §1</a>, the boundary in <a class="xref" href="#doc2--2-the-validation-boundary">T2 §2</a>. The step from
+Markdown files to HTML is the compilation flow in <a class="xref" href="#doc3--1-two-passes">T3 §1</a>. Cross-references — the
+<code>T1 §3</code> style links you're reading now — are covered in <a class="xref" href="#doc4--1-syntax">T4 §1</a>.</p>
+</article><article class="doc" id="doc2"><h1 id="doc2--architecture">Architecture</h1>
+<p>The point of the layout is that the compilation logic never imports an
+interface. You can run and test the engine with no GUI and no CLI present.</p>
+<h2 id="doc2--1-the-engine">1. The engine</h2>
+<p><code>mdbook.engine</code> is the core. It holds the parser (<code>parser.py</code>, built on
+markdown-it-py), the internal model (<code>model.py</code>: <code>Book</code>, <code>Document</code>, <code>Section</code>),
+the cross-reference logic (<code>crossref.py</code>), the HTML assembler (<code>renderer.py</code>),
+and the orchestration (<code>compiler.py</code>). The HTML template, CSS and JS live in
+<code>engine/assets/</code> and get inlined into the output.</p>
+<p>The engine depends on nothing from the interfaces. A test enforces this; see
+<a class="xref" href="#doc6--3-tests-to-keep-green">T6 §3</a>.</p>
+<h2 id="doc2--2-the-validation-boundary">2. The validation boundary</h2>
+<p><code>mdbook.config</code> defines <code>BuildOptions</code>, a frozen Pydantic model. It is the one
+place where input is checked: the title isn't empty, every input path exists and
+ends in <code>.md</code>, the output ends in <code>.html</code>, the theme is <code>light</code> or <code>dark</code>. Once
+built, the engine trusts it and does not re-validate.</p>
+<p>Both interfaces construct the same <code>BuildOptions</code> — see <a class="xref" href="#doc5--3-the-shared-contract">T5 §3</a>.</p>
+<h2 id="doc2--3-the-interfaces">3. The interfaces</h2>
+<p>There are two: a Typer CLI (<code>cli.py</code>) and a CustomTkinter GUI (<code>gui/app.py</code>).
+Each collects input its own way and then builds a <code>BuildOptions</code> and calls the
+engine. Neither contains parsing or rendering code. The GUI uses composition,
+not subclassing, so the strict type checker stays clean.</p>
+<h2 id="doc2--4-why-the-separation">4. Why the separation</h2>
+<p>Keeping the logic free of the interface means two things in practice. The engine
+is testable without spawning a window, and a second interface (the CLI was added
+after the GUI) costs almost nothing because the core doesn't change. When you
+extend the project, keep this boundary intact — the rules are in <a class="xref" href="#doc6--1-add-a-markdown-feature">T6 §1</a>.</p>
+</article><article class="doc" id="doc3"><h1 id="doc3--compilation-flow">Compilation flow</h1>
+<p>This is what happens between a validated <code>BuildOptions</code> and the file on disk.
+The entry points are <code>compile_html</code> (returns a string) and <code>compile_book</code>
+(writes it and returns the path).</p>
+<h2 id="doc3--1-two-passes">1. Two passes</h2>
+<p>The build runs in two passes over the documents. The reason is cross-references:
+a link in document 1 can point to a section in document 3, so every section has
+to be known before any text is rendered. Pass one indexes all documents; pass
+two renders them.</p>
+<h2 id="doc3--2-pass-one-parse-and-index">2. Pass one: parse and index</h2>
+<p>For each file, <code>parse_document</code> parses the Markdown to tokens and walks the
+headings. It takes the first <code>#</code> as the document title, slugifies every heading
+into a unique <code>id</code>, and records each heading's numbered-section value — the
+number is read from the heading text, not from its position. Those numbers are
+what cross-references resolve against; the details are in <a class="xref" href="#doc4--2-how-section-numbers-are-resolved">T4 §2</a>.</p>
+<h2 id="doc3--3-pass-two-render">3. Pass two: render</h2>
+<p>With the full section index in hand, <code>build_crossref_map</code> builds the lookup
+table and <code>render_document</code> turns each document's tokens into HTML. Custom
+render rules handle two things: fenced code blocks get a header with the
+language and a copy button, and text nodes get the <code>T1 §3</code> patterns rewritten
+into links when cross-references are on.</p>
+<h2 id="doc3--4-assembly-and-output">4. Assembly and output</h2>
+<p><code>renderer.build_html</code> reads the three assets, builds the sidebar and the cover
+index from the model, and substitutes everything into the template. The result
+is one HTML string. <code>compile_book</code> writes it where <code>BuildOptions.output</code> points.</p>
+</article><article class="doc" id="doc4"><h1 id="doc4--cross-references">Cross-references</h1>
+<p>An optional feature that turns short references in the prose into internal
+links. It's off by default; turn it on with <code>--cross-refs</code> or the GUI checkbox.</p>
+<h2 id="doc4--1-syntax">1. Syntax</h2>
+<p>A reference looks like <code>T1 §3</code>. <code>T&lt;n&gt;</code> is the document number in the order of
+the work (1-based), and <code>§&lt;m&gt;</code> is a numbered section in that document. Spacing is
+flexible: <code>T1§3</code>, <code>T1 §3</code> and <code>T1 § 3</code> all match. The regex only fires on this
+shape, so ordinary prose isn't touched.</p>
+<h2 id="doc4--2-how-section-numbers-are-resolved">2. How section numbers are resolved</h2>
+<p><code>§&lt;m&gt;</code> does not mean &quot;the m-th heading&quot;. It means the heading whose text starts
+with <code>m.</code> — so <code>## 3. Functions</code> is §3, and an unnumbered <code>### Notes</code> is skipped
+entirely. The number comes straight from the text, which is why the count can
+jump (a <code>## 10.</code> is §10 even if it's the third heading). Section numbers are
+assigned during parsing; see <a class="xref" href="#doc3--2-pass-one-parse-and-index">T3 §2</a>. If the same number appears twice, the first
+one wins.</p>
+<h2 id="doc4--3-behavior-when-a-target-is-missing">3. Behavior when a target is missing</h2>
+<p>If a reference points at a document or section that doesn't exist, nothing
+happens to it — the text is left exactly as written, no broken link. That keeps
+a typo from turning into a dead anchor. The rewriting runs on already-escaped
+text, so references inside code spans are not affected.</p>
+</article><article class="doc" id="doc5"><h1 id="doc5--interfaces">Interfaces</h1>
+<p>Two front ends sit on the engine. They differ only in how they collect input;
+both end at the same <code>BuildOptions</code> and the same <code>compile_book</code> call.</p>
+<h2 id="doc5--1-the-cli">1. The CLI</h2>
+<p><code>mdbook build</code> is a Typer command. You pass a folder with <code>--input</code> (it takes
+every <code>.md</code> in alphabetical order) or individual files with repeated <code>--file</code>
+flags (the flag order sets the document order). <code>--title</code>, <code>--theme</code>,
+<code>--cross-refs</code> and <code>--output</code> cover the rest. Errors from the contract are
+printed as a readable list via Rich, and the command exits non-zero.</p>
+<h2 id="doc5--2-the-gui">2. The GUI</h2>
+<p><code>mdbook-gui</code> opens the desktop window. It does the same job with buttons: add a
+folder or files, reorder the list with Up/Down (that order is the document
+order), type a title, pick the theme, toggle cross-references, then Compile.
+&quot;Open in browser&quot; hands the generated file to the system browser rather than
+rendering it in-window — that's more robust and portable.</p>
+<h2 id="doc5--3-the-shared-contract">3. The shared contract</h2>
+<p>Both interfaces build the <code>BuildOptions</code> described in <a class="xref" href="#doc2--2-the-validation-boundary">T2 §2</a> and hand it over.
+Validation lives there, once, so the two front ends can't drift apart on what
+counts as valid input. Adding a third interface would follow the same shape:
+gather input, build the contract, call the engine.</p>
+</article><article class="doc" id="doc6"><h1 id="doc6--extending-mdbook">Extending mdbook</h1>
+<p>The codebase is small, so most changes land in one or two files. The rules below
+keep it from rotting.</p>
+<h2 id="doc6--1-add-a-markdown-feature">1. Add a Markdown feature</h2>
+<p>Rendering goes through markdown-it-py. To change how something renders, add or
+override a render rule in <code>parser.py</code> (that's how fenced code blocks get their
+copy button). To enable a CommonMark feature that's off, enable it on the
+<code>MarkdownIt</code> instance in <code>build_md</code>. Keep all of this inside <code>engine/</code> — the
+boundary from <a class="xref" href="#doc2--4-why-the-separation">T2 §4</a> says the interfaces never see tokens.</p>
+<h2 id="doc6--2-add-a-build-option">2. Add a build option</h2>
+<p>Add the field to <code>BuildOptions</code> in <code>config.py</code> with a validator if it needs one.
+Then thread it through: read it in the engine where it applies, expose it as a
+Typer option in the CLI, and add the matching widget in the GUI. Because both
+interfaces build the same contract, you can't forget one without the type
+checker or a test noticing.</p>
+<h2 id="doc6--3-tests-to-keep-green">3. Tests to keep green</h2>
+<p>Run <code>pytest</code>, <code>ruff check</code>, <code>ruff format --check</code> and <code>mypy</code> before you call a
+change done. Two tests matter most here. <code>test_architecture.py</code> fails if the
+engine imports an interface or if the GUI reaches into parsing or rendering —
+don't work around it, fix the import. The smoke test compiles the sample files
+end to end; if you change the output structure, update its assertions in the
+same commit. When you fix a bug, add a regression test next to it.</p>
+</article>
+  </main>
+</div>
+<script>
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+  var THEME_KEY = "mdbook-theme";
+
+  // --- Theme (remembers the preference) ---------------------------------
+  function applyTheme(theme) {
+    root.setAttribute("data-theme", theme);
+    var btn = document.querySelector(".theme-btn");
+    if (btn) btn.innerHTML = theme === "dark" ? "&#9728;" : "&#9789;";
+  }
+  var saved = null;
+  try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+  applyTheme(saved || root.getAttribute("data-default-theme") || "light");
+
+  var themeBtn = document.querySelector(".theme-btn");
+  if (themeBtn) {
+    themeBtn.addEventListener("click", function () {
+      var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      applyTheme(next);
+      try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+    });
+  }
+
+  // --- Sidebar menu (mobile) --------------------------------------------
+  var menuBtn = document.querySelector(".menu-btn");
+  var backdrop = document.querySelector(".backdrop");
+  function closeSidebar() { document.body.classList.remove("sidebar-open"); }
+  if (menuBtn) {
+    menuBtn.addEventListener("click", function () {
+      document.body.classList.toggle("sidebar-open");
+    });
+  }
+  if (backdrop) backdrop.addEventListener("click", closeSidebar);
+  document.querySelectorAll(".toc a").forEach(function (a) {
+    a.addEventListener("click", closeSidebar);
+  });
+
+  // --- Copy code ---------------------------------------------------------
+  document.querySelectorAll(".copy-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var block = btn.closest(".code-block");
+      var pre = block ? block.querySelector("pre") : null;
+      if (!pre) return;
+      var text = pre.innerText;
+      function done() {
+        btn.textContent = "Copied";
+        btn.classList.add("done");
+        setTimeout(function () {
+          btn.textContent = "Copy";
+          btn.classList.remove("done");
+        }, 1500);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else {
+        fallback();
+      }
+      function fallback() {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); } catch (e) {}
+        document.body.removeChild(ta);
+        done();
+      }
+    });
+  });
+
+  // --- Group content by section (so search can filter) ------------------
+  document.querySelectorAll(".doc").forEach(function (doc) {
+    var current = doc.id;
+    Array.prototype.forEach.call(doc.children, function (el) {
+      if (/^H[1-6]$/.test(el.tagName) && el.id) current = el.id;
+      el.dataset.sec = current;
+    });
+  });
+
+  // --- Instant search (filter and highlight) ----------------------------
+  var content = document.querySelector(".content");
+  var cover = document.querySelector(".cover");
+  var searchInput = document.querySelector(".search");
+
+  function clearHighlights() {
+    document.querySelectorAll("mark.hit").forEach(function (m) {
+      var parent = m.parentNode;
+      parent.replaceChild(document.createTextNode(m.textContent), m);
+      parent.normalize();
+    });
+  }
+
+  function highlight(query) {
+    var walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (node) {
+        if (!node.nodeValue.toLowerCase().includes(query)) return NodeFilter.FILTER_REJECT;
+        var p = node.parentElement;
+        if (!p) return NodeFilter.FILTER_REJECT;
+        if (p.closest("pre")) return NodeFilter.FILTER_REJECT;
+        var sec = p.closest("[data-sec]");
+        if (sec && sec.style.display === "none") return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      },
+    });
+    var nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function (node) {
+      var text = node.nodeValue;
+      var lower = text.toLowerCase();
+      var frag = document.createDocumentFragment();
+      var i = 0, idx, last = 0;
+      while ((idx = lower.indexOf(query, i)) !== -1) {
+        frag.appendChild(document.createTextNode(text.slice(last, idx)));
+        var mark = document.createElement("mark");
+        mark.className = "hit";
+        mark.textContent = text.slice(idx, idx + query.length);
+        frag.appendChild(mark);
+        i = idx + query.length;
+        last = i;
+      }
+      frag.appendChild(document.createTextNode(text.slice(last)));
+      node.parentNode.replaceChild(frag, node);
+    });
+  }
+
+  function resetSearch() {
+    document.querySelectorAll("[data-sec]").forEach(function (e) { e.style.display = ""; });
+    document.querySelectorAll(".doc").forEach(function (e) { e.style.display = ""; });
+    document.querySelectorAll(".toc-doc, .toc-sec").forEach(function (e) { e.style.display = ""; });
+    if (cover) cover.style.display = "";
+  }
+
+  function runSearch(rawQuery) {
+    clearHighlights();
+    var query = rawQuery.trim().toLowerCase();
+    if (!query) { resetSearch(); return; }
+
+    var matched = {};
+    document.querySelectorAll(".content [data-sec]").forEach(function (el) {
+      if (el.textContent.toLowerCase().includes(query)) matched[el.dataset.sec] = true;
+    });
+
+    document.querySelectorAll(".content [data-sec]").forEach(function (el) {
+      el.style.display = matched[el.dataset.sec] ? "" : "none";
+    });
+    document.querySelectorAll(".doc").forEach(function (doc) {
+      var visible = Array.prototype.some.call(doc.children, function (c) {
+        return c.style.display !== "none";
+      });
+      doc.style.display = visible ? "" : "none";
+    });
+    if (cover) cover.style.display = "none";
+
+    document.querySelectorAll(".toc-doc").forEach(function (li) {
+      var docEl = document.getElementById(li.dataset.doc);
+      var docVisible = docEl && docEl.style.display !== "none";
+      li.style.display = docVisible ? "" : "none";
+      li.querySelectorAll(".toc-sec").forEach(function (s) {
+        s.style.display = matched[s.dataset.target] ? "" : "none";
+      });
+    });
+
+    highlight(query);
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", function () { runSearch(searchInput.value); });
+  }
+
+  // --- Scrollspy: mark the active section in the table of contents -------
+  var tocLinks = {};
+  document.querySelectorAll(".toc a").forEach(function (a) {
+    tocLinks[a.getAttribute("href").slice(1)] = a;
+  });
+  if ("IntersectionObserver" in window) {
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          var link = tocLinks[entry.target.id];
+          if (!link) return;
+          if (entry.isIntersecting) {
+            Object.keys(tocLinks).forEach(function (k) { tocLinks[k].classList.remove("active"); });
+            link.classList.add("active");
+          }
+        });
+      },
+      { rootMargin: "-10% 0px -80% 0px", threshold: 0 }
+    );
+    document.querySelectorAll(".doc [id], .doc").forEach(function (el) {
+      if (el.id && tocLinks[el.id]) observer.observe(el);
+    });
+  }
+})();
+
+</script>
+</body>
+</html>
