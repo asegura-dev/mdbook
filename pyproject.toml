@@ -3,6 +3,8 @@ name = "mdbook"
 version = "1.0.0"
 description = "Convierte archivos Markdown en un único HTML de estudio: navegable, con búsqueda, tema claro/oscuro y copiar código."
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.12"
 authors = [
     { name = "BallonSb", email = "Alejandro_segura85@hotmail.com" }

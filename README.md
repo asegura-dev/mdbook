@@ -150,6 +150,11 @@ uv run ruff format .     # formato
 uv run mypy              # tipos (estricto)
 ```
 
+> **Nota:** clona y trabaja el repo **fuera** de carpetas sincronizadas
+> (OneDrive, Dropbox, Google Drive). El cliente de sincronización bloquea
+> archivos dentro de `.venv` y provoca fallos intermitentes al instalar o
+> reinstalar dependencias con `uv`.
+
 ## Licencia
 
-Pendiente de definir.
+[MIT](LICENSE) © 2026 Alejandro Segura.
