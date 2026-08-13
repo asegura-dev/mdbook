@@ -43,6 +43,13 @@ def test_compiles_and_writes_html(sample_files: list[Path], tmp_path: Path) -> N
     assert "print-btn" in html
     assert "@media print" in html  # the export rules travel inside the file
 
+    # Annotation UI: the controls and the code that drives them ship together,
+    # so a page can never offer highlighting it cannot store.
+    assert 'class="ann-bar"' in html
+    assert 'class="review"' in html
+    assert "notes-btn" in html
+    assert "mdbook:notes:" in html
+
     # Document titles (first H1 of the first and last file).
     assert "Coupling and cohesion" in html
     assert "When not to add structure" in html

@@ -20,6 +20,11 @@
   --accent: #2563eb;
   --accent-soft: rgba(37, 99, 235, 0.12);
   --mark: #fde68a;
+  /* Translucent on purpose: one set of highlight colours has to stay readable
+     on every palette, including the dark one. */
+  --hl-yellow: rgba(250, 204, 21, 0.38);
+  --hl-green: rgba(52, 211, 153, 0.34);
+  --hl-pink: rgba(244, 114, 182, 0.32);
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --line-height: 1.65;
   --sidebar-w: 300px;
@@ -36,6 +41,9 @@
   --accent: #58a6ff;
   --accent-soft: rgba(88, 166, 255, 0.15);
   --mark: #9a6700;
+  --hl-yellow: rgba(250, 204, 21, 0.30);
+  --hl-green: rgba(52, 211, 153, 0.26);
+  --hl-pink: rgba(244, 114, 182, 0.28);
 }
 /* Sepia: warm paper for long reading, still sans-serif. */
 [data-theme="sepia"] {
@@ -217,6 +225,17 @@ body {
 }
 mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
 
+/* Reader highlights */
+.hl { background: var(--hl-yellow); border-radius: 2px; cursor: pointer; }
+.hl[data-color="green"] { background: var(--hl-green); }
+.hl[data-color="pink"] { background: var(--hl-pink); }
+.hl[data-note]::after {
+  content: "✎";
+  font-size: 0.75em;
+  vertical-align: super;
+  opacity: 0.75;
+}
+
 /* Code blocks */
 .code-block {
   margin: 16px 0;
@@ -248,6 +267,116 @@ mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
 .copy-btn.done { color: var(--accent); border-color: var(--accent); }
 .code-block pre { margin: 0; padding: 14px 16px; overflow-x: auto; }
 .code-block pre code { background: none; padding: 0; font-size: 0.88rem; line-height: 1.5; }
+
+/* Annotation controls */
+.notes-btn { width: auto; padding: 0 12px; font-size: 13px; font-family: inherit; }
+.notes-count:not(:empty) {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 11px;
+}
+.sec-note {
+  margin-left: 8px;
+  border: none;
+  background: none;
+  color: var(--text-soft);
+  font-size: 0.6em;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+h2:hover .sec-note, h3:hover .sec-note, .sec-note:focus { opacity: 1; }
+
+.ann-bar, .ann-pop {
+  position: absolute;
+  z-index: 40;
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-soft);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+.ann-pop { flex-direction: column; width: 260px; }
+.ann-pop-colors { display: flex; gap: 6px; }
+.ann-color {
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--hl-yellow);
+  cursor: pointer;
+}
+.ann-color[data-color="green"] { background: var(--hl-green); }
+.ann-color[data-color="pink"] { background: var(--hl-pink); }
+.ann-color.on { outline: 2px solid var(--accent); }
+.ann-note-btn, .ann-pop-save, .ann-pop-delete, .review-copy, .review-download {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.ann-pop-note {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  padding: 6px;
+  resize: vertical;
+}
+.ann-pop-actions { display: flex; justify-content: space-between; }
+.ann-pop-delete { color: #b3261e; border-color: #b3261e; }
+
+/* Review panel */
+.review {
+  position: fixed;
+  top: var(--topbar-h);
+  right: 0;
+  z-index: 35;
+  width: 360px;
+  max-width: 100%;
+  height: calc(100vh - var(--topbar-h));
+  overflow-y: auto;
+  padding: 16px;
+  border-left: 1px solid var(--border);
+  background: var(--bg-soft);
+}
+.review[hidden] { display: none; }
+.review-head { display: flex; align-items: center; justify-content: space-between; }
+.review-actions { display: flex; gap: 8px; margin: 12px 0 16px; }
+.review-group { font-size: 0.95rem; margin: 20px 0 8px; }
+.review-group.orphan { color: var(--text-soft); }
+.review-hint { font-size: 13px; color: var(--text-soft); margin: 0 0 10px; }
+.review-empty { color: var(--text-soft); font-size: 14px; }
+.review-item {
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  cursor: pointer;
+}
+.review-item.orphan { opacity: 0.75; border-style: dashed; }
+.review-where { font-size: 12px; color: var(--text-soft); margin-bottom: 4px; }
+.review-quote {
+  margin: 0;
+  padding: 2px 8px;
+  border-left: 4px solid var(--hl-yellow);
+  font-size: 14px;
+}
+.review-quote[data-color="green"] { border-left-color: var(--hl-green); }
+.review-quote[data-color="pink"] { border-left-color: var(--hl-pink); }
+.review-note { margin: 6px 0 0; font-size: 14px; }
 
 /* Responsive: mobile */
 @media (max-width: 820px) {
@@ -292,6 +421,10 @@ mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
     --accent: #000000;
     --accent-soft: transparent;
     --mark: transparent;
+    /* Highlights print as ink, not as fill — see the .hl rule below. */
+    --hl-yellow: transparent;
+    --hl-green: transparent;
+    --hl-pink: transparent;
     /* Serif on paper: this is printed to be read at length. */
     --font-body: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
     --line-height: 1.5;
@@ -332,6 +465,14 @@ mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
   .content table { display: table; overflow-x: visible; }
   .content thead { display: table-header-group; }
 
+  /* Highlights survive to paper, drawn as a coloured underline: a fill would
+     vanish with "Background graphics" off, and an invisible highlight is worse
+     than none. The note marker is a screen affordance and does not print. */
+  .hl { background: none; border-bottom: 2px solid #b58900; }
+  .hl[data-color="green"] { border-bottom-color: #2a7f62; }
+  .hl[data-color="pink"] { border-bottom-color: #a63d6b; }
+  .hl[data-note]::after { content: none; }
+
   /* On paper a link is only its text, so external targets show where they
      point. Internal cross-references are excluded: "T1 §6 (#doc1--6-x)" would
      be noise, and the anchor means nothing off-screen. */
@@ -351,8 +492,41 @@ mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
   <span class="topbar-title">mdbook — Internal Documentation</span>
   <input type="search" class="search" placeholder="Search…" aria-label="Search" autocomplete="off">
   <select class="theme-select" aria-label="Theme"><option value="light">Light</option><option value="dark" selected>Dark</option><option value="sepia">Sepia</option><option value="serif">Serif</option></select>
+  <button class="icon-btn notes-btn" type="button" aria-label="Notes and highlights">Notes<span class="notes-count"></span></button>
   <button class="icon-btn print-btn" type="button" aria-label="Export to PDF">PDF</button>
 </header>
+
+<div class="ann-bar" hidden>
+  <button class="ann-color" type="button" data-color="yellow" aria-label="Highlight yellow"></button>
+  <button class="ann-color" type="button" data-color="green" aria-label="Highlight green"></button>
+  <button class="ann-color" type="button" data-color="pink" aria-label="Highlight pink"></button>
+  <button class="ann-note-btn" type="button">Note</button>
+</div>
+
+<div class="ann-pop" hidden>
+  <div class="ann-pop-colors">
+    <button class="ann-color" type="button" data-color="yellow" aria-label="Yellow"></button>
+    <button class="ann-color" type="button" data-color="green" aria-label="Green"></button>
+    <button class="ann-color" type="button" data-color="pink" aria-label="Pink"></button>
+  </div>
+  <textarea class="ann-pop-note" rows="3" placeholder="Write a note…"></textarea>
+  <div class="ann-pop-actions">
+    <button class="ann-pop-save" type="button">Save</button>
+    <button class="ann-pop-delete" type="button">Delete</button>
+  </div>
+</div>
+
+<aside class="review" aria-label="Notes and highlights" hidden>
+  <header class="review-head">
+    <strong>Notes &amp; highlights</strong>
+    <button class="icon-btn review-close" type="button" aria-label="Close">&times;</button>
+  </header>
+  <div class="review-actions">
+    <button class="review-copy" type="button">Copy as Markdown</button>
+    <button class="review-download" type="button">Download .md</button>
+  </div>
+  <div class="review-list"></div>
+</aside>
 <div class="layout">
   <nav class="sidebar" aria-label="Navigation">
     <ul class="toc"><li class="toc-doc" data-doc="doc1"><a href="#doc1" class="toc-doc-link">Overview</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc1--1-what-it-does"><a href="#doc1--1-what-it-does">1. What it does</a></li><li class="toc-sec lvl2" data-target="doc1--2-when-to-use-it"><a href="#doc1--2-when-to-use-it">2. When to use it</a></li><li class="toc-sec lvl2" data-target="doc1--3-how-the-pieces-fit"><a href="#doc1--3-how-the-pieces-fit">3. How the pieces fit</a></li></ul></li><li class="toc-doc" data-doc="doc2"><a href="#doc2" class="toc-doc-link">Architecture</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc2--1-the-engine"><a href="#doc2--1-the-engine">1. The engine</a></li><li class="toc-sec lvl2" data-target="doc2--2-the-validation-boundary"><a href="#doc2--2-the-validation-boundary">2. The validation boundary</a></li><li class="toc-sec lvl2" data-target="doc2--3-the-interfaces"><a href="#doc2--3-the-interfaces">3. The interfaces</a></li><li class="toc-sec lvl2" data-target="doc2--4-why-the-separation"><a href="#doc2--4-why-the-separation">4. Why the separation</a></li></ul></li><li class="toc-doc" data-doc="doc3"><a href="#doc3" class="toc-doc-link">Compilation flow</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc3--1-two-passes"><a href="#doc3--1-two-passes">1. Two passes</a></li><li class="toc-sec lvl2" data-target="doc3--2-pass-one-parse-and-index"><a href="#doc3--2-pass-one-parse-and-index">2. Pass one: parse and index</a></li><li class="toc-sec lvl2" data-target="doc3--3-pass-two-render"><a href="#doc3--3-pass-two-render">3. Pass two: render</a></li><li class="toc-sec lvl2" data-target="doc3--4-assembly-and-output"><a href="#doc3--4-assembly-and-output">4. Assembly and output</a></li><li class="toc-sec lvl2" data-target="doc3--5-printing-and-pdf-export"><a href="#doc3--5-printing-and-pdf-export">5. Printing and PDF export</a></li></ul></li><li class="toc-doc" data-doc="doc4"><a href="#doc4" class="toc-doc-link">Cross-references</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc4--1-syntax"><a href="#doc4--1-syntax">1. Syntax</a></li><li class="toc-sec lvl2" data-target="doc4--2-how-section-numbers-are-resolved"><a href="#doc4--2-how-section-numbers-are-resolved">2. How section numbers are resolved</a></li><li class="toc-sec lvl2" data-target="doc4--3-behavior-when-a-target-is-missing"><a href="#doc4--3-behavior-when-a-target-is-missing">3. Behavior when a target is missing</a></li></ul></li><li class="toc-doc" data-doc="doc5"><a href="#doc5" class="toc-doc-link">Interfaces</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc5--1-the-cli"><a href="#doc5--1-the-cli">1. The CLI</a></li><li class="toc-sec lvl2" data-target="doc5--2-the-gui"><a href="#doc5--2-the-gui">2. The GUI</a></li><li class="toc-sec lvl2" data-target="doc5--3-the-shared-contract"><a href="#doc5--3-the-shared-contract">3. The shared contract</a></li></ul></li><li class="toc-doc" data-doc="doc6"><a href="#doc6" class="toc-doc-link">Extending mdbook</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc6--1-add-a-markdown-feature"><a href="#doc6--1-add-a-markdown-feature">1. Add a Markdown feature</a></li><li class="toc-sec lvl2" data-target="doc6--2-add-a-build-option"><a href="#doc6--2-add-a-build-option">2. Add a build option</a></li><li class="toc-sec lvl2" data-target="doc6--3-tests-to-keep-green"><a href="#doc6--3-tests-to-keep-green">3. Tests to keep green</a></li></ul></li><li class="toc-doc" data-doc="doc7"><a href="#doc7" class="toc-doc-link">Development workflow</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc7--1-the-four-gates"><a href="#doc7--1-the-four-gates">1. The four gates</a></li><li class="toc-sec lvl2" data-target="doc7--2-the-pre-commit-hook"><a href="#doc7--2-the-pre-commit-hook">2. The pre-commit hook</a></li><li class="toc-sec lvl2" data-target="doc7--3-the-windows-executable"><a href="#doc7--3-the-windows-executable">3. The Windows executable</a></li><li class="toc-sec lvl2" data-target="doc7--4-gotchas"><a href="#doc7--4-gotchas">4. Gotchas</a></li></ul></li></ul>
@@ -708,6 +882,763 @@ reinstalls dependencies.</p>
       }
     });
   });
+
+  // =======================================================================
+  // Reader annotations: highlights and notes
+  //
+  // Anchoring is the whole problem here. The book gets recompiled while the
+  // reader keeps annotating it, so an annotation cannot be stored as a
+  // position: any edit earlier in the file would shift it. Each one stores the
+  // text it covers plus the text around it, and is located again by searching.
+  // The full model, and what it survives, is in T3 §6.
+  // =======================================================================
+
+  var ANN_VERSION = 1;
+  var CONTEXT = 48; // characters of prefix/suffix kept for disambiguation
+
+  function normalizeText(value) {
+    // Collapsing whitespace is what makes an anchor survive reflowed Markdown,
+    // re-indentation and a changed line width.
+    return String(value).replace(/\s+/g, " ").trim();
+  }
+
+  function bookKey(title) {
+    var slug = normalizeText(title)
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    // Local files share one localStorage origin, so two books would overwrite
+    // each other without this namespace. Keyed by title, not by path, because
+    // the point is to survive the file being rewritten.
+    return "mdbook:notes:" + (slug || "untitled");
+  }
+
+  function commonHeadLength(a, b) {
+    var limit = Math.min(a.length, b.length);
+    var i = 0;
+    while (i < limit && a.charAt(i) === b.charAt(i)) i++;
+    return i;
+  }
+
+  function commonTailLength(a, b) {
+    var limit = Math.min(a.length, b.length);
+    var i = 0;
+    while (i < limit && a.charAt(a.length - 1 - i) === b.charAt(b.length - 1 - i)) i++;
+    return i;
+  }
+
+  /**
+   * Where does `anchor.exact` sit in `haystack`? Returns the start index, or
+   * -1 when the text is gone — in which case the annotation is orphaned rather
+   * than guessed at. There is deliberately no fuzzy matching: a wrong anchor
+   * silently highlights the wrong sentence, which is worse for study than an
+   * honest orphan.
+   */
+  function locateQuote(haystack, anchor) {
+    var quote = anchor.exact;
+    if (!quote) return -1;
+
+    var hits = [];
+    var from = 0;
+    var at;
+    while ((at = haystack.indexOf(quote, from)) !== -1) {
+      hits.push(at);
+      from = at + 1;
+    }
+    if (hits.length === 0) return -1;
+    if (hits.length === 1) return hits[0];
+
+    var prefix = anchor.prefix || "";
+    var suffix = anchor.suffix || "";
+    var best = -1;
+    var bestScore = -Infinity;
+    for (var i = 0; i < hits.length; i++) {
+      var start = hits[i];
+      var before = haystack.slice(Math.max(0, start - prefix.length), start);
+      var after = haystack.slice(start + quote.length, start + quote.length + suffix.length);
+      var score = commonTailLength(before, prefix) + commonHeadLength(after, suffix);
+      // A hit inside the section the annotation came from outranks context:
+      // the same sentence quoted in two chapters is a real case.
+      if (inPreferredRange(anchor, start)) score += 1000;
+      if (score > bestScore || (score === bestScore && isCloser(anchor, start, best))) {
+        best = start;
+        bestScore = score;
+      }
+    }
+    return best;
+  }
+
+  function inPreferredRange(anchor, start) {
+    return (
+      typeof anchor.preferFrom === "number" &&
+      typeof anchor.preferTo === "number" &&
+      start >= anchor.preferFrom &&
+      start < anchor.preferTo
+    );
+  }
+
+  function isCloser(anchor, candidate, current) {
+    if (typeof anchor.offsetHint !== "number" || current < 0) return false;
+    return Math.abs(candidate - anchor.offsetHint) < Math.abs(current - anchor.offsetHint);
+  }
+
+  function stripLeadingNumber(title) {
+    return title.replace(/^\d+\.\s*/, "");
+  }
+
+  // --- Bridge between the DOM and the normalized text --------------------
+
+  /**
+   * The normalized text of an element plus, for every character, the text node
+   * and offset it came from. That map is what lets a match found in a plain
+   * string be painted back onto the DOM.
+   */
+  // Controls are not prose. Excluding them keeps the language label and the
+  // "Copy" caption of a code block — and the note buttons this file injects —
+  // out of the text an anchor is matched against.
+  var NOT_PROSE = ".code-head, .sec-note, .ann-bar, .ann-pop, .review";
+
+  function buildTextMap(root) {
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (node) {
+        var parent = node.parentElement;
+        if (parent && parent.closest(NOT_PROSE)) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    var chars = [];
+    var map = [];
+    var indexOfNode = new Map();
+    var spaceAt = null;
+    var node;
+    while ((node = walker.nextNode())) {
+      var value = node.nodeValue;
+      for (var i = 0; i < value.length; i++) {
+        var ch = value.charAt(i);
+        if (ch === " " || ch === "\n" || ch === "\t" || ch === "\r") {
+          // Remember where the run of whitespace started: mapping the collapsed
+          // space to a real position keeps a painted highlight contiguous
+          // instead of leaving a gap at every word break.
+          if (chars.length > 0 && spaceAt === null) spaceAt = { node: node, offset: i };
+          continue;
+        }
+        if (spaceAt !== null) {
+          chars.push(" ");
+          map.push(spaceAt);
+          spaceAt = null;
+        }
+        if (!indexOfNode.has(node)) indexOfNode.set(node, chars.length);
+        chars.push(ch);
+        map.push({ node: node, offset: i });
+      }
+    }
+    return { text: chars.join(""), map: map, indexOfNode: indexOfNode };
+  }
+
+  function firstIndexOf(textMap, element) {
+    var walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
+    var node = walker.nextNode();
+    while (node) {
+      if (textMap.indexOfNode.has(node)) return textMap.indexOfNode.get(node);
+      node = walker.nextNode();
+    }
+    return -1;
+  }
+
+  /**
+   * A heading's own words. Read from data-title because this file appends a
+   * note button inside the heading, and textContent would otherwise include it.
+   */
+  function headingTitle(heading) {
+    var stored = heading.getAttribute("data-title");
+    if (stored !== null) return stored;
+    var title = normalizeText(heading.textContent);
+    heading.setAttribute("data-title", title);
+    return title;
+  }
+
+  function matchesSection(heading, ann) {
+    if (ann.sectionId && heading.id === ann.sectionId) return true;
+    if (!ann.sectionTitle) return false;
+    var title = headingTitle(heading);
+    // Renumbering "## 3. Sampling" to "## 4." changes the id *and* the title,
+    // so the number is dropped before comparing.
+    return title === ann.sectionTitle ||
+      stripLeadingNumber(title) === stripLeadingNumber(ann.sectionTitle);
+  }
+
+  function preferredRange(scope, textMap, ann) {
+    var headings = scope.querySelectorAll("h1, h2, h3, h4, h5, h6");
+    for (var i = 0; i < headings.length; i++) {
+      if (!matchesSection(headings[i], ann)) continue;
+      var from = firstIndexOf(textMap, headings[i]);
+      if (from < 0) return null;
+      var to = i + 1 < headings.length ? firstIndexOf(textMap, headings[i + 1]) : -1;
+      return { from: from, to: to < 0 ? textMap.text.length : to };
+    }
+    return null;
+  }
+
+  function documentTitleOf(element) {
+    var heading = element.querySelector("h1");
+    return heading ? headingTitle(heading) : "";
+  }
+
+  function scopesFor(ann) {
+    var scopes = [];
+    var docs = document.querySelectorAll(".doc");
+    var byTitle = null;
+    for (var i = 0; i < docs.length && ann.docTitle; i++) {
+      if (documentTitleOf(docs[i]) === ann.docTitle) {
+        byTitle = docs[i];
+        break;
+      }
+    }
+    // Title before id: doc ids are positional, so inserting or reordering a
+    // chapter silently points doc3 at different prose.
+    if (byTitle) scopes.push(byTitle);
+    var byId = ann.docId ? document.getElementById(ann.docId) : null;
+    if (byId && byId !== byTitle && byId.classList.contains("doc")) scopes.push(byId);
+    var content = document.querySelector(".content");
+    if (content) scopes.push(content);
+    return scopes;
+  }
+
+  // --- Painting ----------------------------------------------------------
+
+  function wrapRun(run, ann) {
+    var node = run.node;
+    if (!node.parentNode) return;
+    var target = run.start > 0 ? node.splitText(run.start) : node;
+    if (target.nodeValue.length > run.end - run.start) {
+      target.splitText(run.end - run.start);
+    }
+    var span = document.createElement("span");
+    span.className = "hl";
+    span.setAttribute("data-ann", ann.id);
+    span.setAttribute("data-color", ann.color || "yellow");
+    if (ann.note) span.setAttribute("data-note", "1");
+    target.parentNode.insertBefore(span, target);
+    span.appendChild(target);
+  }
+
+  function paintRange(textMap, start, end, ann) {
+    var runs = [];
+    for (var i = start; i < end && i < textMap.map.length; i++) {
+      var entry = textMap.map[i];
+      var last = runs[runs.length - 1];
+      if (last && last.node === entry.node && entry.offset === last.end) {
+        last.end = entry.offset + 1;
+      } else {
+        runs.push({ node: entry.node, start: entry.offset, end: entry.offset + 1 });
+      }
+    }
+    // A highlight can cross <strong> or <code>, so each text node is wrapped
+    // separately; back to front, because splitting invalidates later offsets.
+    for (var r = runs.length - 1; r >= 0; r--) wrapRun(runs[r], ann);
+    return runs.length > 0;
+  }
+
+  // --- Storage -----------------------------------------------------------
+
+  var ANN_KEY = bookKey(document.title);
+  var annotations = [];
+
+  function loadAnnotations() {
+    try {
+      var raw = localStorage.getItem(ANN_KEY);
+      if (!raw) return [];
+      var data = JSON.parse(raw);
+      return Array.isArray(data.items) ? data.items : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveAnnotations(items) {
+    try {
+      localStorage.setItem(ANN_KEY, JSON.stringify({ version: ANN_VERSION, items: items }));
+      return true;
+    } catch (e) {
+      // Quota exhausted or storage blocked. Reported rather than swallowed:
+      // the reader has to know an annotation did not survive the click.
+      return false;
+    }
+  }
+
+  function placeAnnotation(ann) {
+    var scopes = scopesFor(ann);
+    for (var i = 0; i < scopes.length; i++) {
+      var textMap = buildTextMap(scopes[i]);
+      var range = preferredRange(scopes[i], textMap, ann);
+      var at = locateQuote(textMap.text, {
+        exact: ann.exact,
+        prefix: ann.prefix,
+        suffix: ann.suffix,
+        offsetHint: ann.offsetHint,
+        preferFrom: range ? range.from : undefined,
+        preferTo: range ? range.to : undefined
+      });
+      if (at >= 0) return paintRange(textMap, at, at + ann.exact.length, ann);
+    }
+    return false;
+  }
+
+  function sectionHeadingFor(ann) {
+    var headings = document.querySelectorAll(".content h1, .content h2, .content h3, .content h4");
+    for (var i = 0; i < headings.length; i++) {
+      if (matchesSection(headings[i], ann)) return headings[i];
+    }
+    return null;
+  }
+
+  /**
+   * Paint the in-memory annotations and refresh their orphan flags. Returns
+   * whether any flag changed, so the caller knows if storage is now stale.
+   */
+  function renderAnnotations() {
+    var changed = false;
+    annotations.forEach(function (ann) {
+      var placed = ann.exact ? placeAnnotation(ann) : Boolean(sectionHeadingFor(ann));
+      if (Boolean(ann.orphan) !== !placed) {
+        ann.orphan = !placed;
+        changed = true;
+      }
+    });
+    return changed;
+  }
+
+  function applyAnnotations() {
+    annotations = loadAnnotations();
+    // Orphan state is recomputed on every load, so an annotation heals itself
+    // when a later build brings its text back. Nothing is ever deleted here.
+    if (renderAnnotations()) saveAnnotations(annotations);
+    return annotations;
+  }
+
+  // --- Capture -----------------------------------------------------------
+
+  function anchorFromRange(range) {
+    var host = range.startContainer.parentElement;
+    var doc = host ? host.closest(".doc") : null;
+    if (!doc) return null;
+    var exact = normalizeText(range.toString());
+    if (!exact) return null;
+
+    var textMap = buildTextMap(doc);
+    var start = textMap.text.indexOf(exact);
+    if (start < 0) return null;
+
+    var heading = null;
+    var headings = doc.querySelectorAll("h1, h2, h3, h4, h5, h6");
+    for (var i = 0; i < headings.length; i++) {
+      var at = firstIndexOf(textMap, headings[i]);
+      if (at >= 0 && at <= start) heading = headings[i];
+    }
+
+    return {
+      id: "a" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      docId: doc.id,
+      docTitle: documentTitleOf(doc),
+      sectionId: heading ? heading.id : "",
+      sectionTitle: heading ? headingTitle(heading) : "",
+      exact: exact,
+      prefix: textMap.text.slice(Math.max(0, start - CONTEXT), start),
+      suffix: textMap.text.slice(start + exact.length, start + exact.length + CONTEXT),
+      offsetHint: start,
+      color: "yellow",
+      note: "",
+      orphan: false,
+      created: Date.now()
+    };
+  }
+
+  // --- Annotation UI -----------------------------------------------------
+
+  var annBar = document.querySelector(".ann-bar");
+  var annPop = document.querySelector(".ann-pop");
+  var review = document.querySelector(".review");
+  var notesBtn = document.querySelector(".notes-btn");
+  var editingId = null;
+
+  function byId(id) {
+    for (var i = 0; i < annotations.length; i++) {
+      if (annotations[i].id === id) return annotations[i];
+    }
+    return null;
+  }
+
+  function unpaintAll() {
+    document.querySelectorAll(".hl").forEach(function (span) {
+      var parent = span.parentNode;
+      while (span.firstChild) parent.insertBefore(span.firstChild, span);
+      parent.removeChild(span);
+      parent.normalize();
+    });
+  }
+
+  function persist() {
+    unpaintAll();
+    renderAnnotations();
+    if (!saveAnnotations(annotations)) {
+      // Never pretend a click was saved: storage can be full or blocked, and
+      // the reader would keep annotating into a void.
+      window.alert(
+        "Could not save. Browser storage is full or blocked — export your notes " +
+          "from the Notes panel before continuing."
+      );
+    }
+    renderReview();
+  }
+
+  function place(element) {
+    var rect = element.getBoundingClientRect();
+    return { top: window.scrollY + rect.bottom + 8, left: window.scrollX + rect.left };
+  }
+
+  // --- Creating from a selection -----------------------------------------
+
+  function currentRange() {
+    var selection = window.getSelection();
+    if (!selection || selection.isCollapsed || selection.rangeCount === 0) return null;
+    var range = selection.getRangeAt(0);
+    if (!normalizeText(range.toString())) return null;
+    var host = range.commonAncestorContainer;
+    host = host.nodeType === 1 ? host : host.parentElement;
+    return host && host.closest(".doc") ? range : null;
+  }
+
+  function showBar() {
+    var range = currentRange();
+    if (!range || !annBar) {
+      if (annBar) annBar.hidden = true;
+      return;
+    }
+    var rect = range.getBoundingClientRect();
+    annBar.hidden = false;
+    annBar.style.top = window.scrollY + rect.top - annBar.offsetHeight - 8 + "px";
+    annBar.style.left = window.scrollX + rect.left + "px";
+  }
+
+  function createFromSelection(color, withNote) {
+    var range = currentRange();
+    if (annBar) annBar.hidden = true;
+    if (!range) return;
+    var ann = anchorFromRange(range);
+    if (!ann) return;
+    ann.color = color;
+    annotations.push(ann);
+    window.getSelection().removeAllRanges();
+    persist();
+    if (withNote) openPopover(ann.id);
+  }
+
+  if (annBar) {
+    annBar.querySelectorAll(".ann-color").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        createFromSelection(btn.getAttribute("data-color"), false);
+      });
+    });
+    var noteBtn = annBar.querySelector(".ann-note-btn");
+    if (noteBtn) {
+      noteBtn.addEventListener("click", function () {
+        createFromSelection("yellow", true);
+      });
+    }
+  }
+
+  document.addEventListener("mouseup", function (event) {
+    if (annBar && annBar.contains(event.target)) return;
+    if (annPop && annPop.contains(event.target)) return;
+    // After the browser has settled the selection.
+    window.setTimeout(showBar, 0);
+  });
+
+  // --- Editing an existing annotation ------------------------------------
+
+  function openPopover(id, element) {
+    var ann = byId(id);
+    if (!ann || !annPop) return;
+    editingId = id;
+    annPop.querySelector(".ann-pop-note").value = ann.note || "";
+    annPop.querySelectorAll(".ann-color").forEach(function (btn) {
+      btn.classList.toggle("on", btn.getAttribute("data-color") === ann.color);
+    });
+    annPop.hidden = false;
+    var target = element || document.querySelector('[data-ann="' + id + '"]');
+    if (target) {
+      var at = place(target);
+      annPop.style.top = at.top + "px";
+      annPop.style.left = at.left + "px";
+    }
+  }
+
+  if (annPop) {
+    annPop.querySelectorAll(".ann-color").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var ann = byId(editingId);
+        if (!ann) return;
+        ann.color = btn.getAttribute("data-color");
+        annPop.querySelectorAll(".ann-color").forEach(function (other) {
+          other.classList.toggle("on", other === btn);
+        });
+        persist();
+      });
+    });
+    annPop.querySelector(".ann-pop-save").addEventListener("click", function () {
+      var ann = byId(editingId);
+      if (!ann) return;
+      ann.note = annPop.querySelector(".ann-pop-note").value.trim();
+      annPop.hidden = true;
+      persist();
+    });
+    annPop.querySelector(".ann-pop-delete").addEventListener("click", function () {
+      annotations = annotations.filter(function (ann) {
+        return ann.id !== editingId;
+      });
+      annPop.hidden = true;
+      persist();
+    });
+  }
+
+  document.addEventListener("click", function (event) {
+    var span = event.target.closest ? event.target.closest(".hl") : null;
+    if (span) {
+      openPopover(span.getAttribute("data-ann"), span);
+      return;
+    }
+    if (annPop && !annPop.contains(event.target) && !event.target.closest(".review-item")) {
+      annPop.hidden = true;
+    }
+  });
+
+  // --- Section notes ------------------------------------------------------
+
+  function createSectionNote(heading) {
+    var doc = heading.closest(".doc");
+    var existing = null;
+    for (var i = 0; i < annotations.length; i++) {
+      if (!annotations[i].exact && annotations[i].sectionId === heading.id) {
+        existing = annotations[i];
+        break;
+      }
+    }
+    if (!existing) {
+      existing = {
+        id: "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+        docId: doc ? doc.id : "",
+        docTitle: doc ? documentTitleOf(doc) : "",
+        sectionId: heading.id,
+        sectionTitle: headingTitle(heading),
+        exact: "",
+        prefix: "",
+        suffix: "",
+        color: "yellow",
+        note: "",
+        orphan: false,
+        created: Date.now()
+      };
+      annotations.push(existing);
+      persist();
+    }
+    openPopover(existing.id, heading);
+  }
+
+  document.querySelectorAll(".content .doc h2, .content .doc h3").forEach(function (heading) {
+    headingTitle(heading); // freeze the title before the button joins the DOM
+    var btn = document.createElement("button");
+    btn.className = "sec-note";
+    btn.type = "button";
+    btn.setAttribute("aria-label", "Note on this section");
+    btn.textContent = "✎";
+    btn.addEventListener("click", function (event) {
+      event.stopPropagation();
+      createSectionNote(heading);
+    });
+    heading.appendChild(btn);
+  });
+
+  // --- Review panel -------------------------------------------------------
+
+  function inDocumentOrder(list) {
+    var positions = {};
+    document.querySelectorAll(".hl").forEach(function (span, index) {
+      var id = span.getAttribute("data-ann");
+      if (!(id in positions)) positions[id] = index;
+    });
+    return list.slice().sort(function (a, b) {
+      var pa = a.id in positions ? positions[a.id] : Number.MAX_SAFE_INTEGER;
+      var pb = b.id in positions ? positions[b.id] : Number.MAX_SAFE_INTEGER;
+      return pa - pb || (a.created || 0) - (b.created || 0);
+    });
+  }
+
+  function element(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function renderItem(ann) {
+    var item = element("div", "review-item");
+    item.setAttribute("data-ann", ann.id);
+    if (ann.orphan) item.classList.add("orphan");
+    item.appendChild(element("div", "review-where", ann.sectionTitle || ann.docTitle || ""));
+    if (ann.exact) {
+      var quote = element("blockquote", "review-quote", ann.exact);
+      quote.setAttribute("data-color", ann.color || "yellow");
+      item.appendChild(quote);
+    }
+    if (ann.note) item.appendChild(element("p", "review-note", ann.note));
+    item.addEventListener("click", function () {
+      var span = document.querySelector('[data-ann="' + ann.id + '"]');
+      if (span) {
+        span.scrollIntoView({ block: "center" });
+        openPopover(ann.id, span);
+      } else {
+        openPopover(ann.id, item);
+      }
+    });
+    return item;
+  }
+
+  function renderReview() {
+    if (!review) return;
+    var list = review.querySelector(".review-list");
+    list.textContent = "";
+
+    var live = inDocumentOrder(
+      annotations.filter(function (ann) {
+        return !ann.orphan;
+      })
+    );
+    var orphans = annotations.filter(function (ann) {
+      return ann.orphan;
+    });
+
+    if (!annotations.length) {
+      list.appendChild(
+        element("p", "review-empty", "Select text in the book to highlight it.")
+      );
+    }
+
+    var lastGroup = null;
+    live.forEach(function (ann) {
+      if (ann.docTitle !== lastGroup) {
+        list.appendChild(element("h3", "review-group", ann.docTitle || "Untitled"));
+        lastGroup = ann.docTitle;
+      }
+      list.appendChild(renderItem(ann));
+    });
+
+    if (orphans.length) {
+      // Kept, never deleted: the text they were attached to changed, but the
+      // reader's own words are still theirs.
+      list.appendChild(element("h3", "review-group orphan", "Orphaned (" + orphans.length + ")"));
+      list.appendChild(
+        element(
+          "p",
+          "review-hint",
+          "The text these were on has changed. They are kept here, and reattach on their own if it comes back."
+        )
+      );
+      orphans.forEach(function (ann) {
+        list.appendChild(renderItem(ann));
+      });
+    }
+
+    var count = annotations.length;
+    var badge = document.querySelector(".notes-count");
+    if (badge) badge.textContent = count ? String(count) : "";
+  }
+
+  if (notesBtn && review) {
+    notesBtn.addEventListener("click", function () {
+      review.hidden = !review.hidden;
+    });
+    review.querySelector(".review-close").addEventListener("click", function () {
+      review.hidden = true;
+    });
+  }
+
+  // --- Export -------------------------------------------------------------
+
+  function toMarkdown() {
+    var lines = ["# Notes — " + document.title, ""];
+    var lastGroup = null;
+    var live = inDocumentOrder(
+      annotations.filter(function (ann) {
+        return !ann.orphan;
+      })
+    );
+    live.concat(annotations.filter(function (a) { return a.orphan; })).forEach(function (ann) {
+      var group = ann.orphan ? "Orphaned" : ann.docTitle || "Untitled";
+      if (group !== lastGroup) {
+        lines.push("## " + group, "");
+        lastGroup = group;
+      }
+      if (ann.sectionTitle) lines.push("### " + ann.sectionTitle, "");
+      if (ann.exact) lines.push("> " + ann.exact, "");
+      if (ann.note) lines.push(ann.note, "");
+    });
+    return lines.join("\n");
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(null, fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+    function fallbackCopy() {
+      var area = document.createElement("textarea");
+      area.value = text;
+      area.style.position = "fixed";
+      area.style.opacity = "0";
+      document.body.appendChild(area);
+      area.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(area);
+    }
+  }
+
+  if (review) {
+    var copyBtn = review.querySelector(".review-copy");
+    copyBtn.addEventListener("click", function () {
+      copyText(toMarkdown());
+      copyBtn.textContent = "Copied";
+      window.setTimeout(function () { copyBtn.textContent = "Copy as Markdown"; }, 1500);
+    });
+    review.querySelector(".review-download").addEventListener("click", function () {
+      var blob = new Blob([toMarkdown()], { type: "text/markdown;charset=utf-8" });
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement("a");
+      link.href = url;
+      link.download = bookKey(document.title).replace("mdbook:notes:", "") + "-notes.md";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    });
+  }
+
+  applyAnnotations();
+  renderReview();
+
+  // Exposed for the Node tests of the anchor resolver (T3 §6). `module` does
+  // not exist in a browser, so this is a no-op there.
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+      normalizeText: normalizeText,
+      bookKey: bookKey,
+      locateQuote: locateQuote,
+      stripLeadingNumber: stripLeadingNumber
+    };
+  }
 
   // --- Group content by section (so search can filter) ------------------
   document.querySelectorAll(".doc").forEach(function (doc) {

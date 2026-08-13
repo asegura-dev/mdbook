@@ -22,6 +22,10 @@ const APP = path.join(
   __dirname, "..", "..", "src", "mdbook", "engine", "assets", "app.js"
 );
 
+// A page-shaped stub, not a DOM: every query comes back empty, so the UI wiring
+// in app.js finds nothing to attach to and only the pure functions are left to
+// test. It grows when app.js starts touching a new browser API — which is the
+// point of loading the real file rather than a copy of it.
 function loadApp() {
   const noElement = { getAttribute: () => null, setAttribute: () => {}, options: [] };
   const sandbox = {
@@ -31,12 +35,16 @@ function loadApp() {
     Date,
     JSON,
     String,
-    window: { print: () => {} },
+    Number,
+    navigator: {},
+    window: { print: () => {}, setTimeout: () => 0, alert: () => {}, getSelection: () => null },
     localStorage: { getItem: () => null, setItem: () => {} },
     document: {
       title: "Test Book",
       documentElement: noElement,
       body: { classList: { remove: () => {}, toggle: () => {} } },
+      addEventListener: () => {},
+      createElement: () => ({ style: {}, classList: { toggle: () => {} } }),
       querySelector: () => null,
       querySelectorAll: () => [],
       createTreeWalker: () => ({ nextNode: () => null }),
