@@ -177,11 +177,28 @@ def _render_code_block(
     )
 
 
+def _inside_link(tokens: list[Token], idx: int) -> bool:
+    """Whether the token at ``idx`` sits between a ``link_open``/``link_close``.
+
+    Inline tokens are a flat stream, so the nearest of the two behind us decides.
+    """
+    for token in reversed(tokens[:idx]):
+        if token.type == "link_close":
+            return False
+        if token.type == "link_open":
+            return True
+    return False
+
+
 def _render_text(
     renderer: Any, tokens: list[Token], idx: int, options: Any, env: dict[str, Any]
 ) -> str:
     content = escapeHtml(tokens[idx].content)
     crossref_map: CrossRefMap | None = env.get("crossref_map")
-    if crossref_map:
+    # Linking inside a link would nest <a> elements, which HTML does not allow:
+    # the browser closes the outer anchor early and the author's own link breaks.
+    # The reference text is left alone, which is the same thing that happens when
+    # a reference has no target.
+    if crossref_map and not _inside_link(tokens, idx):
         return apply_crossref(content, crossref_map)
     return content
