@@ -1,0 +1,54 @@
+#!/bin/sh
+#
+# Block heavy files and paths that must never reach the history.
+#
+# Git has no undo for a pushed blob: rewriting history is the only way to drop
+# one, and that breaks every clone. So the check runs before the commit exists,
+# not after. It reads the staged blobs (":path"), not the working tree, so what
+# it measures is exactly what would be recorded.
+#
+# Install once per clone:  git config core.hooksPath .githooks
+# Bypass on purpose:       git commit --no-verify
+
+set -eu
+
+# 250 KB. Above the largest asset in the repo (docs/img/demo-dark.png, ~197 KB)
+# so real screenshots pass, low enough to catch a stray binary or dataset.
+MAX_BYTES=256000
+
+# Ignored by .gitignore already; listed again because a "git add -f" or a
+# missing rule would otherwise slip them in silently.
+FORBIDDEN='^(\.env($|\.)|\.venv/|\.claude/|data/|dist/|build/)'
+
+staged=$(git diff --cached --name-only --diff-filter=ACM)
+[ -n "$staged" ] || exit 0
+
+offenders=$(
+    printf '%s\n' "$staged" | while IFS= read -r path; do
+        [ -n "$path" ] || continue
+
+        if printf '%s' "$path" | grep -Eq "$FORBIDDEN"; then
+            printf '  %s\n      must never be committed (secret, virtualenv or build output)\n' "$path"
+            continue
+        fi
+
+        # Size of the staged blob; missing objects are skipped, not guessed at.
+        size=$(git cat-file -s ":$path" 2>/dev/null) || continue
+        if [ "$size" -gt "$MAX_BYTES" ]; then
+            printf '  %s\n      %s KB, over the %s KB limit\n' \
+                "$path" "$((size / 1024))" "$((MAX_BYTES / 1024))"
+        fi
+    done
+)
+
+[ -n "$offenders" ] || exit 0
+
+printf 'pre-commit: refusing to commit these files.\n\n%s\n' "$offenders" >&2
+cat >&2 <<'EOF'
+
+Fix it by unstaging them (git restore --staged <file>) and, if they should
+never come back, adding them to .gitignore.
+
+If this file genuinely belongs in the repo, commit with --no-verify.
+EOF
+exit 1

@@ -1,0 +1,11 @@
+# Normalize line endings so a clone behaves the same on every platform.
+* text=auto
+
+# Shell scripts must keep LF. This repo is developed on Windows with
+# core.autocrlf=true, and a hook checked out with CRLF dies on its own shebang
+# ("bad interpreter"), silently disabling the pre-commit guard.
+.githooks/* text eol=lf
+*.sh text eol=lf
+
+# Binary assets: never touch them, never diff them as text.
+*.png binary
