@@ -10,6 +10,15 @@ Work on v2, on the `v2` branch.
 
 ### Added
 
+- Two themes, `sepia` and `serif`, next to the existing `light` and `dark`.
+  Sepia is warm paper for long reading; serif also swaps the typeface for a
+  system serif stack and loosens the leading. Both use system fonts only — a
+  webfont would need a network request and break the self-contained output.
+- `THEMES` in `mdbook.config`, the theme set derived from the `Theme` literal
+  with `typing.get_args`. The GUI dropdown, the CLI help and the rendered picker
+  all read from it, so adding a theme is one edit instead of four.
+- `tests/unit/test_themes.py`: every declared theme must override the full set
+  of colour tokens, and the stylesheet must not reference anything external.
 - Continuous integration (`.github/workflows/ci.yml`): ruff, `ruff format
   --check`, strict mypy and pytest on every push and pull request to `main` and
   `v2`. Lint and types run once on Linux; tests run on a Linux and Windows
@@ -26,6 +35,18 @@ Work on v2, on the `v2` branch.
   fresh clone needs, and the gotchas (moved repository breaking the `.venv`
   console scripts, synced folders locking `.venv`).
 - This changelog.
+
+### Changed
+
+- The theme control in the generated HTML is a `<select>` instead of a button
+  that toggled between two values. A two-state toggle does not survive a third
+  theme. The picker is rendered server-side, one option per theme, so the page
+  script holds no copy of the theme list; that removed the sun/moon glyph
+  branch and left `app.js` shorter. A theme restored from `localStorage` now
+  syncs the control, and a stale stored theme falls back to the default instead
+  of leaving the page on an undefined palette.
+- The font stack is the `--font-body` token rather than a hard-coded rule, so a
+  theme can change the typeface without duplicating the typography rules.
 
 ## [1.0.0] - 2026-06-16
 

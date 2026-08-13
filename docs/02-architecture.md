@@ -18,8 +18,14 @@ T6 §3.
 
 `mdbook.config` defines `BuildOptions`, a frozen Pydantic model. It is the one
 place where input is checked: the title isn't empty, every input path exists and
-ends in `.md`, the output ends in `.html`, the theme is `light` or `dark`. Once
-built, the engine trusts it and does not re-validate.
+ends in `.md`, the output ends in `.html`, the theme is one of the four the
+`Theme` literal declares. Once built, the engine trusts it and does not
+re-validate.
+
+`config.py` also exports `THEMES`, the same set as a sequence derived from the
+literal. The interfaces need to *list* the themes and the renderer needs to emit
+one option per theme; deriving that list from the type keeps a new theme a
+one-line change instead of four edits that drift apart.
 
 Both interfaces construct the same `BuildOptions` — see T5 §3.
 

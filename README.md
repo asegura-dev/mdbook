@@ -3,7 +3,7 @@
 [![CI](https://github.com/asegura-dev/mdbook/actions/workflows/ci.yml/badge.svg)](https://github.com/asegura-dev/mdbook/actions/workflows/ci.yml)
 
 Compile several Markdown files into one self-contained HTML file: navigable,
-searchable, with a light/dark theme and a copy button on every code block.
+searchable, themeable, with a copy button on every code block.
 
 It exists for two things: reading docs comfortably on a phone, and shipping a
 single browsable `.html` inside a repo. No server, no external dependencies in
@@ -17,7 +17,8 @@ the output.
   becomes its title in the navigation.
 - Cover, table of contents and a sidebar with sections and subsections.
 - Instant search that filters and highlights matches.
-- Light/dark theme that remembers your choice.
+- Four themes — `light`, `dark`, `sepia` and `serif` — switchable from the page,
+  and it remembers your choice.
 - A "Copy" button on every code block, with its language label.
 - Optional cross-references: `T1 §3` turns into an internal link.
 - Self-contained output: CSS and JS are inlined, no external URLs.
@@ -97,14 +98,14 @@ uv run mdbook build --input docs --title "My Book" --theme dark --output book.ht
 uv run mdbook build -f intro.md -f chap1.md -t "Course" --cross-refs -o course.html
 ```
 
-| Option                           | Description                                       |
-| -------------------------------- | ------------------------------------------------- |
-| `--input/-i`                     | Folder: take every `.md` (alphabetical order).    |
-| `--file/-f`                      | A single `.md` file (repeatable; sets the order). |
-| `--title/-t`                     | Title of the work.                                |
-| `--theme`                        | `light` or `dark` (default `light`).              |
-| `--cross-refs / --no-cross-refs` | Turn cross-references on/off.                     |
-| `--output/-o`                    | Output HTML path (`.html`).                       |
+| Option                           | Description                                            |
+| -------------------------------- | ------------------------------------------------------ |
+| `--input/-i`                     | Folder: take every `.md` (alphabetical order).         |
+| `--file/-f`                      | A single `.md` file (repeatable; sets the order).      |
+| `--title/-t`                     | Title of the work.                                     |
+| `--theme`                        | `light`, `dark`, `sepia` or `serif` (default `light`). |
+| `--cross-refs / --no-cross-refs` | Turn cross-references on/off.                          |
+| `--output/-o`                    | Output HTML path (`.html`).                            |
 
 ### Cross-references
 

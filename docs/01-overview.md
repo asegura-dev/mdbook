@@ -9,8 +9,13 @@ sample of the cross-references and navigation.
 You give it an ordered list of `.md` files and a few options. It parses a fixed
 subset of Markdown, builds a table of contents from the headings, and writes a
 single self-contained `.html`: styles and scripts are inlined, so there are no
-external requests. The output has a cover, a sidebar, instant search, a
-light/dark toggle, and a copy button on each code block.
+external requests. The output has a cover, a sidebar, instant search, a theme
+picker, and a copy button on each code block.
+
+Four themes ship: `light`, `dark`, `sepia` and `serif`. The first three differ
+only in palette; `serif` also swaps the typeface for a system serif stack and
+loosens the leading, for reading rather than reference. The reader can switch
+between them in the page, and the choice is remembered.
 
 There is no project config file and no plugin system. The feature set is fixed
 on purpose.
@@ -21,8 +26,8 @@ It fits two cases. The first is reading long documentation on a phone: one file,
 no server, search built in. The second is shipping browsable docs inside a repo
 without a static-site toolchain.
 
-If you need themes beyond light/dark, embedded images, or PDF export, this isn't
-the tool — and adding them is out of scope.
+If you need embedded images, PDF export or a custom palette of your own, this
+isn't the tool — and adding them is out of scope.
 
 ## 3. How the pieces fit
 

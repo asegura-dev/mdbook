@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>mdbook — Internal Documentation</title>
 <style>
+/* Themes are token overrides only: every rule below reads var(--x), so a theme
+   restates the palette and never a layout rule. Fonts are tokens too, so a
+   theme can change the typeface without duplicating the typography rules.
+   Only system font stacks — a webfont would need a network request and break
+   the self-contained output. */
 :root {
   --bg: #ffffff;
   --bg-soft: #f5f6f8;
@@ -15,9 +20,11 @@
   --accent: #2563eb;
   --accent-soft: rgba(37, 99, 235, 0.12);
   --mark: #fde68a;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --line-height: 1.65;
   --sidebar-w: 300px;
   --topbar-h: 54px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-body);
 }
 [data-theme="dark"] {
   --bg: #0d1117;
@@ -30,13 +37,39 @@
   --accent-soft: rgba(88, 166, 255, 0.15);
   --mark: #9a6700;
 }
+/* Sepia: warm paper for long reading, still sans-serif. */
+[data-theme="sepia"] {
+  --bg: #f4ecd8;
+  --bg-soft: #ece2c8;
+  --bg-code: #e8ddc0;
+  --text: #4a3f35;
+  --text-soft: #7a6a58;
+  --border: #d8cbb0;
+  --accent: #9a5b2d;
+  --accent-soft: rgba(154, 91, 45, 0.14);
+  --mark: #e8c26a;
+}
+/* Serif: book typography on off-white paper, looser leading. */
+[data-theme="serif"] {
+  --bg: #fbfaf7;
+  --bg-soft: #f2f0ea;
+  --bg-code: #f0eee7;
+  --text: #24201c;
+  --text-soft: #5f584f;
+  --border: #ddd8cd;
+  --accent: #7a5230;
+  --accent-soft: rgba(122, 82, 48, 0.12);
+  --mark: #f0d99b;
+  --font-body: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+  --line-height: 1.8;
+}
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
   background: var(--bg);
   color: var(--text);
-  line-height: 1.65;
+  line-height: var(--line-height);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -86,6 +119,19 @@ body {
 }
 .icon-btn:hover { background: var(--accent-soft); }
 .menu-btn { display: none; }
+.theme-select {
+  flex: 0 0 auto;
+  height: 38px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.theme-select:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
 
 /* Layout */
 .layout { display: flex; align-items: flex-start; }
@@ -232,7 +278,7 @@ mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
   <button class="icon-btn menu-btn" type="button" aria-label="Menu">&#9776;</button>
   <span class="topbar-title">mdbook — Internal Documentation</span>
   <input type="search" class="search" placeholder="Search…" aria-label="Search" autocomplete="off">
-  <button class="icon-btn theme-btn" type="button" aria-label="Toggle theme">&#9788;</button>
+  <select class="theme-select" aria-label="Theme"><option value="light">Light</option><option value="dark" selected>Dark</option><option value="sepia">Sepia</option><option value="serif">Serif</option></select>
 </header>
 <div class="layout">
   <nav class="sidebar" aria-label="Navigation">
@@ -248,16 +294,20 @@ sample of the cross-references and navigation.</p>
 <p>You give it an ordered list of <code>.md</code> files and a few options. It parses a fixed
 subset of Markdown, builds a table of contents from the headings, and writes a
 single self-contained <code>.html</code>: styles and scripts are inlined, so there are no
-external requests. The output has a cover, a sidebar, instant search, a
-light/dark toggle, and a copy button on each code block.</p>
+external requests. The output has a cover, a sidebar, instant search, a theme
+picker, and a copy button on each code block.</p>
+<p>Four themes ship: <code>light</code>, <code>dark</code>, <code>sepia</code> and <code>serif</code>. The first three differ
+only in palette; <code>serif</code> also swaps the typeface for a system serif stack and
+loosens the leading, for reading rather than reference. The reader can switch
+between them in the page, and the choice is remembered.</p>
 <p>There is no project config file and no plugin system. The feature set is fixed
 on purpose.</p>
 <h2 id="doc1--2-when-to-use-it">2. When to use it</h2>
 <p>It fits two cases. The first is reading long documentation on a phone: one file,
 no server, search built in. The second is shipping browsable docs inside a repo
 without a static-site toolchain.</p>
-<p>If you need themes beyond light/dark, embedded images, or PDF export, this isn't
-the tool — and adding them is out of scope.</p>
+<p>If you need embedded images, PDF export or a custom palette of your own, this
+isn't the tool — and adding them is out of scope.</p>
 <h2 id="doc1--3-how-the-pieces-fit">3. How the pieces fit</h2>
 <p>There are three parts: a pure engine, a validation boundary, and two interfaces
 on top. The engine is described in <a class="xref" href="#doc2--1-the-engine">T2 §1</a>, the boundary in <a class="xref" href="#doc2--2-the-validation-boundary">T2 §2</a>. The step from
@@ -277,8 +327,13 @@ and the orchestration (<code>compiler.py</code>). The HTML template, CSS and JS 
 <h2 id="doc2--2-the-validation-boundary">2. The validation boundary</h2>
 <p><code>mdbook.config</code> defines <code>BuildOptions</code>, a frozen Pydantic model. It is the one
 place where input is checked: the title isn't empty, every input path exists and
-ends in <code>.md</code>, the output ends in <code>.html</code>, the theme is <code>light</code> or <code>dark</code>. Once
-built, the engine trusts it and does not re-validate.</p>
+ends in <code>.md</code>, the output ends in <code>.html</code>, the theme is one of the four the
+<code>Theme</code> literal declares. Once built, the engine trusts it and does not
+re-validate.</p>
+<p><code>config.py</code> also exports <code>THEMES</code>, the same set as a sequence derived from the
+literal. The interfaces need to <em>list</em> the themes and the renderer needs to emit
+one option per theme; deriving that list from the type keeps a new theme a
+one-line change instead of four edits that drift apart.</p>
 <p>Both interfaces construct the same <code>BuildOptions</code> — see <a class="xref" href="#doc5--3-the-shared-contract">T5 §3</a>.</p>
 <h2 id="doc2--3-the-interfaces">3. The interfaces</h2>
 <p>There are two: a Typer CLI (<code>cli.py</code>) and a CustomTkinter GUI (<code>gui/app.py</code>).
@@ -441,19 +496,35 @@ reinstalls dependencies.</p>
   var THEME_KEY = "mdbook-theme";
 
   // --- Theme (remembers the preference) ---------------------------------
+  // The <select> is rendered server-side, one option per theme the contract
+  // declares, so this script never holds its own copy of the theme list.
+  var themeSelect = document.querySelector(".theme-select");
+
+  function isKnownTheme(theme) {
+    if (!theme || !themeSelect) return false;
+    return Array.prototype.some.call(themeSelect.options, function (opt) {
+      return opt.value === theme;
+    });
+  }
+
   function applyTheme(theme) {
     root.setAttribute("data-theme", theme);
-    var btn = document.querySelector(".theme-btn");
-    if (btn) btn.innerHTML = theme === "dark" ? "&#9728;" : "&#9789;";
+    // Keep the control honest: a theme restored from localStorage must show up
+    // as the selected option, or the box says one thing and the page another.
+    if (themeSelect) themeSelect.value = theme;
   }
+
   var saved = null;
   try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
-  applyTheme(saved || root.getAttribute("data-default-theme") || "light");
+  // A stale localStorage value (a theme that was renamed or removed) would
+  // otherwise leave the page on an undefined palette.
+  applyTheme(
+    isKnownTheme(saved) ? saved : root.getAttribute("data-default-theme") || "light"
+  );
 
-  var themeBtn = document.querySelector(".theme-btn");
-  if (themeBtn) {
-    themeBtn.addEventListener("click", function () {
-      var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  if (themeSelect) {
+    themeSelect.addEventListener("change", function () {
+      var next = themeSelect.value;
       applyTheme(next);
       try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
     });
