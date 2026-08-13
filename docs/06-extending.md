@@ -27,3 +27,6 @@ engine imports an interface or if the GUI reaches into parsing or rendering —
 don't work around it, fix the import. The smoke test compiles the sample files
 end to end; if you change the output structure, update its assertions in the
 same commit. When you fix a bug, add a regression test next to it.
+
+What enforces these gates — CI, the pre-commit hook and the setup a fresh clone
+needs — is described in T7 §1.

@@ -1,5 +1,7 @@
 # mdbook
 
+[![CI](https://github.com/asegura-dev/mdbook/actions/workflows/ci.yml/badge.svg)](https://github.com/asegura-dev/mdbook/actions/workflows/ci.yml)
+
 Compile several Markdown files into one self-contained HTML file: navigable,
 searchable, with a light/dark theme and a copy button on every code block.
 
@@ -159,12 +161,24 @@ GUI reaches into parsing or rendering.
 ## Development
 
 ```bash
+uv sync                  # install, including the dev group
+git config core.hooksPath .githooks   # enable the pre-commit hook (once)
+```
+
+```bash
 uv run pytest            # all tests
 uv run pytest -m unit    # markers: unit | smoke | regression
 uv run ruff check .      # lint
 uv run ruff format .     # format
 uv run mypy              # types (strict)
 ```
+
+Those four gates also run in CI on every push and pull request, on Linux and
+Windows. The pre-commit hook blocks staged files over 250 KB and paths that
+should never be committed; `git commit --no-verify` bypasses it when a large
+asset genuinely belongs. Details and gotchas are in
+[docs/07-development-workflow.md](docs/07-development-workflow.md), and notable
+changes are tracked in [CHANGELOG.md](CHANGELOG.md).
 
 Clone and work on the repo outside synced folders (OneDrive, Dropbox, Google
 Drive). The sync client locks files under `.venv` and causes intermittent

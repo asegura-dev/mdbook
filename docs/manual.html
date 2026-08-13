@@ -236,11 +236,11 @@ mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
 </header>
 <div class="layout">
   <nav class="sidebar" aria-label="Navigation">
-    <ul class="toc"><li class="toc-doc" data-doc="doc1"><a href="#doc1" class="toc-doc-link">Overview</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc1--1-what-it-does"><a href="#doc1--1-what-it-does">1. What it does</a></li><li class="toc-sec lvl2" data-target="doc1--2-when-to-use-it"><a href="#doc1--2-when-to-use-it">2. When to use it</a></li><li class="toc-sec lvl2" data-target="doc1--3-how-the-pieces-fit"><a href="#doc1--3-how-the-pieces-fit">3. How the pieces fit</a></li></ul></li><li class="toc-doc" data-doc="doc2"><a href="#doc2" class="toc-doc-link">Architecture</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc2--1-the-engine"><a href="#doc2--1-the-engine">1. The engine</a></li><li class="toc-sec lvl2" data-target="doc2--2-the-validation-boundary"><a href="#doc2--2-the-validation-boundary">2. The validation boundary</a></li><li class="toc-sec lvl2" data-target="doc2--3-the-interfaces"><a href="#doc2--3-the-interfaces">3. The interfaces</a></li><li class="toc-sec lvl2" data-target="doc2--4-why-the-separation"><a href="#doc2--4-why-the-separation">4. Why the separation</a></li></ul></li><li class="toc-doc" data-doc="doc3"><a href="#doc3" class="toc-doc-link">Compilation flow</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc3--1-two-passes"><a href="#doc3--1-two-passes">1. Two passes</a></li><li class="toc-sec lvl2" data-target="doc3--2-pass-one-parse-and-index"><a href="#doc3--2-pass-one-parse-and-index">2. Pass one: parse and index</a></li><li class="toc-sec lvl2" data-target="doc3--3-pass-two-render"><a href="#doc3--3-pass-two-render">3. Pass two: render</a></li><li class="toc-sec lvl2" data-target="doc3--4-assembly-and-output"><a href="#doc3--4-assembly-and-output">4. Assembly and output</a></li></ul></li><li class="toc-doc" data-doc="doc4"><a href="#doc4" class="toc-doc-link">Cross-references</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc4--1-syntax"><a href="#doc4--1-syntax">1. Syntax</a></li><li class="toc-sec lvl2" data-target="doc4--2-how-section-numbers-are-resolved"><a href="#doc4--2-how-section-numbers-are-resolved">2. How section numbers are resolved</a></li><li class="toc-sec lvl2" data-target="doc4--3-behavior-when-a-target-is-missing"><a href="#doc4--3-behavior-when-a-target-is-missing">3. Behavior when a target is missing</a></li></ul></li><li class="toc-doc" data-doc="doc5"><a href="#doc5" class="toc-doc-link">Interfaces</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc5--1-the-cli"><a href="#doc5--1-the-cli">1. The CLI</a></li><li class="toc-sec lvl2" data-target="doc5--2-the-gui"><a href="#doc5--2-the-gui">2. The GUI</a></li><li class="toc-sec lvl2" data-target="doc5--3-the-shared-contract"><a href="#doc5--3-the-shared-contract">3. The shared contract</a></li></ul></li><li class="toc-doc" data-doc="doc6"><a href="#doc6" class="toc-doc-link">Extending mdbook</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc6--1-add-a-markdown-feature"><a href="#doc6--1-add-a-markdown-feature">1. Add a Markdown feature</a></li><li class="toc-sec lvl2" data-target="doc6--2-add-a-build-option"><a href="#doc6--2-add-a-build-option">2. Add a build option</a></li><li class="toc-sec lvl2" data-target="doc6--3-tests-to-keep-green"><a href="#doc6--3-tests-to-keep-green">3. Tests to keep green</a></li></ul></li></ul>
+    <ul class="toc"><li class="toc-doc" data-doc="doc1"><a href="#doc1" class="toc-doc-link">Overview</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc1--1-what-it-does"><a href="#doc1--1-what-it-does">1. What it does</a></li><li class="toc-sec lvl2" data-target="doc1--2-when-to-use-it"><a href="#doc1--2-when-to-use-it">2. When to use it</a></li><li class="toc-sec lvl2" data-target="doc1--3-how-the-pieces-fit"><a href="#doc1--3-how-the-pieces-fit">3. How the pieces fit</a></li></ul></li><li class="toc-doc" data-doc="doc2"><a href="#doc2" class="toc-doc-link">Architecture</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc2--1-the-engine"><a href="#doc2--1-the-engine">1. The engine</a></li><li class="toc-sec lvl2" data-target="doc2--2-the-validation-boundary"><a href="#doc2--2-the-validation-boundary">2. The validation boundary</a></li><li class="toc-sec lvl2" data-target="doc2--3-the-interfaces"><a href="#doc2--3-the-interfaces">3. The interfaces</a></li><li class="toc-sec lvl2" data-target="doc2--4-why-the-separation"><a href="#doc2--4-why-the-separation">4. Why the separation</a></li></ul></li><li class="toc-doc" data-doc="doc3"><a href="#doc3" class="toc-doc-link">Compilation flow</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc3--1-two-passes"><a href="#doc3--1-two-passes">1. Two passes</a></li><li class="toc-sec lvl2" data-target="doc3--2-pass-one-parse-and-index"><a href="#doc3--2-pass-one-parse-and-index">2. Pass one: parse and index</a></li><li class="toc-sec lvl2" data-target="doc3--3-pass-two-render"><a href="#doc3--3-pass-two-render">3. Pass two: render</a></li><li class="toc-sec lvl2" data-target="doc3--4-assembly-and-output"><a href="#doc3--4-assembly-and-output">4. Assembly and output</a></li></ul></li><li class="toc-doc" data-doc="doc4"><a href="#doc4" class="toc-doc-link">Cross-references</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc4--1-syntax"><a href="#doc4--1-syntax">1. Syntax</a></li><li class="toc-sec lvl2" data-target="doc4--2-how-section-numbers-are-resolved"><a href="#doc4--2-how-section-numbers-are-resolved">2. How section numbers are resolved</a></li><li class="toc-sec lvl2" data-target="doc4--3-behavior-when-a-target-is-missing"><a href="#doc4--3-behavior-when-a-target-is-missing">3. Behavior when a target is missing</a></li></ul></li><li class="toc-doc" data-doc="doc5"><a href="#doc5" class="toc-doc-link">Interfaces</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc5--1-the-cli"><a href="#doc5--1-the-cli">1. The CLI</a></li><li class="toc-sec lvl2" data-target="doc5--2-the-gui"><a href="#doc5--2-the-gui">2. The GUI</a></li><li class="toc-sec lvl2" data-target="doc5--3-the-shared-contract"><a href="#doc5--3-the-shared-contract">3. The shared contract</a></li></ul></li><li class="toc-doc" data-doc="doc6"><a href="#doc6" class="toc-doc-link">Extending mdbook</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc6--1-add-a-markdown-feature"><a href="#doc6--1-add-a-markdown-feature">1. Add a Markdown feature</a></li><li class="toc-sec lvl2" data-target="doc6--2-add-a-build-option"><a href="#doc6--2-add-a-build-option">2. Add a build option</a></li><li class="toc-sec lvl2" data-target="doc6--3-tests-to-keep-green"><a href="#doc6--3-tests-to-keep-green">3. Tests to keep green</a></li></ul></li><li class="toc-doc" data-doc="doc7"><a href="#doc7" class="toc-doc-link">Development workflow</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc7--1-the-four-gates"><a href="#doc7--1-the-four-gates">1. The four gates</a></li><li class="toc-sec lvl2" data-target="doc7--2-the-pre-commit-hook"><a href="#doc7--2-the-pre-commit-hook">2. The pre-commit hook</a></li><li class="toc-sec lvl2" data-target="doc7--3-gotchas"><a href="#doc7--3-gotchas">3. Gotchas</a></li></ul></li></ul>
   </nav>
   <div class="backdrop"></div>
   <main class="content">
-    <header class="cover"><h1>mdbook — Internal Documentation</h1><nav class="index"><h2>Contents</h2><ol class="index-list"><li><a href="#doc1">Overview</a></li><li><a href="#doc2">Architecture</a></li><li><a href="#doc3">Compilation flow</a></li><li><a href="#doc4">Cross-references</a></li><li><a href="#doc5">Interfaces</a></li><li><a href="#doc6">Extending mdbook</a></li></ol></nav></header><article class="doc" id="doc1"><h1 id="doc1--overview">Overview</h1>
+    <header class="cover"><h1>mdbook — Internal Documentation</h1><nav class="index"><h2>Contents</h2><ol class="index-list"><li><a href="#doc1">Overview</a></li><li><a href="#doc2">Architecture</a></li><li><a href="#doc3">Compilation flow</a></li><li><a href="#doc4">Cross-references</a></li><li><a href="#doc5">Interfaces</a></li><li><a href="#doc6">Extending mdbook</a></li><li><a href="#doc7">Development workflow</a></li></ol></nav></header><article class="doc" id="doc1"><h1 id="doc1--overview">Overview</h1>
 <p>mdbook takes a set of Markdown files and produces one HTML file you can open
 anywhere. This manual is itself built with mdbook, so it doubles as a working
 sample of the cross-references and navigation.</p>
@@ -377,6 +377,59 @@ engine imports an interface or if the GUI reaches into parsing or rendering —
 don't work around it, fix the import. The smoke test compiles the sample files
 end to end; if you change the output structure, update its assertions in the
 same commit. When you fix a bug, add a regression test next to it.</p>
+<p>What enforces these gates — CI, the pre-commit hook and the setup a fresh clone
+needs — is described in <a class="xref" href="#doc7--1-the-four-gates">T7 §1</a>.</p>
+</article><article class="doc" id="doc7"><h1 id="doc7--development-workflow">Development workflow</h1>
+<p><a class="xref" href="#doc6--3-tests-to-keep-green">T6 §3</a> lists the checks a change has to pass. This document covers what enforces
+them and how the repository is set up so the enforcement survives a clone.</p>
+<h2 id="doc7--1-the-four-gates">1. The four gates</h2>
+<p><code>ruff check</code>, <code>ruff format --check</code>, <code>mypy</code> (strict) and <code>pytest</code>. Nothing is
+done while one of them is red. Run them with the project runner:</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-bash">uv run ruff check .
+uv run ruff format --check .
+uv run mypy
+uv run pytest
+</code></pre></div>
+<p><code>.github/workflows/ci.yml</code> runs the same four on every push and pull request to
+<code>main</code> and <code>v2</code>. The list is intentionally identical to the one above — a CI
+that checks something different from the documented workflow only teaches you
+to ignore one of the two.</p>
+<p>The workflow splits them in two jobs. Lint, format and types run once on Linux,
+because their result cannot differ by platform. Tests run on Linux and Windows,
+because the engine is pure Python but the product ships as a Windows <code>.exe</code>, and
+path and encoding behaviour is exactly what differs. <code>uv sync --locked</code> makes a
+job fail if <code>uv.lock</code> drifted from <code>pyproject.toml</code>, so the lock file stays
+trustworthy instead of quietly rotting.</p>
+<h2 id="doc7--2-the-pre-commit-hook">2. The pre-commit hook</h2>
+<p>Git has no undo for a blob that reaches a pushed history: removing one means
+rewriting history and breaking every clone. So <code>.githooks/pre-commit</code> checks
+before the commit exists. It reads the staged blobs rather than the working
+tree — what it measures is exactly what would be recorded — and refuses any file
+over 250 KB. The threshold sits above the largest tracked asset
+(<code>docs/img/demo-dark.png</code>, ~197 KB) so screenshots still pass, and low enough to
+catch a stray binary or dataset.</p>
+<p>It also refuses paths that must never be committed (<code>.env</code>, <code>.venv/</code>,
+<code>.claude/</code>, <code>data/</code>, <code>dist/</code>, <code>build/</code>) even when someone forces them past
+<code>.gitignore</code> with <code>git add -f</code>. If a large asset genuinely belongs in the repo,
+<code>git commit --no-verify</code> is the escape hatch.</p>
+<p>The hook is versioned instead of living in <code>.git/hooks</code>, so it survives a clone
+and can be reviewed in a diff. The cost is one command per clone:</p>
+<div class="code-block"><div class="code-head"><span class="code-lang">bash</span><button class="copy-btn" type="button" aria-label="Copy code">Copy</button></div><pre><code class="language-bash">git config core.hooksPath .githooks
+</code></pre></div>
+<p><code>.gitattributes</code> pins <code>.githooks/*</code> to LF endings. This repository is developed
+on Windows with <code>core.autocrlf=true</code>, and a hook checked out with CRLF fails on
+its own shebang — which would disable the guard without saying so, the worst
+failure mode a safety net can have.</p>
+<h2 id="doc7--3-gotchas">3. Gotchas</h2>
+<p>Moving the repository to a different folder breaks the <code>.venv</code>. The console
+scripts in <code>.venv/Scripts/</code> are trampolines with the original path baked in, so
+after a move <code>mypy</code> and <code>pytest</code> die with <code>uv trampoline failed to canonicalize script path</code> while <code>ruff</code> still works. It looks like a broken toolchain and
+isn't: run <code>uv sync --reinstall</code>, or invoke the tools as modules
+(<code>uv run python -m pytest</code>) to confirm the code itself is fine before
+diagnosing further.</p>
+<p>Work outside synced folders (OneDrive, Dropbox, Google Drive). The sync client
+locks files under <code>.venv</code> and causes intermittent failures when <code>uv</code> installs or
+reinstalls dependencies.</p>
 </article>
   </main>
 </div>
