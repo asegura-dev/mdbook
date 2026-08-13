@@ -38,7 +38,20 @@
   </div>
 </div>
 
-<aside class="review" aria-label="Notes and highlights" hidden>
+<div class="layout">
+  <nav class="sidebar" aria-label="Navigation">
+    {{SIDEBAR}}
+  </nav>
+  <div class="backdrop"></div>
+  <main class="content">
+    {{CONTENT}}
+  </main>
+</div>
+
+<!-- Last in the document on purpose: on screen it is a fixed drawer, so its
+     position here does not matter, but in print it becomes the appendix and an
+     appendix belongs at the end. -->
+<aside class="review" aria-label="Notes and highlights" hidden data-count="0">
   <header class="review-head">
     <strong>Notes &amp; highlights</strong>
     <button class="icon-btn review-close" type="button" aria-label="Close">&times;</button>
@@ -49,15 +62,6 @@
   </div>
   <div class="review-list"></div>
 </aside>
-<div class="layout">
-  <nav class="sidebar" aria-label="Navigation">
-    {{SIDEBAR}}
-  </nav>
-  <div class="backdrop"></div>
-  <main class="content">
-    {{CONTENT}}
-  </main>
-</div>
 <script>
 {{SCRIPT}}
 </script>

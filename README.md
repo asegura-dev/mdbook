@@ -21,6 +21,8 @@ the output.
   and it remembers your choice.
 - Export to PDF with the browser's own print dialog: white page, serif type,
   a page per document. See [Export to PDF](#export-to-pdf).
+- Highlight and take notes as you read, kept in your browser and exportable to
+  Markdown. See [Highlights and notes](#highlights-and-notes).
 - A "Copy" button on every code block, with its language label.
 - Optional cross-references: `T1 §3` turns into an internal link.
 - Self-contained output: CSS and JS are inlined, no external URLs.
@@ -118,6 +120,34 @@ With cross-references on, patterns like `T1 §3` become internal links:
   (e.g. `## 3. Functions` is §3). Unnumbered subheadings don't count.
 
 If the target doesn't exist, the text is left as is.
+
+## Highlights and notes
+
+Select text to highlight it in one of three colours, click a highlight to attach
+a note, and use the ✎ beside a heading for notes about a whole section. **Notes**
+in the top bar opens a panel with everything in reading order, and exports it all
+as Markdown — copy to the clipboard or download a `.md`.
+
+Everything is stored in your browser, on your machine. No server, no account,
+nothing leaves the device.
+
+The part worth understanding is what happens when you recompile the book, which
+you will do constantly while you're still writing it. Annotations are not tied
+to a position in the file — they're found again by their text and the text around
+them, so they survive edits elsewhere, chapters being reordered, and sections
+being renumbered. If you edit the highlighted words themselves, that annotation
+is reported as **orphaned**: it's kept, with its note, in its own group in the
+panel, and it reattaches by itself if the text comes back. It is never silently
+moved to a sentence you didn't mark, and never deleted.
+
+Two things to know. Annotations are keyed by the book's **title**, so renaming
+the book starts a fresh set, and storage is per browser — export if you want a
+copy you control. Highlights print as coloured underlines, and the panel prints
+as an appendix, so a printed chapter carries your notes with it.
+
+The full model and a step-by-step check that your annotations survive a
+recompile are in
+[docs/03-compilation-flow.md](docs/03-compilation-flow.md) §6.
 
 ## Export to PDF
 

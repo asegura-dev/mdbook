@@ -469,6 +469,27 @@ h2:hover .sec-note, h3:hover .sec-note, .sec-note:focus { opacity: 1; }
   .content table { display: table; overflow-x: visible; }
   .content thead { display: table-header-group; }
 
+  /* The review panel prints as an appendix, so a printed chapter carries the
+     reader's own notes with it. It is last in the document for exactly this;
+     on screen it is a fixed drawer and its position there is irrelevant. */
+  .review, .review[hidden] {
+    display: block;
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    padding: 0;
+    border: none;
+    background: none;
+    break-before: page;
+  }
+  /* Nothing to say, no page claimed. */
+  .review[data-count="0"] { display: none; }
+  .review-actions, .review-close, .review-empty, .review-hint { display: none; }
+  .review-item { break-inside: avoid; border-color: var(--border); }
+  .review-quote { border-left-width: 3px; }
+  .ann-bar, .ann-pop, .sec-note { display: none !important; }
+
   /* Highlights survive to paper, drawn as a coloured underline: a fill would
      vanish with "Background graphics" off, and an invisible highlight is worse
      than none. The note marker is a screen affordance and does not print. */
@@ -520,17 +541,6 @@ h2:hover .sec-note, h3:hover .sec-note, .sec-note:focus { opacity: 1; }
   </div>
 </div>
 
-<aside class="review" aria-label="Notes and highlights" hidden>
-  <header class="review-head">
-    <strong>Notes &amp; highlights</strong>
-    <button class="icon-btn review-close" type="button" aria-label="Close">&times;</button>
-  </header>
-  <div class="review-actions">
-    <button class="review-copy" type="button">Copy as Markdown</button>
-    <button class="review-download" type="button">Download .md</button>
-  </div>
-  <div class="review-list"></div>
-</aside>
 <div class="layout">
   <nav class="sidebar" aria-label="Navigation">
     <ul class="toc"><li class="toc-doc" data-doc="doc1"><a href="#doc1" class="toc-doc-link">Coupling and cohesion</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc1--1-what-coupling-is"><a href="#doc1--1-what-coupling-is">1. What coupling is</a></li><li class="toc-sec lvl2" data-target="doc1--2-what-cohesion-is"><a href="#doc1--2-what-cohesion-is">2. What cohesion is</a></li><li class="toc-sec lvl2" data-target="doc1--3-the-rule-of-thumb"><a href="#doc1--3-the-rule-of-thumb">3. The rule of thumb</a></li></ul></li><li class="toc-doc" data-doc="doc2"><a href="#doc2" class="toc-doc-link">Dependency direction</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc2--1-dependencies-point-inward"><a href="#doc2--1-dependencies-point-inward">1. Dependencies point inward</a></li><li class="toc-sec lvl2" data-target="doc2--2-the-dependency-inversion-trick"><a href="#doc2--2-the-dependency-inversion-trick">2. The dependency inversion trick</a></li><li class="toc-sec lvl2" data-target="doc2--3-a-worked-example"><a href="#doc2--3-a-worked-example">3. A worked example</a></li></ul></li><li class="toc-doc" data-doc="doc3"><a href="#doc3" class="toc-doc-link">Validation at the boundary</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc3--1-validate-once-at-the-edge"><a href="#doc3--1-validate-once-at-the-edge">1. Validate once, at the edge</a></li><li class="toc-sec lvl2" data-target="doc3--2-the-core-trusts-its-inputs"><a href="#doc3--2-the-core-trusts-its-inputs">2. The core trusts its inputs</a></li><li class="toc-sec lvl2" data-target="doc3--3-where-to-put-the-contract"><a href="#doc3--3-where-to-put-the-contract">3. Where to put the contract</a></li></ul></li><li class="toc-doc" data-doc="doc4"><a href="#doc4" class="toc-doc-link">Pure functions and side effects</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc4--1-what-makes-a-function-pure"><a href="#doc4--1-what-makes-a-function-pure">1. What makes a function pure</a></li><li class="toc-sec lvl2" data-target="doc4--2-push-side-effects-to-the-edges"><a href="#doc4--2-push-side-effects-to-the-edges">2. Push side effects to the edges</a></li><li class="toc-sec lvl2" data-target="doc4--3-why-this-helps-testing"><a href="#doc4--3-why-this-helps-testing">3. Why this helps testing</a></li></ul></li><li class="toc-doc" data-doc="doc5"><a href="#doc5" class="toc-doc-link">When not to add structure</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc5--1-structure-has-a-cost"><a href="#doc5--1-structure-has-a-cost">1. Structure has a cost</a></li><li class="toc-sec lvl2" data-target="doc5--2-signs-you-went-too-far"><a href="#doc5--2-signs-you-went-too-far">2. Signs you went too far</a></li><li class="toc-sec lvl2" data-target="doc5--3-a-checklist"><a href="#doc5--3-a-checklist">3. A checklist</a></li></ul></li></ul>
@@ -767,6 +777,21 @@ abstraction is hard to take back.</p>
 </article>
   </main>
 </div>
+
+<!-- Last in the document on purpose: on screen it is a fixed drawer, so its
+     position here does not matter, but in print it becomes the appendix and an
+     appendix belongs at the end. -->
+<aside class="review" aria-label="Notes and highlights" hidden data-count="0">
+  <header class="review-head">
+    <strong>Notes &amp; highlights</strong>
+    <button class="icon-btn review-close" type="button" aria-label="Close">&times;</button>
+  </header>
+  <div class="review-actions">
+    <button class="review-copy" type="button">Copy as Markdown</button>
+    <button class="review-download" type="button">Download .md</button>
+  </div>
+  <div class="review-list"></div>
+</aside>
 <script>
 (function () {
   "use strict";
@@ -1597,6 +1622,8 @@ abstraction is hard to take back.</p>
     var count = annotations.length;
     var badge = document.querySelector(".notes-count");
     if (badge) badge.textContent = count ? String(count) : "";
+    // Drives the print appendix: with nothing to say it must not claim a page.
+    review.setAttribute("data-count", String(count));
   }
 
   if (notesBtn && review) {

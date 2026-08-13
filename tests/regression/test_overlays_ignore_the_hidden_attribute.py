@@ -18,7 +18,12 @@ import pytest
 
 pytestmark = pytest.mark.regression
 
-STYLE = (files("mdbook.engine") / "assets" / "style.css").read_text(encoding="utf-8")
+FULL = (files("mdbook.engine") / "assets" / "style.css").read_text(encoding="utf-8")
+
+# Screen rules only. The print block deliberately forces the review panel
+# visible so it can be the PDF appendix, and counting that as a screen `display`
+# would make this check meaningless for the one element it most applies to.
+STYLE = FULL.split("@media print")[0]
 
 # Every element the script shows and hides through the `hidden` attribute.
 TOGGLED = [".ann-bar", ".ann-pop", ".review"]

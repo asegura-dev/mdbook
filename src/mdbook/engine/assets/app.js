@@ -827,6 +827,8 @@
     var count = annotations.length;
     var badge = document.querySelector(".notes-count");
     if (badge) badge.textContent = count ? String(count) : "";
+    // Drives the print appendix: with nothing to say it must not claim a page.
+    review.setAttribute("data-count", String(count));
   }
 
   if (notesBtn && review) {

@@ -10,6 +10,20 @@ Work on v2, on the `v2` branch.
 
 ### Added
 
+- Reader highlights and notes, stored in the browser and never leaving the
+  device. Three colours, notes on a passage or on a whole section, a review
+  panel listing everything in reading order, and export to Markdown by clipboard
+  or download. Highlights print as coloured underlines and the panel prints as
+  an appendix, so a printed chapter carries the reader's notes with it.
+- Annotations are anchored by text, not by position, so they survive the book
+  being recompiled: edits elsewhere, chapters reordered, sections renumbered.
+  Editing the highlighted words themselves orphans the annotation instead of
+  relocating it — a wrong anchor corrupts a review silently, an orphan does not
+  — and orphans are kept, grouped separately, and reattach on their own if the
+  text returns. The model and an acceptance procedure are in T3 §6.
+- `tests/js`, run under Node's built-in runner from pytest, covering the anchor
+  resolver — the one part where a bug loses a reader's work without saying so.
+  Node is a development tool only, and the suite skips these without it.
 - PDF export: a "PDF" button in the top bar prints the page through the
   browser's own pipeline, with `@media print` rules doing the work — white page
   and serif type whatever theme is on screen, screen chrome hidden, a page per

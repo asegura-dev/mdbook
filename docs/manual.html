@@ -469,6 +469,27 @@ h2:hover .sec-note, h3:hover .sec-note, .sec-note:focus { opacity: 1; }
   .content table { display: table; overflow-x: visible; }
   .content thead { display: table-header-group; }
 
+  /* The review panel prints as an appendix, so a printed chapter carries the
+     reader's own notes with it. It is last in the document for exactly this;
+     on screen it is a fixed drawer and its position there is irrelevant. */
+  .review, .review[hidden] {
+    display: block;
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    padding: 0;
+    border: none;
+    background: none;
+    break-before: page;
+  }
+  /* Nothing to say, no page claimed. */
+  .review[data-count="0"] { display: none; }
+  .review-actions, .review-close, .review-empty, .review-hint { display: none; }
+  .review-item { break-inside: avoid; border-color: var(--border); }
+  .review-quote { border-left-width: 3px; }
+  .ann-bar, .ann-pop, .sec-note { display: none !important; }
+
   /* Highlights survive to paper, drawn as a coloured underline: a fill would
      vanish with "Background graphics" off, and an invisible highlight is worse
      than none. The note marker is a screen affordance and does not print. */
@@ -520,20 +541,9 @@ h2:hover .sec-note, h3:hover .sec-note, .sec-note:focus { opacity: 1; }
   </div>
 </div>
 
-<aside class="review" aria-label="Notes and highlights" hidden>
-  <header class="review-head">
-    <strong>Notes &amp; highlights</strong>
-    <button class="icon-btn review-close" type="button" aria-label="Close">&times;</button>
-  </header>
-  <div class="review-actions">
-    <button class="review-copy" type="button">Copy as Markdown</button>
-    <button class="review-download" type="button">Download .md</button>
-  </div>
-  <div class="review-list"></div>
-</aside>
 <div class="layout">
   <nav class="sidebar" aria-label="Navigation">
-    <ul class="toc"><li class="toc-doc" data-doc="doc1"><a href="#doc1" class="toc-doc-link">Overview</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc1--1-what-it-does"><a href="#doc1--1-what-it-does">1. What it does</a></li><li class="toc-sec lvl2" data-target="doc1--2-when-to-use-it"><a href="#doc1--2-when-to-use-it">2. When to use it</a></li><li class="toc-sec lvl2" data-target="doc1--3-how-the-pieces-fit"><a href="#doc1--3-how-the-pieces-fit">3. How the pieces fit</a></li></ul></li><li class="toc-doc" data-doc="doc2"><a href="#doc2" class="toc-doc-link">Architecture</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc2--1-the-engine"><a href="#doc2--1-the-engine">1. The engine</a></li><li class="toc-sec lvl2" data-target="doc2--2-the-validation-boundary"><a href="#doc2--2-the-validation-boundary">2. The validation boundary</a></li><li class="toc-sec lvl2" data-target="doc2--3-the-interfaces"><a href="#doc2--3-the-interfaces">3. The interfaces</a></li><li class="toc-sec lvl2" data-target="doc2--4-why-the-separation"><a href="#doc2--4-why-the-separation">4. Why the separation</a></li></ul></li><li class="toc-doc" data-doc="doc3"><a href="#doc3" class="toc-doc-link">Compilation flow</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc3--1-two-passes"><a href="#doc3--1-two-passes">1. Two passes</a></li><li class="toc-sec lvl2" data-target="doc3--2-pass-one-parse-and-index"><a href="#doc3--2-pass-one-parse-and-index">2. Pass one: parse and index</a></li><li class="toc-sec lvl2" data-target="doc3--3-pass-two-render"><a href="#doc3--3-pass-two-render">3. Pass two: render</a></li><li class="toc-sec lvl2" data-target="doc3--4-assembly-and-output"><a href="#doc3--4-assembly-and-output">4. Assembly and output</a></li><li class="toc-sec lvl2" data-target="doc3--5-printing-and-pdf-export"><a href="#doc3--5-printing-and-pdf-export">5. Printing and PDF export</a></li></ul></li><li class="toc-doc" data-doc="doc4"><a href="#doc4" class="toc-doc-link">Cross-references</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc4--1-syntax"><a href="#doc4--1-syntax">1. Syntax</a></li><li class="toc-sec lvl2" data-target="doc4--2-how-section-numbers-are-resolved"><a href="#doc4--2-how-section-numbers-are-resolved">2. How section numbers are resolved</a></li><li class="toc-sec lvl2" data-target="doc4--3-behavior-when-a-target-is-missing"><a href="#doc4--3-behavior-when-a-target-is-missing">3. Behavior when a target is missing</a></li></ul></li><li class="toc-doc" data-doc="doc5"><a href="#doc5" class="toc-doc-link">Interfaces</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc5--1-the-cli"><a href="#doc5--1-the-cli">1. The CLI</a></li><li class="toc-sec lvl2" data-target="doc5--2-the-gui"><a href="#doc5--2-the-gui">2. The GUI</a></li><li class="toc-sec lvl2" data-target="doc5--3-the-shared-contract"><a href="#doc5--3-the-shared-contract">3. The shared contract</a></li></ul></li><li class="toc-doc" data-doc="doc6"><a href="#doc6" class="toc-doc-link">Extending mdbook</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc6--1-add-a-markdown-feature"><a href="#doc6--1-add-a-markdown-feature">1. Add a Markdown feature</a></li><li class="toc-sec lvl2" data-target="doc6--2-add-a-build-option"><a href="#doc6--2-add-a-build-option">2. Add a build option</a></li><li class="toc-sec lvl2" data-target="doc6--3-tests-to-keep-green"><a href="#doc6--3-tests-to-keep-green">3. Tests to keep green</a></li></ul></li><li class="toc-doc" data-doc="doc7"><a href="#doc7" class="toc-doc-link">Development workflow</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc7--1-the-four-gates"><a href="#doc7--1-the-four-gates">1. The four gates</a></li><li class="toc-sec lvl2" data-target="doc7--2-the-pre-commit-hook"><a href="#doc7--2-the-pre-commit-hook">2. The pre-commit hook</a></li><li class="toc-sec lvl2" data-target="doc7--3-the-windows-executable"><a href="#doc7--3-the-windows-executable">3. The Windows executable</a></li><li class="toc-sec lvl2" data-target="doc7--4-gotchas"><a href="#doc7--4-gotchas">4. Gotchas</a></li></ul></li></ul>
+    <ul class="toc"><li class="toc-doc" data-doc="doc1"><a href="#doc1" class="toc-doc-link">Overview</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc1--1-what-it-does"><a href="#doc1--1-what-it-does">1. What it does</a></li><li class="toc-sec lvl2" data-target="doc1--2-when-to-use-it"><a href="#doc1--2-when-to-use-it">2. When to use it</a></li><li class="toc-sec lvl2" data-target="doc1--3-how-the-pieces-fit"><a href="#doc1--3-how-the-pieces-fit">3. How the pieces fit</a></li></ul></li><li class="toc-doc" data-doc="doc2"><a href="#doc2" class="toc-doc-link">Architecture</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc2--1-the-engine"><a href="#doc2--1-the-engine">1. The engine</a></li><li class="toc-sec lvl2" data-target="doc2--2-the-validation-boundary"><a href="#doc2--2-the-validation-boundary">2. The validation boundary</a></li><li class="toc-sec lvl2" data-target="doc2--3-the-interfaces"><a href="#doc2--3-the-interfaces">3. The interfaces</a></li><li class="toc-sec lvl2" data-target="doc2--4-why-the-separation"><a href="#doc2--4-why-the-separation">4. Why the separation</a></li></ul></li><li class="toc-doc" data-doc="doc3"><a href="#doc3" class="toc-doc-link">Compilation flow</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc3--1-two-passes"><a href="#doc3--1-two-passes">1. Two passes</a></li><li class="toc-sec lvl2" data-target="doc3--2-pass-one-parse-and-index"><a href="#doc3--2-pass-one-parse-and-index">2. Pass one: parse and index</a></li><li class="toc-sec lvl2" data-target="doc3--3-pass-two-render"><a href="#doc3--3-pass-two-render">3. Pass two: render</a></li><li class="toc-sec lvl2" data-target="doc3--4-assembly-and-output"><a href="#doc3--4-assembly-and-output">4. Assembly and output</a></li><li class="toc-sec lvl2" data-target="doc3--5-printing-and-pdf-export"><a href="#doc3--5-printing-and-pdf-export">5. Printing and PDF export</a></li><li class="toc-sec lvl2" data-target="doc3--6-reader-annotations"><a href="#doc3--6-reader-annotations">6. Reader annotations</a></li><li class="toc-sec lvl3" data-target="doc3--the-anchor"><a href="#doc3--the-anchor">The anchor</a></li><li class="toc-sec lvl3" data-target="doc3--acceptance-procedure"><a href="#doc3--acceptance-procedure">Acceptance procedure</a></li></ul></li><li class="toc-doc" data-doc="doc4"><a href="#doc4" class="toc-doc-link">Cross-references</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc4--1-syntax"><a href="#doc4--1-syntax">1. Syntax</a></li><li class="toc-sec lvl2" data-target="doc4--2-how-section-numbers-are-resolved"><a href="#doc4--2-how-section-numbers-are-resolved">2. How section numbers are resolved</a></li><li class="toc-sec lvl2" data-target="doc4--3-behavior-when-a-target-is-missing"><a href="#doc4--3-behavior-when-a-target-is-missing">3. Behavior when a target is missing</a></li></ul></li><li class="toc-doc" data-doc="doc5"><a href="#doc5" class="toc-doc-link">Interfaces</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc5--1-the-cli"><a href="#doc5--1-the-cli">1. The CLI</a></li><li class="toc-sec lvl2" data-target="doc5--2-the-gui"><a href="#doc5--2-the-gui">2. The GUI</a></li><li class="toc-sec lvl2" data-target="doc5--3-the-shared-contract"><a href="#doc5--3-the-shared-contract">3. The shared contract</a></li></ul></li><li class="toc-doc" data-doc="doc6"><a href="#doc6" class="toc-doc-link">Extending mdbook</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc6--1-add-a-markdown-feature"><a href="#doc6--1-add-a-markdown-feature">1. Add a Markdown feature</a></li><li class="toc-sec lvl2" data-target="doc6--2-add-a-build-option"><a href="#doc6--2-add-a-build-option">2. Add a build option</a></li><li class="toc-sec lvl2" data-target="doc6--3-tests-to-keep-green"><a href="#doc6--3-tests-to-keep-green">3. Tests to keep green</a></li></ul></li><li class="toc-doc" data-doc="doc7"><a href="#doc7" class="toc-doc-link">Development workflow</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc7--1-the-four-gates"><a href="#doc7--1-the-four-gates">1. The four gates</a></li><li class="toc-sec lvl2" data-target="doc7--2-the-pre-commit-hook"><a href="#doc7--2-the-pre-commit-hook">2. The pre-commit hook</a></li><li class="toc-sec lvl2" data-target="doc7--3-the-windows-executable"><a href="#doc7--3-the-windows-executable">3. The Windows executable</a></li><li class="toc-sec lvl2" data-target="doc7--4-gotchas"><a href="#doc7--4-gotchas">4. Gotchas</a></li></ul></li></ul>
   </nav>
   <div class="backdrop"></div>
   <main class="content">
@@ -651,6 +661,59 @@ are outside our control. Breaks are requests, not guarantees: an element taller
 than a page still breaks. Output differs between browsers, so pick one for
 reproducible drafts. If page-level typographic control ever matters more than
 portability, that is the point to reconsider the approach — not before.</p>
+<h2 id="doc3--6-reader-annotations">6. Reader annotations</h2>
+<p>Highlights and notes live in the reader's browser, in <code>localStorage</code>, and never
+leave the machine. The interesting problem is not storing them but finding them
+again: the book gets recompiled while the reader keeps annotating it.</p>
+<h3 id="doc3--the-anchor">The anchor</h3>
+<p>An annotation cannot be a position — any edit earlier in the file would shift
+it. Each one stores the text it covers, 48 characters of context on each side,
+and the titles of the chapter and section it came from. Whitespace is collapsed
+before storing and before searching, which is what carries an anchor across
+reflowed Markdown and re-indentation.</p>
+<p>Resolution walks from the most stable identifier to the least. The chapter is
+found by title before id, because ids are positional: <code>doc3</code> is whatever the
+third file happens to be, so inserting a chapter would silently point it at
+different prose. The section is matched by id, then by title, then by title with
+its leading number removed, because renumbering <code>## 3.</code> to <code>## 4.</code> changes both
+the id and the title. The quote is then searched inside that section, widening
+to the chapter and then to the whole book. Where a phrase occurs more than once,
+the stored context decides between the copies.</p>
+<p>There is deliberately no fuzzy matching. Editing the highlighted words orphans
+the annotation instead of relocating it. A wrong anchor highlights the wrong
+sentence without saying so and quietly corrupts a review; an orphan is visible
+and can be dealt with. Orphans are kept, listed in their own group in the review
+panel, and never deleted — and because orphan state is recomputed on every load,
+an annotation reattaches by itself when a later build brings its text back.</p>
+<p>Storage is namespaced by book title. That is not a precaution: every local file
+shares one <code>localStorage</code> origin, so without the namespace two books would
+overwrite each other. Keying by title rather than by path is what lets
+annotations survive the file being rewritten — and means renaming the book
+starts a fresh set. The 5 MB quota is shared across every local file the browser
+has open, and the export exists so nothing here is the only copy.</p>
+<p>Highlights may not overlap. Nested spans paint unpredictably, and once nested,
+one annotation's stored quote can contain another's text, which corrupts both
+the export and the review list. Selecting over an existing highlight edits it.</p>
+<h3 id="doc3--acceptance-procedure">Acceptance procedure</h3>
+<p>The resolver has tests (<code>tests/js</code>, run under Node). The rest of the feature —
+selection, painting, the panel, the export — is checked by hand, with these
+steps, which are written down so they are repeated the same way each time:</p>
+<ol>
+<li>Compile a book, highlight three passages in different chapters, attach a note
+to one, and add a section note. Reload: all four come back.</li>
+<li>Edit a chapter — rewrite an earlier paragraph, renumber a section, and insert
+a new chapter before the others. Recompile and reload: all four still come
+back, with the section note attached to the renumbered heading.</li>
+<li>Edit the words inside one highlight. Recompile and reload: that one appears
+under &quot;Orphaned&quot; with its text and note intact, and the others are untouched.</li>
+<li>Undo that edit, recompile, reload: the orphan reattaches on its own.</li>
+<li>Export to Markdown and check every annotation is present, orphans included.</li>
+<li>Print: highlights appear as coloured underlines, note markers do not, and the
+panel prints as an appendix at the end.</li>
+</ol>
+<p>Step 6 is the one that catches a stale artifact: the samples and the executable
+embed these assets, so both must be rebuilt before they can show any of this —
+see <a class="xref" href="#doc7--3-the-windows-executable">T7 §3</a>.</p>
 </article><article class="doc" id="doc4"><h1 id="doc4--cross-references">Cross-references</h1>
 <p>An optional feature that turns short references in the prose into internal
 links. It's off by default; turn it on with <code>--cross-refs</code> or the GUI checkbox.</p>
@@ -787,6 +850,21 @@ reinstalls dependencies.</p>
 </article>
   </main>
 </div>
+
+<!-- Last in the document on purpose: on screen it is a fixed drawer, so its
+     position here does not matter, but in print it becomes the appendix and an
+     appendix belongs at the end. -->
+<aside class="review" aria-label="Notes and highlights" hidden data-count="0">
+  <header class="review-head">
+    <strong>Notes &amp; highlights</strong>
+    <button class="icon-btn review-close" type="button" aria-label="Close">&times;</button>
+  </header>
+  <div class="review-actions">
+    <button class="review-copy" type="button">Copy as Markdown</button>
+    <button class="review-download" type="button">Download .md</button>
+  </div>
+  <div class="review-list"></div>
+</aside>
 <script>
 (function () {
   "use strict";
@@ -1617,6 +1695,8 @@ reinstalls dependencies.</p>
     var count = annotations.length;
     var badge = document.querySelector(".notes-count");
     if (badge) badge.textContent = count ? String(count) : "";
+    // Drives the print appendix: with nothing to say it must not claim a page.
+    review.setAttribute("data-count", String(count));
   }
 
   if (notesBtn && review) {

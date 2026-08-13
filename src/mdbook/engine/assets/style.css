@@ -462,6 +462,27 @@ h2:hover .sec-note, h3:hover .sec-note, .sec-note:focus { opacity: 1; }
   .content table { display: table; overflow-x: visible; }
   .content thead { display: table-header-group; }
 
+  /* The review panel prints as an appendix, so a printed chapter carries the
+     reader's own notes with it. It is last in the document for exactly this;
+     on screen it is a fixed drawer and its position there is irrelevant. */
+  .review, .review[hidden] {
+    display: block;
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    padding: 0;
+    border: none;
+    background: none;
+    break-before: page;
+  }
+  /* Nothing to say, no page claimed. */
+  .review[data-count="0"] { display: none; }
+  .review-actions, .review-close, .review-empty, .review-hint { display: none; }
+  .review-item { break-inside: avoid; border-color: var(--border); }
+  .review-quote { border-left-width: 3px; }
+  .ann-bar, .ann-pop, .sec-note { display: none !important; }
+
   /* Highlights survive to paper, drawn as a coloured underline: a fill would
      vanish with "Background graphics" off, and an invisible highlight is worse
      than none. The note marker is a screen affordance and does not print. */
