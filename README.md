@@ -128,6 +128,11 @@ uv run pyinstaller packaging/mdbook.spec
 The binary lands in `dist/mdbook.exe`: one window, no console, assets embedded.
 It doesn't need Python installed to run.
 
+Because the assets are embedded, the executable is a snapshot: after changing
+anything under `src/mdbook/engine/assets/`, rebuild it or the app keeps
+producing the previous version of the HTML without saying so. See
+[docs/07-development-workflow.md](docs/07-development-workflow.md) §3.
+
 ## Documentation
 
 [`docs/manual.html`](docs/manual.html) is the project's own documentation,

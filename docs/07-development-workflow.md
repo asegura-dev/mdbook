@@ -54,7 +54,32 @@ on Windows with `core.autocrlf=true`, and a hook checked out with CRLF fails on
 its own shebang — which would disable the guard without saying so, the worst
 failure mode a safety net can have.
 
-## 3. Gotchas
+## 3. The Windows executable
+
+The desktop app ships as a single binary, built from the project root:
+
+```bash
+uv run pyinstaller packaging/mdbook.spec
+```
+
+It lands in `dist/mdbook.exe`. Both `dist/` and `build/` are ignored, so the
+binary never enters the history — the pre-commit hook in §2 refuses those paths
+outright.
+
+The part worth remembering: **the engine's assets are frozen into the binary at
+build time**. `packaging/mdbook.spec` bundles `template.html`, `style.css` and
+`app.js`, and the running app reads them from inside itself, never from disk.
+So any change to the stylesheet, the script or the template leaves the existing
+executable stale, and it fails quietly — it still opens, still compiles, still
+produces valid HTML, just with the previous version of the output. Nothing warns
+you. After touching anything under `engine/assets/`, rebuild before judging the
+app, or you are looking at the old build.
+
+The same goes for the screenshots in `docs/img/`: they are pictures of a
+particular build, and the README links them, so a change to the window or to the
+generated page dates them too.
+
+## 4. Gotchas
 
 Moving the repository to a different folder breaks the `.venv`. The console
 scripts in `.venv/Scripts/` are trampolines with the original path baked in, so

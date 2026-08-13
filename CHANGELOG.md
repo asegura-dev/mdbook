@@ -34,6 +34,9 @@ Work on v2, on the `v2` branch.
 - `docs/07-development-workflow.md`: the gates, what enforces them, the setup a
   fresh clone needs, and the gotchas (moved repository breaking the `.venv`
   console scripts, synced folders locking `.venv`).
+- T7 §3, on the Windows executable: how to build it, and the fact that the
+  engine's assets are frozen into the binary — so a stale executable keeps
+  producing the previous HTML without warning.
 - This changelog.
 
 ### Changed
