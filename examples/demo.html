@@ -290,6 +290,10 @@ mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
 }
 h2:hover .sec-note, h3:hover .sec-note, .sec-note:focus { opacity: 1; }
 
+/* The [hidden] guards are load-bearing: `display` set by an author rule beats
+   the browser's own `[hidden] { display: none }` whatever the specificity, so
+   without these the overlays stay on screen no matter what the script does. */
+.ann-bar[hidden], .ann-pop[hidden] { display: none; }
 .ann-bar, .ann-pop {
   position: absolute;
   z-index: 40;
