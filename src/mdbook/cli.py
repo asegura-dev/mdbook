@@ -56,10 +56,16 @@ def build(
     inputs: list[Path] = []
     if input_dir is not None:
         try:
-            inputs.extend(discover_markdown(input_dir))
+            found = discover_markdown(input_dir)
         except ValueError as exc:
             err_console.print(f"[bold red]Error:[/] {exc}")
             raise typer.Exit(code=1) from exc
+        # Say what actually went wrong. Falling through to the generic message
+        # below would tell someone who did pass --input to pass --input.
+        if not found and not files:
+            err_console.print(f"[bold red]Error:[/] no .md files in {input_dir}.")
+            raise typer.Exit(code=1)
+        inputs.extend(found)
     if files:
         inputs.extend(files)
 

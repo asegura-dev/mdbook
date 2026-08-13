@@ -41,11 +41,16 @@ class MdbookApp:
 
         self.title_var = tk.StringVar(value="My study book")
         self.output_var = tk.StringVar(value=str(Path.cwd() / "mdbook.html"))
-        self.theme_var = tk.StringVar(value="light")
+        self.theme_var = tk.StringVar(value=THEMES[0])
         self.crossref_var = tk.BooleanVar(value=False)
         self.status_var = tk.StringVar(value="Pick a folder or .md files to start.")
 
         self._build_ui()
+
+        # Registered after the widgets exist, since _invalidate_build touches
+        # one of them. Any edit to an option makes the last build stale.
+        for var in (self.title_var, self.output_var, self.theme_var, self.crossref_var):
+            var.trace_add("write", self._invalidate_build)
 
     # --- UI construction --------------------------------------------------
     def _build_ui(self) -> None:
@@ -150,6 +155,16 @@ class MdbookApp:
         )
 
     # --- List state -------------------------------------------------------
+    def _invalidate_build(self, *_args: object) -> None:
+        """Forget the last build: the inputs or the options no longer match it.
+
+        Without this, "Open in browser" keeps pointing at the previous HTML, so
+        changing a file and clicking it shows the old result and looks like the
+        change was ignored.
+        """
+        self.last_output = None
+        self.open_btn.configure(state="disabled")
+
     def _refresh_list(self, select: int | None = None) -> None:
         self.listbox.delete(0, tk.END)
         for path in self.files:
@@ -159,6 +174,9 @@ class MdbookApp:
             self.listbox.selection_set(select)
             self.listbox.activate(select)
         self.status_var.set(f"{len(self.files)} document(s) in the list.")
+        # Every list mutation funnels through here, so this is the one place
+        # that has to notice the document set changed.
+        self._invalidate_build()
 
     def _selected_index(self) -> int | None:
         selection = self.listbox.curselection()  # type: ignore[no-untyped-call]
@@ -166,13 +184,24 @@ class MdbookApp:
 
     def _add_paths(self, new_paths: list[Path]) -> None:
         added = 0
+        skipped: list[str] = []
         for path in new_paths:
+            # The contract rejects anything that is not .md, but only at compile
+            # time. Refusing it here keeps the list honest about what will build.
+            if path.suffix.lower() != ".md":
+                skipped.append(path.name)
+                continue
             resolved = path.resolve()
             if resolved not in self.files:
                 self.files.append(resolved)
                 added += 1
         self._refresh_list(select=len(self.files) - 1 if self.files else None)
-        if new_paths and added == 0:
+        if skipped:
+            messagebox.showwarning(
+                "Not Markdown",
+                "Only .md files can be added. Skipped:\n\n" + "\n".join(skipped),
+            )
+        elif new_paths and added == 0:
             self.status_var.set("Those files were already in the list.")
 
     # --- Selection actions ------------------------------------------------
