@@ -37,7 +37,8 @@ def test_compiles_and_writes_html(sample_files: list[Path], tmp_path: Path) -> N
     assert "Clean Architecture Guide" in html
     assert 'data-theme="dark"' in html  # default theme applied
     assert 'class="search"' in html
-    assert "theme-btn" in html
+    assert "theme-select" in html
+    assert '<option value="dark" selected' in html
     assert "copy-btn" in html
 
     # Document titles (first H1 of the first and last file).

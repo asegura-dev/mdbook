@@ -9,11 +9,26 @@ from __future__ import annotations
 from html import escape
 from importlib.resources import files
 
+from mdbook.config import THEMES
 from mdbook.engine.model import Book
 
 
 def _asset(name: str) -> str:
     return (files("mdbook.engine") / "assets" / name).read_text(encoding="utf-8")
+
+
+def _build_theme_picker(book: Book) -> str:
+    """Return the theme ``<select>``, one option per declared theme.
+
+    Built here rather than in the browser so the script never carries its own
+    copy of the theme list: it only reads whatever options are present.
+    """
+    options = "".join(
+        f'<option value="{theme}"{" selected" if theme == book.theme else ""}>'
+        f"{theme.capitalize()}</option>"
+        for theme in THEMES
+    )
+    return f'<select class="theme-select" aria-label="Theme">{options}</select>'
 
 
 def _build_sidebar(book: Book) -> str:
@@ -66,6 +81,7 @@ def build_html(book: Book) -> str:
     replacements = {
         "{{TITLE}}": escape(book.title),
         "{{DEFAULT_THEME}}": book.theme,
+        "{{THEME_PICKER}}": _build_theme_picker(book),
         "{{STYLE}}": style,
         "{{SIDEBAR}}": _build_sidebar(book),
         "{{CONTENT}}": _build_content(book),

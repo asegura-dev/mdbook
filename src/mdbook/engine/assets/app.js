@@ -5,19 +5,35 @@
   var THEME_KEY = "mdbook-theme";
 
   // --- Theme (remembers the preference) ---------------------------------
+  // The <select> is rendered server-side, one option per theme the contract
+  // declares, so this script never holds its own copy of the theme list.
+  var themeSelect = document.querySelector(".theme-select");
+
+  function isKnownTheme(theme) {
+    if (!theme || !themeSelect) return false;
+    return Array.prototype.some.call(themeSelect.options, function (opt) {
+      return opt.value === theme;
+    });
+  }
+
   function applyTheme(theme) {
     root.setAttribute("data-theme", theme);
-    var btn = document.querySelector(".theme-btn");
-    if (btn) btn.innerHTML = theme === "dark" ? "&#9728;" : "&#9789;";
+    // Keep the control honest: a theme restored from localStorage must show up
+    // as the selected option, or the box says one thing and the page another.
+    if (themeSelect) themeSelect.value = theme;
   }
+
   var saved = null;
   try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
-  applyTheme(saved || root.getAttribute("data-default-theme") || "light");
+  // A stale localStorage value (a theme that was renamed or removed) would
+  // otherwise leave the page on an undefined palette.
+  applyTheme(
+    isKnownTheme(saved) ? saved : root.getAttribute("data-default-theme") || "light"
+  );
 
-  var themeBtn = document.querySelector(".theme-btn");
-  if (themeBtn) {
-    themeBtn.addEventListener("click", function () {
-      var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  if (themeSelect) {
+    themeSelect.addEventListener("change", function () {
+      var next = themeSelect.value;
       applyTheme(next);
       try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
     });

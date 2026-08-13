@@ -1,3 +1,8 @@
+/* Themes are token overrides only: every rule below reads var(--x), so a theme
+   restates the palette and never a layout rule. Fonts are tokens too, so a
+   theme can change the typeface without duplicating the typography rules.
+   Only system font stacks — a webfont would need a network request and break
+   the self-contained output. */
 :root {
   --bg: #ffffff;
   --bg-soft: #f5f6f8;
@@ -8,9 +13,11 @@
   --accent: #2563eb;
   --accent-soft: rgba(37, 99, 235, 0.12);
   --mark: #fde68a;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --line-height: 1.65;
   --sidebar-w: 300px;
   --topbar-h: 54px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-body);
 }
 [data-theme="dark"] {
   --bg: #0d1117;
@@ -23,13 +30,39 @@
   --accent-soft: rgba(88, 166, 255, 0.15);
   --mark: #9a6700;
 }
+/* Sepia: warm paper for long reading, still sans-serif. */
+[data-theme="sepia"] {
+  --bg: #f4ecd8;
+  --bg-soft: #ece2c8;
+  --bg-code: #e8ddc0;
+  --text: #4a3f35;
+  --text-soft: #7a6a58;
+  --border: #d8cbb0;
+  --accent: #9a5b2d;
+  --accent-soft: rgba(154, 91, 45, 0.14);
+  --mark: #e8c26a;
+}
+/* Serif: book typography on off-white paper, looser leading. */
+[data-theme="serif"] {
+  --bg: #fbfaf7;
+  --bg-soft: #f2f0ea;
+  --bg-code: #f0eee7;
+  --text: #24201c;
+  --text-soft: #5f584f;
+  --border: #ddd8cd;
+  --accent: #7a5230;
+  --accent-soft: rgba(122, 82, 48, 0.12);
+  --mark: #f0d99b;
+  --font-body: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+  --line-height: 1.8;
+}
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
   background: var(--bg);
   color: var(--text);
-  line-height: 1.65;
+  line-height: var(--line-height);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -79,6 +112,19 @@ body {
 }
 .icon-btn:hover { background: var(--accent-soft); }
 .menu-btn { display: none; }
+.theme-select {
+  flex: 0 0 auto;
+  height: 38px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.theme-select:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
 
 /* Layout */
 .layout { display: flex; align-items: flex-start; }
