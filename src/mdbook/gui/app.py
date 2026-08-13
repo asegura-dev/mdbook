@@ -15,7 +15,7 @@ from tkinter import filedialog, messagebox
 import customtkinter as ctk
 from pydantic import ValidationError
 
-from mdbook.config import BuildOptions, discover_markdown
+from mdbook.config import THEMES, BuildOptions, discover_markdown
 from mdbook.engine import compile_book
 
 
@@ -121,7 +121,7 @@ class MdbookApp:
         options_frame.grid(row=5, column=0, sticky="ew", padx=12, pady=6)
         ctk.CTkLabel(options_frame, text="Default theme:").pack(side="left", padx=(8, 6), pady=8)
         ctk.CTkOptionMenu(
-            options_frame, values=["light", "dark"], variable=self.theme_var, width=120
+            options_frame, values=list(THEMES), variable=self.theme_var, width=140
         ).pack(side="left", padx=(0, 16), pady=8)
         ctk.CTkCheckBox(
             options_frame,

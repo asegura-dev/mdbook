@@ -13,7 +13,7 @@ import typer
 from pydantic import ValidationError
 from rich.console import Console
 
-from mdbook.config import BuildOptions, discover_markdown
+from mdbook.config import THEMES, BuildOptions, discover_markdown
 from mdbook.engine import compile_book
 
 app = typer.Typer(
@@ -44,7 +44,9 @@ def build(
     output: Annotated[Path, typer.Option("--output", "-o", help="Output HTML path.")] = Path(
         "mdbook.html"
     ),
-    theme: Annotated[str, typer.Option("--theme", help="Default theme: light | dark.")] = "light",
+    theme: Annotated[
+        str, typer.Option("--theme", help=f"Default theme: {' | '.join(THEMES)}.")
+    ] = "light",
     cross_references: Annotated[
         bool,
         typer.Option("--cross-refs/--no-cross-refs", help="Enable 'T1 §6' references."),

@@ -7,12 +7,20 @@ engine trusts it and does not validate again.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Literal
+from typing import Literal, get_args
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-Theme = Literal["light", "dark"]
+Theme = Literal["light", "dark", "sepia", "serif"]
 """The only themes the contract accepts."""
+
+THEMES: tuple[Theme, ...] = get_args(Theme)
+"""The same themes as a sequence, derived from :data:`Theme`.
+
+The interfaces need to *list* the themes (a dropdown, a help string) and the
+renderer needs to emit one option per theme. Deriving that list here means
+adding a theme is a one-line edit instead of four edits that drift apart.
+"""
 
 
 class BuildOptions(BaseModel):

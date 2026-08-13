@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from mdbook.config import BuildOptions, discover_markdown
+from mdbook.config import THEMES, BuildOptions, Theme, discover_markdown
 
 pytestmark = pytest.mark.unit
 
@@ -36,6 +36,19 @@ def test_valid_options(tmp_path: Path) -> None:
 def test_empty_title_fails(tmp_path: Path) -> None:
     with pytest.raises(ValidationError):
         BuildOptions(title="   ", inputs=[_md(tmp_path)], output=tmp_path / "o.html")
+
+
+@pytest.mark.parametrize("theme", THEMES)
+def test_every_declared_theme_is_accepted(tmp_path: Path, theme: Theme) -> None:
+    opts = BuildOptions(title="x", inputs=[_md(tmp_path)], output=tmp_path / "o.html", theme=theme)
+    assert opts.theme == theme
+
+
+def test_themes_matches_the_literal() -> None:
+    # A deliberate tripwire, not a tautology: THEMES is derived from Theme, so
+    # this is the one place that fails when the set changes. Updating it is the
+    # prompt to add the CSS block and the docs entry the new theme also needs.
+    assert THEMES == ("light", "dark", "sepia", "serif")
 
 
 def test_invalid_theme_fails(tmp_path: Path) -> None:
