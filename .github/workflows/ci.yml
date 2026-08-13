@@ -62,6 +62,14 @@ jobs:
         with:
           enable-cache: true
 
+      # The anchor-resolver tests are JavaScript and run under Node's built-in
+      # runner. Pinned rather than relying on the runner image, so the suite
+      # cannot start skipping them without anyone noticing.
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
       - name: Sync dependencies
         run: uv sync --locked
 

@@ -13,6 +13,11 @@
   --accent: #2563eb;
   --accent-soft: rgba(37, 99, 235, 0.12);
   --mark: #fde68a;
+  /* Translucent on purpose: one set of highlight colours has to stay readable
+     on every palette, including the dark one. */
+  --hl-yellow: rgba(250, 204, 21, 0.38);
+  --hl-green: rgba(52, 211, 153, 0.34);
+  --hl-pink: rgba(244, 114, 182, 0.32);
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --line-height: 1.65;
   --sidebar-w: 300px;
@@ -29,6 +34,9 @@
   --accent: #58a6ff;
   --accent-soft: rgba(88, 166, 255, 0.15);
   --mark: #9a6700;
+  --hl-yellow: rgba(250, 204, 21, 0.30);
+  --hl-green: rgba(52, 211, 153, 0.26);
+  --hl-pink: rgba(244, 114, 182, 0.28);
 }
 /* Sepia: warm paper for long reading, still sans-serif. */
 [data-theme="sepia"] {
@@ -210,6 +218,17 @@ body {
 }
 mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
 
+/* Reader highlights */
+.hl { background: var(--hl-yellow); border-radius: 2px; cursor: pointer; }
+.hl[data-color="green"] { background: var(--hl-green); }
+.hl[data-color="pink"] { background: var(--hl-pink); }
+.hl[data-note]::after {
+  content: "✎";
+  font-size: 0.75em;
+  vertical-align: super;
+  opacity: 0.75;
+}
+
 /* Code blocks */
 .code-block {
   margin: 16px 0;
@@ -285,6 +304,10 @@ mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
     --accent: #000000;
     --accent-soft: transparent;
     --mark: transparent;
+    /* Highlights print as ink, not as fill — see the .hl rule below. */
+    --hl-yellow: transparent;
+    --hl-green: transparent;
+    --hl-pink: transparent;
     /* Serif on paper: this is printed to be read at length. */
     --font-body: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
     --line-height: 1.5;
@@ -324,6 +347,14 @@ mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
      group repeats on each one. */
   .content table { display: table; overflow-x: visible; }
   .content thead { display: table-header-group; }
+
+  /* Highlights survive to paper, drawn as a coloured underline: a fill would
+     vanish with "Background graphics" off, and an invisible highlight is worse
+     than none. The note marker is a screen affordance and does not print. */
+  .hl { background: none; border-bottom: 2px solid #b58900; }
+  .hl[data-color="green"] { border-bottom-color: #2a7f62; }
+  .hl[data-color="pink"] { border-bottom-color: #a63d6b; }
+  .hl[data-note]::after { content: none; }
 
   /* On paper a link is only its text, so external targets show where they
      point. Internal cross-references are excluded: "T1 §6 (#doc1--6-x)" would

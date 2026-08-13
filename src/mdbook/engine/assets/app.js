@@ -97,6 +97,361 @@
     });
   });
 
+  // =======================================================================
+  // Reader annotations: highlights and notes
+  //
+  // Anchoring is the whole problem here. The book gets recompiled while the
+  // reader keeps annotating it, so an annotation cannot be stored as a
+  // position: any edit earlier in the file would shift it. Each one stores the
+  // text it covers plus the text around it, and is located again by searching.
+  // The full model, and what it survives, is in T3 §6.
+  // =======================================================================
+
+  var ANN_VERSION = 1;
+  var CONTEXT = 48; // characters of prefix/suffix kept for disambiguation
+
+  function normalizeText(value) {
+    // Collapsing whitespace is what makes an anchor survive reflowed Markdown,
+    // re-indentation and a changed line width.
+    return String(value).replace(/\s+/g, " ").trim();
+  }
+
+  function bookKey(title) {
+    var slug = normalizeText(title)
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    // Local files share one localStorage origin, so two books would overwrite
+    // each other without this namespace. Keyed by title, not by path, because
+    // the point is to survive the file being rewritten.
+    return "mdbook:notes:" + (slug || "untitled");
+  }
+
+  function commonHeadLength(a, b) {
+    var limit = Math.min(a.length, b.length);
+    var i = 0;
+    while (i < limit && a.charAt(i) === b.charAt(i)) i++;
+    return i;
+  }
+
+  function commonTailLength(a, b) {
+    var limit = Math.min(a.length, b.length);
+    var i = 0;
+    while (i < limit && a.charAt(a.length - 1 - i) === b.charAt(b.length - 1 - i)) i++;
+    return i;
+  }
+
+  /**
+   * Where does `anchor.exact` sit in `haystack`? Returns the start index, or
+   * -1 when the text is gone — in which case the annotation is orphaned rather
+   * than guessed at. There is deliberately no fuzzy matching: a wrong anchor
+   * silently highlights the wrong sentence, which is worse for study than an
+   * honest orphan.
+   */
+  function locateQuote(haystack, anchor) {
+    var quote = anchor.exact;
+    if (!quote) return -1;
+
+    var hits = [];
+    var from = 0;
+    var at;
+    while ((at = haystack.indexOf(quote, from)) !== -1) {
+      hits.push(at);
+      from = at + 1;
+    }
+    if (hits.length === 0) return -1;
+    if (hits.length === 1) return hits[0];
+
+    var prefix = anchor.prefix || "";
+    var suffix = anchor.suffix || "";
+    var best = -1;
+    var bestScore = -Infinity;
+    for (var i = 0; i < hits.length; i++) {
+      var start = hits[i];
+      var before = haystack.slice(Math.max(0, start - prefix.length), start);
+      var after = haystack.slice(start + quote.length, start + quote.length + suffix.length);
+      var score = commonTailLength(before, prefix) + commonHeadLength(after, suffix);
+      // A hit inside the section the annotation came from outranks context:
+      // the same sentence quoted in two chapters is a real case.
+      if (inPreferredRange(anchor, start)) score += 1000;
+      if (score > bestScore || (score === bestScore && isCloser(anchor, start, best))) {
+        best = start;
+        bestScore = score;
+      }
+    }
+    return best;
+  }
+
+  function inPreferredRange(anchor, start) {
+    return (
+      typeof anchor.preferFrom === "number" &&
+      typeof anchor.preferTo === "number" &&
+      start >= anchor.preferFrom &&
+      start < anchor.preferTo
+    );
+  }
+
+  function isCloser(anchor, candidate, current) {
+    if (typeof anchor.offsetHint !== "number" || current < 0) return false;
+    return Math.abs(candidate - anchor.offsetHint) < Math.abs(current - anchor.offsetHint);
+  }
+
+  function stripLeadingNumber(title) {
+    return title.replace(/^\d+\.\s*/, "");
+  }
+
+  // --- Bridge between the DOM and the normalized text --------------------
+
+  /**
+   * The normalized text of an element plus, for every character, the text node
+   * and offset it came from. That map is what lets a match found in a plain
+   * string be painted back onto the DOM.
+   */
+  function buildTextMap(root) {
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    var chars = [];
+    var map = [];
+    var indexOfNode = new Map();
+    var spaceAt = null;
+    var node;
+    while ((node = walker.nextNode())) {
+      var value = node.nodeValue;
+      for (var i = 0; i < value.length; i++) {
+        var ch = value.charAt(i);
+        if (ch === " " || ch === "\n" || ch === "\t" || ch === "\r") {
+          // Remember where the run of whitespace started: mapping the collapsed
+          // space to a real position keeps a painted highlight contiguous
+          // instead of leaving a gap at every word break.
+          if (chars.length > 0 && spaceAt === null) spaceAt = { node: node, offset: i };
+          continue;
+        }
+        if (spaceAt !== null) {
+          chars.push(" ");
+          map.push(spaceAt);
+          spaceAt = null;
+        }
+        if (!indexOfNode.has(node)) indexOfNode.set(node, chars.length);
+        chars.push(ch);
+        map.push({ node: node, offset: i });
+      }
+    }
+    return { text: chars.join(""), map: map, indexOfNode: indexOfNode };
+  }
+
+  function firstIndexOf(textMap, element) {
+    var walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
+    var node = walker.nextNode();
+    while (node) {
+      if (textMap.indexOfNode.has(node)) return textMap.indexOfNode.get(node);
+      node = walker.nextNode();
+    }
+    return -1;
+  }
+
+  function matchesSection(heading, ann) {
+    if (ann.sectionId && heading.id === ann.sectionId) return true;
+    if (!ann.sectionTitle) return false;
+    var title = normalizeText(heading.textContent);
+    // Renumbering "## 3. Sampling" to "## 4." changes the id *and* the title,
+    // so the number is dropped before comparing.
+    return title === ann.sectionTitle ||
+      stripLeadingNumber(title) === stripLeadingNumber(ann.sectionTitle);
+  }
+
+  function preferredRange(scope, textMap, ann) {
+    var headings = scope.querySelectorAll("h1, h2, h3, h4, h5, h6");
+    for (var i = 0; i < headings.length; i++) {
+      if (!matchesSection(headings[i], ann)) continue;
+      var from = firstIndexOf(textMap, headings[i]);
+      if (from < 0) return null;
+      var to = i + 1 < headings.length ? firstIndexOf(textMap, headings[i + 1]) : -1;
+      return { from: from, to: to < 0 ? textMap.text.length : to };
+    }
+    return null;
+  }
+
+  function documentTitleOf(element) {
+    var heading = element.querySelector("h1");
+    return heading ? normalizeText(heading.textContent) : "";
+  }
+
+  function scopesFor(ann) {
+    var scopes = [];
+    var docs = document.querySelectorAll(".doc");
+    var byTitle = null;
+    for (var i = 0; i < docs.length && ann.docTitle; i++) {
+      if (documentTitleOf(docs[i]) === ann.docTitle) {
+        byTitle = docs[i];
+        break;
+      }
+    }
+    // Title before id: doc ids are positional, so inserting or reordering a
+    // chapter silently points doc3 at different prose.
+    if (byTitle) scopes.push(byTitle);
+    var byId = ann.docId ? document.getElementById(ann.docId) : null;
+    if (byId && byId !== byTitle && byId.classList.contains("doc")) scopes.push(byId);
+    var content = document.querySelector(".content");
+    if (content) scopes.push(content);
+    return scopes;
+  }
+
+  // --- Painting ----------------------------------------------------------
+
+  function wrapRun(run, ann) {
+    var node = run.node;
+    if (!node.parentNode) return;
+    var target = run.start > 0 ? node.splitText(run.start) : node;
+    if (target.nodeValue.length > run.end - run.start) {
+      target.splitText(run.end - run.start);
+    }
+    var span = document.createElement("span");
+    span.className = "hl";
+    span.setAttribute("data-ann", ann.id);
+    span.setAttribute("data-color", ann.color || "yellow");
+    if (ann.note) span.setAttribute("data-note", "1");
+    target.parentNode.insertBefore(span, target);
+    span.appendChild(target);
+  }
+
+  function paintRange(textMap, start, end, ann) {
+    var runs = [];
+    for (var i = start; i < end && i < textMap.map.length; i++) {
+      var entry = textMap.map[i];
+      var last = runs[runs.length - 1];
+      if (last && last.node === entry.node && entry.offset === last.end) {
+        last.end = entry.offset + 1;
+      } else {
+        runs.push({ node: entry.node, start: entry.offset, end: entry.offset + 1 });
+      }
+    }
+    // A highlight can cross <strong> or <code>, so each text node is wrapped
+    // separately; back to front, because splitting invalidates later offsets.
+    for (var r = runs.length - 1; r >= 0; r--) wrapRun(runs[r], ann);
+    return runs.length > 0;
+  }
+
+  // --- Storage -----------------------------------------------------------
+
+  var ANN_KEY = bookKey(document.title);
+  var annotations = [];
+
+  function loadAnnotations() {
+    try {
+      var raw = localStorage.getItem(ANN_KEY);
+      if (!raw) return [];
+      var data = JSON.parse(raw);
+      return Array.isArray(data.items) ? data.items : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveAnnotations(items) {
+    try {
+      localStorage.setItem(ANN_KEY, JSON.stringify({ version: ANN_VERSION, items: items }));
+      return true;
+    } catch (e) {
+      // Quota exhausted or storage blocked. Reported rather than swallowed:
+      // the reader has to know an annotation did not survive the click.
+      return false;
+    }
+  }
+
+  function placeAnnotation(ann) {
+    var scopes = scopesFor(ann);
+    for (var i = 0; i < scopes.length; i++) {
+      var textMap = buildTextMap(scopes[i]);
+      var range = preferredRange(scopes[i], textMap, ann);
+      var at = locateQuote(textMap.text, {
+        exact: ann.exact,
+        prefix: ann.prefix,
+        suffix: ann.suffix,
+        offsetHint: ann.offsetHint,
+        preferFrom: range ? range.from : undefined,
+        preferTo: range ? range.to : undefined
+      });
+      if (at >= 0) return paintRange(textMap, at, at + ann.exact.length, ann);
+    }
+    return false;
+  }
+
+  function sectionHeadingFor(ann) {
+    var headings = document.querySelectorAll(".content h1, .content h2, .content h3, .content h4");
+    for (var i = 0; i < headings.length; i++) {
+      if (matchesSection(headings[i], ann)) return headings[i];
+    }
+    return null;
+  }
+
+  function applyAnnotations() {
+    annotations = loadAnnotations();
+    var changed = false;
+    annotations.forEach(function (ann) {
+      var placed = ann.exact ? placeAnnotation(ann) : Boolean(sectionHeadingFor(ann));
+      if (Boolean(ann.orphan) !== !placed) {
+        ann.orphan = !placed;
+        changed = true;
+      }
+    });
+    // Orphan state is recomputed on every load, so an annotation heals itself
+    // when a later build brings its text back. Nothing is ever deleted here.
+    if (changed) saveAnnotations(annotations);
+    return annotations;
+  }
+
+  // --- Capture -----------------------------------------------------------
+
+  function anchorFromRange(range) {
+    var host = range.startContainer.parentElement;
+    var doc = host ? host.closest(".doc") : null;
+    if (!doc) return null;
+    var exact = normalizeText(range.toString());
+    if (!exact) return null;
+
+    var textMap = buildTextMap(doc);
+    var start = textMap.text.indexOf(exact);
+    if (start < 0) return null;
+
+    var heading = null;
+    var headings = doc.querySelectorAll("h1, h2, h3, h4, h5, h6");
+    for (var i = 0; i < headings.length; i++) {
+      var at = firstIndexOf(textMap, headings[i]);
+      if (at >= 0 && at <= start) heading = headings[i];
+    }
+
+    return {
+      id: "a" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      docId: doc.id,
+      docTitle: documentTitleOf(doc),
+      sectionId: heading ? heading.id : "",
+      sectionTitle: heading ? normalizeText(heading.textContent) : "",
+      exact: exact,
+      prefix: textMap.text.slice(Math.max(0, start - CONTEXT), start),
+      suffix: textMap.text.slice(start + exact.length, start + exact.length + CONTEXT),
+      offsetHint: start,
+      color: "yellow",
+      note: "",
+      orphan: false,
+      created: Date.now()
+    };
+  }
+
+  applyAnnotations();
+
+  // Exposed for the Node tests of the anchor resolver (T3 §6). `module` does
+  // not exist in a browser, so this is a no-op there.
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+      normalizeText: normalizeText,
+      bookKey: bookKey,
+      locateQuote: locateQuote,
+      stripLeadingNumber: stripLeadingNumber
+    };
+  }
+
   // --- Group content by section (so search can filter) ------------------
   document.querySelectorAll(".doc").forEach(function (doc) {
     var current = doc.id;
