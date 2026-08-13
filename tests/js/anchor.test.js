@@ -37,7 +37,13 @@ function loadApp() {
     String,
     Number,
     navigator: {},
-    window: { print: () => {}, setTimeout: () => 0, alert: () => {}, getSelection: () => null },
+    window: {
+      print: () => {},
+      setTimeout: () => 0,
+      alert: () => {},
+      getSelection: () => null,
+      addEventListener: () => {},
+    },
     localStorage: { getItem: () => null, setItem: () => {} },
     document: {
       title: "Test Book",

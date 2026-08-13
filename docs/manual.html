@@ -1311,22 +1311,63 @@ reinstalls dependencies.</p>
     return host && host.closest(".doc") ? range : null;
   }
 
+  // The range the toolbar is currently offering to highlight. Kept, rather than
+  // read back on click, because pressing a button collapses the selection: by
+  // the time the click handler runs there is nothing left to anchor to.
+  var pendingRange = null;
+
+  function closeBar() {
+    pendingRange = null;
+    if (annBar) annBar.hidden = true;
+  }
+
+  function closePopover() {
+    editingId = null;
+    if (annPop) annPop.hidden = true;
+  }
+
+  function closeOverlays() {
+    closeBar();
+    closePopover();
+  }
+
   function showBar() {
     var range = currentRange();
     if (!range || !annBar) {
-      if (annBar) annBar.hidden = true;
+      closeBar();
       return;
     }
+    pendingRange = range.cloneRange();
     var rect = range.getBoundingClientRect();
     annBar.hidden = false;
     annBar.style.top = window.scrollY + rect.top - annBar.offsetHeight - 8 + "px";
     annBar.style.left = window.scrollX + rect.left + "px";
   }
 
+  /** The first existing highlight the range runs into, if any. */
+  function overlappingHighlight(range) {
+    var spans = document.querySelectorAll(".hl");
+    for (var i = 0; i < spans.length; i++) {
+      if (range.intersectsNode(spans[i])) return spans[i];
+    }
+    return null;
+  }
+
   function createFromSelection(color, withNote) {
-    var range = currentRange();
-    if (annBar) annBar.hidden = true;
+    var range = pendingRange || currentRange();
+    closeBar();
     if (!range) return;
+
+    // Highlights must not overlap. Nested spans paint unpredictably and a quote
+    // could then contain another annotation's text, so a selection that runs
+    // into an existing highlight edits that one instead of stacking on it.
+    var existing = overlappingHighlight(range);
+    if (existing) {
+      window.getSelection().removeAllRanges();
+      openPopover(existing.getAttribute("data-ann"), existing);
+      return;
+    }
+
     var ann = anchorFromRange(range);
     if (!ann) return;
     ann.color = color;
@@ -1337,6 +1378,11 @@ reinstalls dependencies.</p>
   }
 
   if (annBar) {
+    // Keep the selection alive: without this the browser collapses it the
+    // instant the button takes the press, and there is nothing to highlight.
+    annBar.addEventListener("mousedown", function (event) {
+      event.preventDefault();
+    });
     annBar.querySelectorAll(".ann-color").forEach(function (btn) {
       btn.addEventListener("click", function () {
         createFromSelection(btn.getAttribute("data-color"), false);
@@ -1356,6 +1402,24 @@ reinstalls dependencies.</p>
     // After the browser has settled the selection.
     window.setTimeout(showBar, 0);
   });
+
+  // Dismissal, on every route a reader would expect: pressing elsewhere,
+  // scrolling away, or Escape. Relying on the click handler alone left both
+  // overlays sitting on the page.
+  document.addEventListener("mousedown", function (event) {
+    if (annBar && annBar.contains(event.target)) return;
+    if (annPop && annPop.contains(event.target)) return;
+    closeBar();
+    if (!event.target.closest(".hl") && !event.target.closest(".review-item")) {
+      closePopover();
+    }
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") closeOverlays();
+  });
+
+  window.addEventListener("scroll", closeBar, { passive: true });
 
   // --- Editing an existing annotation ------------------------------------
 
@@ -1392,27 +1456,22 @@ reinstalls dependencies.</p>
       var ann = byId(editingId);
       if (!ann) return;
       ann.note = annPop.querySelector(".ann-pop-note").value.trim();
-      annPop.hidden = true;
+      closePopover();
       persist();
     });
     annPop.querySelector(".ann-pop-delete").addEventListener("click", function () {
+      var id = editingId;
       annotations = annotations.filter(function (ann) {
-        return ann.id !== editingId;
+        return ann.id !== id;
       });
-      annPop.hidden = true;
+      closePopover();
       persist();
     });
   }
 
   document.addEventListener("click", function (event) {
     var span = event.target.closest ? event.target.closest(".hl") : null;
-    if (span) {
-      openPopover(span.getAttribute("data-ann"), span);
-      return;
-    }
-    if (annPop && !annPop.contains(event.target) && !event.target.closest(".review-item")) {
-      annPop.hidden = true;
-    }
+    if (span) openPopover(span.getAttribute("data-ann"), span);
   });
 
   // --- Section notes ------------------------------------------------------
