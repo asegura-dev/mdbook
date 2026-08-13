@@ -51,6 +51,25 @@ def slugify(text: str) -> str:
     return text or "sec"
 
 
+def _unique_slug(base: str, used: set[str]) -> str:
+    """Return ``base``, or the first free ``base-N``, and record it as used.
+
+    Counting occurrences of each base is not enough: the suffixed candidate can
+    itself be a real heading's slug. With headings "Intro", "Intro" and
+    "Intro 2", a counter hands "intro-2" to both the second and the third, so
+    the page ends up with two elements sharing an id and one table-of-contents
+    link jumping to the wrong heading. Checking the candidate against what has
+    actually been taken cannot collide.
+    """
+    candidate = base
+    suffix = 2
+    while candidate in used:
+        candidate = f"{base}-{suffix}"
+        suffix += 1
+    used.add(candidate)
+    return candidate
+
+
 def build_md() -> MarkdownIt:
     """Create the parser with the supported subset and our own render rules."""
     md = MarkdownIt("commonmark", {"html": False, "linkify": False, "typographer": False})
@@ -79,17 +98,14 @@ def parse_document(md: MarkdownIt, text: str, doc_id: str) -> ParsedDocument:
     tokens = md.parse(text)
     sections: list[Section] = []
     title: str | None = None
-    seen: dict[str, int] = {}
+    used: set[str] = set()
 
     for i, tok in enumerate(tokens):
         if tok.type != "heading_open":
             continue
         level = int(tok.tag[1])
         heading_text = _plain_text(tokens[i + 1])
-        base = slugify(heading_text)
-        n = seen.get(base, 0)
-        seen[base] = n + 1
-        unique = base if n == 0 else f"{base}-{n + 1}"
+        unique = _unique_slug(slugify(heading_text), used)
         section_id = f"{doc_id}--{unique}"
         tok.attrSet("id", section_id)
 
