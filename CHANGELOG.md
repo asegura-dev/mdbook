@@ -10,6 +10,14 @@ Work on v2, on the `v2` branch.
 
 ### Added
 
+- PDF export: a "PDF" button in the top bar prints the page through the
+  browser's own pipeline, with `@media print` rules doing the work — white page
+  and serif type whatever theme is on screen, screen chrome hidden, a page per
+  document, code blocks and quotes kept whole, table headers repeated across
+  pages, and external links printing their URL. No PDF library, no server, and
+  the output stays one self-contained file. Its limits are documented in T3 §5
+  and in the README: no page numbers of ours, breaks are requests rather than
+  guarantees, and results differ between browsers.
 - Two themes, `sepia` and `serif`, next to the existing `light` and `dark`.
   Sepia is warm paper for long reading; serif also swaps the typeface for a
   system serif stack and loosens the leading. Both use system fonts only — a
@@ -38,6 +46,28 @@ Work on v2, on the `v2` branch.
   engine's assets are frozen into the binary — so a stale executable keeps
   producing the previous HTML without warning.
 - This changelog.
+
+### Fixed
+
+- A relative `--output` came back relative, and `Path.as_uri()` rejects those,
+  so the GUI's "Open in browser" raised inside a Tk callback and — with no
+  console in the packaged app — did nothing at all, after reporting a
+  successful build. The contract now resolves the output path as it already
+  resolved the inputs. `open_browser` also reports failures in a dialog and no
+  longer ignores `webbrowser.open()` returning `False`.
+- Repeated headings could share an `id`: de-duplication counted occurrences and
+  appended the count, and the name it produced could be another heading's real
+  slug ("Intro", "Intro", "Intro 2" all landed on `intro-2`). A table-of-
+  contents link then jumped to the wrong heading. Candidates are now checked
+  against the ids actually taken; existing anchors are unchanged.
+- A cross-reference inside a link produced nested `<a>` elements, which HTML
+  forbids, breaking the author's own link. Inside a link the reference is left
+  as plain text, exactly as an unresolvable reference already was.
+- The GUI kept "Open in browser" enabled after the inputs changed, so it opened
+  the previous build; accepted files that were not `.md` and only rejected them
+  at compile time; and hard-coded `"light"` as its initial theme instead of
+  reading `THEMES`. The CLI answered an empty folder by telling you to pass a
+  folder; it now says the folder has no `.md` files.
 
 ### Changed
 

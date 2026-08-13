@@ -17,6 +17,10 @@ only in palette; `serif` also swaps the typeface for a system serif stack and
 loosens the leading, for reading rather than reference. The reader can switch
 between them in the page, and the choice is remembered.
 
+A "PDF" button exports the page through the browser's own print pipeline. There
+is no PDF library involved — the output is the same HTML with a print
+stylesheet, described in T3 §5.
+
 There is no project config file and no plugin system. The feature set is fixed
 on purpose.
 

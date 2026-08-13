@@ -132,6 +132,8 @@ body {
   cursor: pointer;
 }
 .theme-select:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+/* Wider than a square icon button: the label is a word, not a glyph. */
+.print-btn { width: auto; padding: 0 12px; font-size: 13px; font-family: inherit; }
 
 /* Layout */
 .layout { display: flex; align-items: flex-start; }
@@ -271,6 +273,76 @@ mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
   .content { padding: 20px 16px 100px; }
 }
 
+/* Print / PDF export. Everything is scoped to @media print, so nothing here
+   changes what the reader sees on screen. */
+@media print {
+  /* Force the light palette whatever theme is active, without touching
+     data-theme. Swapping the attribute from JS would have to be undone
+     afterwards, and a cancelled print dialog would strand the page on the
+     wrong theme. :root:root scores (0,2,0) and beats [data-theme="…"] at
+     (0,1,0), so it wins regardless of order — and because it names no theme,
+     a theme added later is covered without editing this block. */
+  :root:root {
+    --bg: #ffffff;
+    --bg-soft: #ffffff;
+    --bg-code: #ffffff;
+    --text: #111111;
+    --text-soft: #333333;
+    --border: #9a9a9a;
+    --accent: #000000;
+    --accent-soft: transparent;
+    --mark: transparent;
+    /* Serif on paper: this is printed to be read at length. */
+    --font-body: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+    --line-height: 1.5;
+  }
+
+  @page { margin: 2cm; }
+
+  /* Screen chrome means nothing on paper. */
+  .topbar, .sidebar, .backdrop, .copy-btn { display: none !important; }
+
+  .layout { display: block; }
+  .content { max-width: none; margin: 0; padding: 0; }
+
+  /* An active search filter must not silently truncate the export. The search
+     box is hidden here, so a filtered PDF would look like missing pages with
+     nothing on the page to explain why. `revert` restores each element's
+     default display, and !important outranks the inline style the filter sets. */
+  .cover, .content .doc, .content [data-sec] { display: revert !important; }
+
+  /* Page breaks. The cover carries the contents list, so it earns its own
+     page; each following document starts on a fresh one. */
+  .cover { break-after: page; }
+  .doc + .doc { break-before: page; margin-top: 0; padding-top: 0; border-top: none; }
+  .content h1, .content h2, .content h3 { break-after: avoid; }
+  .content p, .content li { orphans: 3; widows: 3; }
+
+  /* Browsers drop background fills unless the reader ticks "Background
+     graphics", so a code block is drawn with its border instead of its fill
+     and stays legible with the default print settings. */
+  .code-block { break-inside: avoid; border: 1px solid var(--border); }
+  .code-head { border-bottom: 1px solid var(--border); }
+  .code-block pre code { font-size: 0.8rem; }
+  .content blockquote { break-inside: avoid; }
+
+  /* display:block gives the screen its horizontal scroll but stops a table
+     paginating. As a real table it can break across pages, and the header
+     group repeats on each one. */
+  .content table { display: table; overflow-x: visible; }
+  .content thead { display: table-header-group; }
+
+  /* On paper a link is only its text, so external targets show where they
+     point. Internal cross-references are excluded: "T1 §6 (#doc1--6-x)" would
+     be noise, and the anchor means nothing off-screen. */
+  .content a { text-decoration: underline; }
+  .content a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -279,10 +351,11 @@ mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
   <span class="topbar-title">mdbook — Internal Documentation</span>
   <input type="search" class="search" placeholder="Search…" aria-label="Search" autocomplete="off">
   <select class="theme-select" aria-label="Theme"><option value="light">Light</option><option value="dark" selected>Dark</option><option value="sepia">Sepia</option><option value="serif">Serif</option></select>
+  <button class="icon-btn print-btn" type="button" aria-label="Export to PDF">PDF</button>
 </header>
 <div class="layout">
   <nav class="sidebar" aria-label="Navigation">
-    <ul class="toc"><li class="toc-doc" data-doc="doc1"><a href="#doc1" class="toc-doc-link">Overview</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc1--1-what-it-does"><a href="#doc1--1-what-it-does">1. What it does</a></li><li class="toc-sec lvl2" data-target="doc1--2-when-to-use-it"><a href="#doc1--2-when-to-use-it">2. When to use it</a></li><li class="toc-sec lvl2" data-target="doc1--3-how-the-pieces-fit"><a href="#doc1--3-how-the-pieces-fit">3. How the pieces fit</a></li></ul></li><li class="toc-doc" data-doc="doc2"><a href="#doc2" class="toc-doc-link">Architecture</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc2--1-the-engine"><a href="#doc2--1-the-engine">1. The engine</a></li><li class="toc-sec lvl2" data-target="doc2--2-the-validation-boundary"><a href="#doc2--2-the-validation-boundary">2. The validation boundary</a></li><li class="toc-sec lvl2" data-target="doc2--3-the-interfaces"><a href="#doc2--3-the-interfaces">3. The interfaces</a></li><li class="toc-sec lvl2" data-target="doc2--4-why-the-separation"><a href="#doc2--4-why-the-separation">4. Why the separation</a></li></ul></li><li class="toc-doc" data-doc="doc3"><a href="#doc3" class="toc-doc-link">Compilation flow</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc3--1-two-passes"><a href="#doc3--1-two-passes">1. Two passes</a></li><li class="toc-sec lvl2" data-target="doc3--2-pass-one-parse-and-index"><a href="#doc3--2-pass-one-parse-and-index">2. Pass one: parse and index</a></li><li class="toc-sec lvl2" data-target="doc3--3-pass-two-render"><a href="#doc3--3-pass-two-render">3. Pass two: render</a></li><li class="toc-sec lvl2" data-target="doc3--4-assembly-and-output"><a href="#doc3--4-assembly-and-output">4. Assembly and output</a></li></ul></li><li class="toc-doc" data-doc="doc4"><a href="#doc4" class="toc-doc-link">Cross-references</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc4--1-syntax"><a href="#doc4--1-syntax">1. Syntax</a></li><li class="toc-sec lvl2" data-target="doc4--2-how-section-numbers-are-resolved"><a href="#doc4--2-how-section-numbers-are-resolved">2. How section numbers are resolved</a></li><li class="toc-sec lvl2" data-target="doc4--3-behavior-when-a-target-is-missing"><a href="#doc4--3-behavior-when-a-target-is-missing">3. Behavior when a target is missing</a></li></ul></li><li class="toc-doc" data-doc="doc5"><a href="#doc5" class="toc-doc-link">Interfaces</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc5--1-the-cli"><a href="#doc5--1-the-cli">1. The CLI</a></li><li class="toc-sec lvl2" data-target="doc5--2-the-gui"><a href="#doc5--2-the-gui">2. The GUI</a></li><li class="toc-sec lvl2" data-target="doc5--3-the-shared-contract"><a href="#doc5--3-the-shared-contract">3. The shared contract</a></li></ul></li><li class="toc-doc" data-doc="doc6"><a href="#doc6" class="toc-doc-link">Extending mdbook</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc6--1-add-a-markdown-feature"><a href="#doc6--1-add-a-markdown-feature">1. Add a Markdown feature</a></li><li class="toc-sec lvl2" data-target="doc6--2-add-a-build-option"><a href="#doc6--2-add-a-build-option">2. Add a build option</a></li><li class="toc-sec lvl2" data-target="doc6--3-tests-to-keep-green"><a href="#doc6--3-tests-to-keep-green">3. Tests to keep green</a></li></ul></li><li class="toc-doc" data-doc="doc7"><a href="#doc7" class="toc-doc-link">Development workflow</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc7--1-the-four-gates"><a href="#doc7--1-the-four-gates">1. The four gates</a></li><li class="toc-sec lvl2" data-target="doc7--2-the-pre-commit-hook"><a href="#doc7--2-the-pre-commit-hook">2. The pre-commit hook</a></li><li class="toc-sec lvl2" data-target="doc7--3-the-windows-executable"><a href="#doc7--3-the-windows-executable">3. The Windows executable</a></li><li class="toc-sec lvl2" data-target="doc7--4-gotchas"><a href="#doc7--4-gotchas">4. Gotchas</a></li></ul></li></ul>
+    <ul class="toc"><li class="toc-doc" data-doc="doc1"><a href="#doc1" class="toc-doc-link">Overview</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc1--1-what-it-does"><a href="#doc1--1-what-it-does">1. What it does</a></li><li class="toc-sec lvl2" data-target="doc1--2-when-to-use-it"><a href="#doc1--2-when-to-use-it">2. When to use it</a></li><li class="toc-sec lvl2" data-target="doc1--3-how-the-pieces-fit"><a href="#doc1--3-how-the-pieces-fit">3. How the pieces fit</a></li></ul></li><li class="toc-doc" data-doc="doc2"><a href="#doc2" class="toc-doc-link">Architecture</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc2--1-the-engine"><a href="#doc2--1-the-engine">1. The engine</a></li><li class="toc-sec lvl2" data-target="doc2--2-the-validation-boundary"><a href="#doc2--2-the-validation-boundary">2. The validation boundary</a></li><li class="toc-sec lvl2" data-target="doc2--3-the-interfaces"><a href="#doc2--3-the-interfaces">3. The interfaces</a></li><li class="toc-sec lvl2" data-target="doc2--4-why-the-separation"><a href="#doc2--4-why-the-separation">4. Why the separation</a></li></ul></li><li class="toc-doc" data-doc="doc3"><a href="#doc3" class="toc-doc-link">Compilation flow</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc3--1-two-passes"><a href="#doc3--1-two-passes">1. Two passes</a></li><li class="toc-sec lvl2" data-target="doc3--2-pass-one-parse-and-index"><a href="#doc3--2-pass-one-parse-and-index">2. Pass one: parse and index</a></li><li class="toc-sec lvl2" data-target="doc3--3-pass-two-render"><a href="#doc3--3-pass-two-render">3. Pass two: render</a></li><li class="toc-sec lvl2" data-target="doc3--4-assembly-and-output"><a href="#doc3--4-assembly-and-output">4. Assembly and output</a></li><li class="toc-sec lvl2" data-target="doc3--5-printing-and-pdf-export"><a href="#doc3--5-printing-and-pdf-export">5. Printing and PDF export</a></li></ul></li><li class="toc-doc" data-doc="doc4"><a href="#doc4" class="toc-doc-link">Cross-references</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc4--1-syntax"><a href="#doc4--1-syntax">1. Syntax</a></li><li class="toc-sec lvl2" data-target="doc4--2-how-section-numbers-are-resolved"><a href="#doc4--2-how-section-numbers-are-resolved">2. How section numbers are resolved</a></li><li class="toc-sec lvl2" data-target="doc4--3-behavior-when-a-target-is-missing"><a href="#doc4--3-behavior-when-a-target-is-missing">3. Behavior when a target is missing</a></li></ul></li><li class="toc-doc" data-doc="doc5"><a href="#doc5" class="toc-doc-link">Interfaces</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc5--1-the-cli"><a href="#doc5--1-the-cli">1. The CLI</a></li><li class="toc-sec lvl2" data-target="doc5--2-the-gui"><a href="#doc5--2-the-gui">2. The GUI</a></li><li class="toc-sec lvl2" data-target="doc5--3-the-shared-contract"><a href="#doc5--3-the-shared-contract">3. The shared contract</a></li></ul></li><li class="toc-doc" data-doc="doc6"><a href="#doc6" class="toc-doc-link">Extending mdbook</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc6--1-add-a-markdown-feature"><a href="#doc6--1-add-a-markdown-feature">1. Add a Markdown feature</a></li><li class="toc-sec lvl2" data-target="doc6--2-add-a-build-option"><a href="#doc6--2-add-a-build-option">2. Add a build option</a></li><li class="toc-sec lvl2" data-target="doc6--3-tests-to-keep-green"><a href="#doc6--3-tests-to-keep-green">3. Tests to keep green</a></li></ul></li><li class="toc-doc" data-doc="doc7"><a href="#doc7" class="toc-doc-link">Development workflow</a><ul class="toc-subs"><li class="toc-sec lvl2" data-target="doc7--1-the-four-gates"><a href="#doc7--1-the-four-gates">1. The four gates</a></li><li class="toc-sec lvl2" data-target="doc7--2-the-pre-commit-hook"><a href="#doc7--2-the-pre-commit-hook">2. The pre-commit hook</a></li><li class="toc-sec lvl2" data-target="doc7--3-the-windows-executable"><a href="#doc7--3-the-windows-executable">3. The Windows executable</a></li><li class="toc-sec lvl2" data-target="doc7--4-gotchas"><a href="#doc7--4-gotchas">4. Gotchas</a></li></ul></li></ul>
   </nav>
   <div class="backdrop"></div>
   <main class="content">
@@ -300,6 +373,9 @@ picker, and a copy button on each code block.</p>
 only in palette; <code>serif</code> also swaps the typeface for a system serif stack and
 loosens the leading, for reading rather than reference. The reader can switch
 between them in the page, and the choice is remembered.</p>
+<p>A &quot;PDF&quot; button exports the page through the browser's own print pipeline. There
+is no PDF library involved — the output is the same HTML with a print
+stylesheet, described in <a class="xref" href="#doc3--5-printing-and-pdf-export">T3 §5</a>.</p>
 <p>There is no project config file and no plugin system. The feature set is fixed
 on purpose.</p>
 <h2 id="doc1--2-when-to-use-it">2. When to use it</h2>
@@ -370,6 +446,33 @@ into links when cross-references are on.</p>
 <p><code>renderer.build_html</code> reads the three assets, builds the sidebar and the cover
 index from the model, and substitutes everything into the template. The result
 is one HTML string. <code>compile_book</code> writes it where <code>BuildOptions.output</code> points.</p>
+<h2 id="doc3--5-printing-and-pdf-export">5. Printing and PDF export</h2>
+<p>The &quot;PDF&quot; button calls <code>window.print()</code> and nothing else. There is no PDF
+library, no server and no second output format: the page prints itself, so the
+export cannot go stale relative to the HTML and adds no dependency to the
+executable.</p>
+<p>The work is in the <code>@media print</code> rules. Screen chrome is hidden, each document
+starts on a fresh page, the cover and its contents list take a page of their
+own, code blocks and quotes resist breaking, and tables become real tables again
+(on screen they are <code>display: block</code> for horizontal scrolling, which stops them
+paginating) so a long one repeats its header across pages. External links print
+their URL after the text; internal cross-references do not, since the anchor
+means nothing on paper.</p>
+<p>Two decisions are worth knowing about. The palette is forced light — and the
+typeface serif — by specificity: <code>:root:root</code> outweighs any <code>[data-theme=&quot;…&quot;]</code>
+block, so no JavaScript has to swap the theme and put it back. Swapping it would
+leave the reader on the wrong theme if they cancelled the print dialog. And
+because the rule names no theme, a theme added later is neutralised without
+touching the print block. Second, browsers omit background fills unless the
+reader enables &quot;Background graphics&quot;, so anything that must be visible on paper
+is drawn with borders and ink rather than with a fill.</p>
+<p>What this approach cannot do, in exchange for costing nothing: there are no page
+numbers of our own — <code>@page</code> margin boxes are CSS Paged Media, which browsers do
+not implement, and the header and footer you see come from the print dialog and
+are outside our control. Breaks are requests, not guarantees: an element taller
+than a page still breaks. Output differs between browsers, so pick one for
+reproducible drafts. If page-level typographic control ever matters more than
+portability, that is the point to reconsider the approach — not before.</p>
 </article><article class="doc" id="doc4"><h1 id="doc4--cross-references">Cross-references</h1>
 <p>An optional feature that turns short references in the prose into internal
 links. It's off by default; turn it on with <code>--cross-refs</code> or the GUI checkbox.</p>
@@ -545,6 +648,16 @@ reinstalls dependencies.</p>
       var next = themeSelect.value;
       applyTheme(next);
       try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+    });
+  }
+
+  // --- Export to PDF -----------------------------------------------------
+  // The browser's own print pipeline; everything that makes the result look
+  // like a document lives in the @media print rules, not here.
+  var printBtn = document.querySelector(".print-btn");
+  if (printBtn) {
+    printBtn.addEventListener("click", function () {
+      window.print();
     });
   }
 

@@ -19,6 +19,8 @@ the output.
 - Instant search that filters and highlights matches.
 - Four themes — `light`, `dark`, `sepia` and `serif` — switchable from the page,
   and it remembers your choice.
+- Export to PDF with the browser's own print dialog: white page, serif type,
+  a page per document. See [Export to PDF](#export-to-pdf).
 - A "Copy" button on every code block, with its language label.
 - Optional cross-references: `T1 §3` turns into an internal link.
 - Self-contained output: CSS and JS are inlined, no external URLs.
@@ -116,6 +118,31 @@ With cross-references on, patterns like `T1 §3` become internal links:
   (e.g. `## 3. Functions` is §3). Unnumbered subheadings don't count.
 
 If the target doesn't exist, the text is left as is.
+
+## Export to PDF
+
+Click **PDF** in the top bar (or press Ctrl+P) and choose "Save as PDF". The
+page prints itself — there's no PDF library and no server, so the export can
+never drift from the HTML.
+
+The print stylesheet hides the sidebar, the search and every button; forces a
+white page with dark serif type whatever theme you're reading in; starts each
+document on a new page; keeps code blocks and quotes from splitting; repeats
+table headers across pages; and prints external links with their URL. An active
+search filter is ignored, so you always export the whole book.
+
+What it can't do, which is the price of needing no dependencies:
+
+- **No page numbers of ours.** The header and footer come from your print
+  dialog, and you can turn them on or off there.
+- **Breaks are requests.** A code block or table taller than a page still
+  splits.
+- **Browsers differ.** Pick one and stay with it for reproducible drafts.
+- **Backgrounds are off by default.** The stylesheet is designed for that, so
+  you don't need to change anything.
+
+For an e-reader, a PDF is fixed-layout and won't reflow — expect to zoom on a
+Kindle. Sending the `.html` itself usually reads better there.
 
 ## Executable (.exe)
 
