@@ -263,9 +263,25 @@ class MdbookApp:
         messagebox.showinfo("Done", f"HTML written to:\n{written}")
 
     def open_browser(self) -> None:
+        """Hand the built file to the system browser, saying so if it can't.
+
+        Every failure here has to be visible. A Tk callback that raises writes
+        its traceback to stderr, and the packaged app has no console, so the
+        button would appear to do nothing at all — the worst outcome for the one
+        control that tells the user their build worked.
+        """
         if self.last_output is None:
             return
-        webbrowser.open(self.last_output.as_uri())
+        try:
+            opened = webbrowser.open(self.last_output.as_uri())
+        except (ValueError, OSError) as exc:
+            messagebox.showerror("Cannot open", f"Could not open the file:\n{exc}")
+            return
+        if not opened:
+            messagebox.showerror(
+                "Cannot open",
+                f"No browser could be launched.\n\nThe file is here:\n{self.last_output}",
+            )
 
     def run(self) -> None:
         self.root.mainloop()

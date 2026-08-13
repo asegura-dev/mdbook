@@ -37,9 +37,13 @@ def compile_html(options: BuildOptions) -> str:
 
 
 def compile_book(options: BuildOptions) -> Path:
-    """Compile and write the HTML to ``options.output``. Returns the path written."""
+    """Compile and write the HTML to ``options.output``.
+
+    Returns the absolute path written: the contract already expanded and
+    resolved it, so callers can hand the result straight to ``Path.as_uri()``.
+    """
     html = compile_html(options)
-    output = options.output.expanduser()
+    output = options.output
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(html, encoding="utf-8")
     return output

@@ -72,7 +72,10 @@ class BuildOptions(BaseModel):
         value = value.expanduser()
         if value.suffix.lower() != ".html":
             raise ValueError(f"Output must end in .html: {value}")
-        return value
+        # Resolved like the inputs are. A relative output would otherwise travel
+        # all the way back to the caller, and Path.as_uri() — how the GUI hands
+        # the result to a browser — rejects relative paths.
+        return value.resolve()
 
 
 def discover_markdown(folder: Path) -> list[Path]:
