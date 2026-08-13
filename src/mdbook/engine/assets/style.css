@@ -125,6 +125,8 @@ body {
   cursor: pointer;
 }
 .theme-select:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+/* Wider than a square icon button: the label is a word, not a glyph. */
+.print-btn { width: auto; padding: 0 12px; font-size: 13px; font-family: inherit; }
 
 /* Layout */
 .layout { display: flex; align-items: flex-start; }
@@ -262,4 +264,74 @@ mark.hit { background: var(--mark); color: inherit; border-radius: 2px; }
     background: rgba(0, 0, 0, 0.4);
   }
   .content { padding: 20px 16px 100px; }
+}
+
+/* Print / PDF export. Everything is scoped to @media print, so nothing here
+   changes what the reader sees on screen. */
+@media print {
+  /* Force the light palette whatever theme is active, without touching
+     data-theme. Swapping the attribute from JS would have to be undone
+     afterwards, and a cancelled print dialog would strand the page on the
+     wrong theme. :root:root scores (0,2,0) and beats [data-theme="…"] at
+     (0,1,0), so it wins regardless of order — and because it names no theme,
+     a theme added later is covered without editing this block. */
+  :root:root {
+    --bg: #ffffff;
+    --bg-soft: #ffffff;
+    --bg-code: #ffffff;
+    --text: #111111;
+    --text-soft: #333333;
+    --border: #9a9a9a;
+    --accent: #000000;
+    --accent-soft: transparent;
+    --mark: transparent;
+    /* Serif on paper: this is printed to be read at length. */
+    --font-body: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+    --line-height: 1.5;
+  }
+
+  @page { margin: 2cm; }
+
+  /* Screen chrome means nothing on paper. */
+  .topbar, .sidebar, .backdrop, .copy-btn { display: none !important; }
+
+  .layout { display: block; }
+  .content { max-width: none; margin: 0; padding: 0; }
+
+  /* An active search filter must not silently truncate the export. The search
+     box is hidden here, so a filtered PDF would look like missing pages with
+     nothing on the page to explain why. `revert` restores each element's
+     default display, and !important outranks the inline style the filter sets. */
+  .cover, .content .doc, .content [data-sec] { display: revert !important; }
+
+  /* Page breaks. The cover carries the contents list, so it earns its own
+     page; each following document starts on a fresh one. */
+  .cover { break-after: page; }
+  .doc + .doc { break-before: page; margin-top: 0; padding-top: 0; border-top: none; }
+  .content h1, .content h2, .content h3 { break-after: avoid; }
+  .content p, .content li { orphans: 3; widows: 3; }
+
+  /* Browsers drop background fills unless the reader ticks "Background
+     graphics", so a code block is drawn with its border instead of its fill
+     and stays legible with the default print settings. */
+  .code-block { break-inside: avoid; border: 1px solid var(--border); }
+  .code-head { border-bottom: 1px solid var(--border); }
+  .code-block pre code { font-size: 0.8rem; }
+  .content blockquote { break-inside: avoid; }
+
+  /* display:block gives the screen its horizontal scroll but stops a table
+     paginating. As a real table it can break across pages, and the header
+     group repeats on each one. */
+  .content table { display: table; overflow-x: visible; }
+  .content thead { display: table-header-group; }
+
+  /* On paper a link is only its text, so external targets show where they
+     point. Internal cross-references are excluded: "T1 §6 (#doc1--6-x)" would
+     be noise, and the anchor means nothing off-screen. */
+  .content a { text-decoration: underline; }
+  .content a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    word-break: break-all;
+  }
 }

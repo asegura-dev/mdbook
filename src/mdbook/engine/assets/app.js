@@ -39,6 +39,16 @@
     });
   }
 
+  // --- Export to PDF -----------------------------------------------------
+  // The browser's own print pipeline; everything that makes the result look
+  // like a document lives in the @media print rules, not here.
+  var printBtn = document.querySelector(".print-btn");
+  if (printBtn) {
+    printBtn.addEventListener("click", function () {
+      window.print();
+    });
+  }
+
   // --- Sidebar menu (mobile) --------------------------------------------
   var menuBtn = document.querySelector(".menu-btn");
   var backdrop = document.querySelector(".backdrop");

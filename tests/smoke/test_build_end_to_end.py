@@ -40,6 +40,8 @@ def test_compiles_and_writes_html(sample_files: list[Path], tmp_path: Path) -> N
     assert "theme-select" in html
     assert '<option value="dark" selected' in html
     assert "copy-btn" in html
+    assert "print-btn" in html
+    assert "@media print" in html  # the export rules travel inside the file
 
     # Document titles (first H1 of the first and last file).
     assert "Coupling and cohesion" in html
